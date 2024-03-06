@@ -1,0 +1,16 @@
+<Project Sdk="Meadow.Sdk/1.1.0">
+  <PropertyGroup>
+     <Authors>Wilderness Labs, Inc</Authors>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Meadow</AssemblyName>
+    <Company>Wilderness Labs, Inc</Company>    
+     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>Meadow</RootNamespace>
+    <Nullable>enable</Nullable>
+    <Description>Tensorflow .NET libraries for Wilderness Labs Meadow</Description>
+    <LangVersion>10.0</LangVersion>
+  </PropertyGroup>
+  </Project>
