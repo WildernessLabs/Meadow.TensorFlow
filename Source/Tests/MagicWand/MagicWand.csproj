@@ -19,6 +19,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../TensorFlowMicro/TensorFlowMicro.csproj" />
+    <ProjectReference Include="../../Meadow.Tensorflow/TensorFlowMicro.csproj" />
   </ItemGroup>
 </Project>
