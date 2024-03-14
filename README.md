@@ -48,11 +48,21 @@ The following steps are required to run the Meadow TensorFlow Library.
 If by chance the Tensorflow DLL isn't in the file system this message should appear:
 
 ```
-Meadow StdOut: PlatformOS Initialize starting...
-Meadow StdOut: System.DllNotFoundException: Tensorflow.so assembly:<unknown assembly> type:<unknown type> member:(null)
-Meadow StdOut: at (wrapper managed-to-native) Tensorflow.litemicro.c_api_lite_micro.TfLiteMicroGetModel(int,intptr,intptr)
-Meadow StdOut: at MeadowApp.MeadowApp.Initialize () [0x000a3] in <aeed14d41b00478398903db563ecff6a>:0
-Meadow StdOut: at Meadow.MeadowOS.Start (System.String[] args, Meadow.IApp app) [0x000a9] in <8c25465e4ef54a56afc8b98d0018204a>:0
-Meadow StdOut: App shutting down
-Meadow StdOut: Shutdown
+stdout> Initializing App
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> Initialize Tensor Flow ...
+stdout> Mono: DllImport unable to load library 'Tensorflow.so'.
+stdout> App Error in App Initialize: Tensorflow.so assembly:<unknown assembly> type:<unknown type> member:(null)
+stdout>  System.DllNotFoundException: Tensorflow.so assembly:<unknown assembly> type:<unknown type> member:(null)
+stdout>   at (wrapper managed-to-native) Tensorflow.litemicro.c_api_lite_micro.TfLiteMicroGetModel(int,intptr,intptr)
+  at MeadowApp.MeadowApp.Initialize () [0x000b5] in <fd8ba0d23bc8457baefb5100962ea831>:0 
+  at Meadow.MeadowOS.Start (System.String[] args, Meadow.IApp app) [0x000a9] in <ffa488067a224532bb9ed3ec47e94b92>:0 
+stdout> App shutting down
+stdout> Shutdown
 ```
