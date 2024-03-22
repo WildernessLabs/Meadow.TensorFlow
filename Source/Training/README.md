@@ -3,28 +3,28 @@
 ## Dataset
 
 The Dataset is an essential part of performing machine learning. There are two options for acquiring a dataset:
-- Create your own dataset;
+- Create your dataset;
 - Consume public and open datasets.
 
-When creating your own data set, you must consider that the collection following a parameterization and a replication more closer to reality.
+When creating your own data set, you must consider that the collection following a parameterization and a replication are closer to reality.
 
-This project has available applications to assist in the data collection and a small dataset de gesture.
+This project has available applications to assist in the data collection and a small dataset de gestures.
 
 ## Models
 
-[TensorFlow Lite][1] allows you to use pre-trained models, modify or create your own. These models can perform tasks such as: voice recognition, video, pattern recognition, text, and more.
+[TensorFlow Lite][1] allows you to use pre-trained models, and modify or create your own. These models can perform tasks such as voice recognition, video, pattern recognition, text, and more.
 
 ## Traning
 
-Building a new model for TensorFlow requires training with the dataset, you can use a virtual machine in Colab or install the required tools to run local.
+Building a new model for TensorFlow requires training with the dataset, you can use a virtual machine in Colab or install the required tools to run locally.
 
 - The first step is the importance of the data and the separation between training and validation data.
 
-Bellow shows the collected acceleration data.
+The below shows the collected acceleration data.
 
 ![right](../Training/Images/right_data.png "Acceleromter Data")
 
-- The second is neural network learning. This part it's where the weight is defined. After training we check some metrics sort as loss or accuracy. If your model learned moves to the last step, otherwise considered review previous steps.
+- The second is neural network learning. This part it's where the weight is defined. After training we check some metrics sort as loss or accuracy. If your model learned moves to the last step, otherwise considered review the previous steps.
 
 ![Traning and Validation Loss](../Training/Images/traning_vs_validation.png "Validation vs Traning")
 
