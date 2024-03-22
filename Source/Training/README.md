@@ -3,32 +3,32 @@
 ## Dataset
 
 The Dataset is an essential part of performing machine learning. There are two options for acquiring a dataset:
-- Create your own data set;
+- Create your own dataset;
 - Consume public and open datasets.
 
-When creating your own data set, you must consider that the collection must follow a parameterization and replication that is closer to reality.
+When creating your own data set, you must consider that the collection following a parameterization and a replication more closer to reality.
 
-This repository is available on the App to assist in data collection as well as a small set of data for import into training scripts. Consult the `Data` directory and see which one best fits the project.
+This project has available applications to assist in the data collection and a small dataset de gesture.
 
 ## Models
 
-[TensorFlow Lite][1] allows you to use pre-trained models, and modify or create your own. These models can perform tasks such as: voice recognition, video, pattern recognition, text, and various applications.
+[TensorFlow Lite][1] allows you to use pre-trained models, modify or create your own. These models can perform tasks such as: voice recognition, video, pattern recognition, text, and more.
 
 ## Traning
 
-Building the model for gesture recognition in TensorFlow requires training with the dataset. To do this, use a [virtual machine][2] in colab and follow the flow of the cells.
+Building a new model for TensorFlow requires training with the dataset, you can use a virtual machine in Colab or install the required tools to run local.
 
-The first step is the importance of the data and the separation between training and validation data.
+- The first step is the importance of the data and the separation between training and validation data.
 
 Bellow shows the collected acceleration data.
 
-![right](../Traning/Images/right_data.png "Acceleromter Data")
+![right](../Training/Images/right_data.png "Acceleromter Data")
 
-The second is neural network learning is carried out, after training there is a loss of Validation vs Training.
+- The second is neural network learning. This part it's where the weight is defined. After training we check some metrics sort as loss or accuracy. If your model learned moves to the last step, otherwise considered review previous steps.
 
-![Traning and Validation Loss](../Traning/Images/traning_vs_validation.png "Validation vs Traning")
+![Traning and Validation Loss](../Training/Images/traning_vs_validation.png "Validation vs Traning")
 
-The third step converts the model to the format expected by TensorFlow Lite.
+- The third step converts the model to the format expected by TensorFlow Lite. The result expected is a large vector.
 
 ```
 const unsigned char model[] = {
@@ -39,4 +39,3 @@ const unsigned char model[] = {
 ```
 
 [1]: https://www.tensorflow.org/lite/models
-[2]: https://colab.research.google.com/drive/1ZjYB2r6U4jTtcKxQGC0esBYEMOv2YJ5f?usp=sharing
