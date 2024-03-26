@@ -19,7 +19,7 @@ namespace MeadowApp
         IntPtr interpreter;
         public override Task Initialize()
         {
-            Resolver.Log.Info("Initialize Tensor Flow ...");
+            Resolver.Log.Info("Initialize TensorFlow ...");
 
             IntPtr model = Marshal.AllocHGlobal(helloWorld.GetSize() * sizeof(int));
 
@@ -42,11 +42,11 @@ namespace MeadowApp
 
             var model_options = c_api_lite_micro.TfLiteMicroGetModel(ArenaSize, arena, model);
             if (model_options == null)
-                Resolver.Log.Info("Falied to loaded the model");
+                Resolver.Log.Info("Failed to loaded the model");
 
             var interpreter_options = c_api_lite_micro.TfLiteMicroInterpreterOptionCreate(model_options);
             if (interpreter_options == null)
-                Resolver.Log.Info("Falied to create interpreter option");
+                Resolver.Log.Info("Failed to create interpreter option");
 
             interpreter = c_api_lite_micro.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
             if (interpreter == null)
@@ -55,7 +55,7 @@ namespace MeadowApp
             tfLiteStatus = c_api_lite_micro.TfLiteMicroInterpreterAllocateTensors(interpreter);
             if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
             {
-                Resolver.Log.Info("Falied to allocate tensors");
+                Resolver.Log.Info("Failed to allocate tensors");
             }
 
             input = c_api_lite_micro.TfLiteMicroInterpreterGetInput(interpreter, 0);
@@ -99,7 +99,7 @@ namespace MeadowApp
 
                 if (helloWorld.floatNoTEqual(x,result[i].x) || helloWorld.floatNoTEqual(y, result[i].y))
                 {
-                    Resolver.Log.Info($"Test {i} falied");
+                    Resolver.Log.Info($"Test {i} failed");
                     Resolver.Log.Info($"Expeced {(result[i].x, result[i].y)}");
                     break;
                 }
@@ -112,7 +112,7 @@ namespace MeadowApp
                 }
             }
 
-            Resolver.Log.Info("Tensor Flow completed");
+            Resolver.Log.Info("Sample completed");
         }
     }
 }

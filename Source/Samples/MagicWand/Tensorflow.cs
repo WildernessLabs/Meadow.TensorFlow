@@ -55,11 +55,11 @@ namespace MeadowApp{
 
             var model_options = c_api_lite_micro.TfLiteMicroGetModel(ArenaSize, arena, model);
             if (model_options == null)
-                Console.WriteLine("Falied to loaded the model");
+                Console.WriteLine("Failed to loaded the model");
 
             var interpreter_options = c_api_lite_micro.TfLiteMicroInterpreterOptionCreate(model_options);
             if (interpreter_options == null)
-                Console.WriteLine("Falied to create interpreter option");
+                Console.WriteLine("Failed to create interpreter option");
 
             interpreter = c_api_lite_micro.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
             if (interpreter == null)
@@ -67,10 +67,9 @@ namespace MeadowApp{
 
             tfLiteStatus = c_api_lite_micro.TfLiteMicroInterpreterAllocateTensors(interpreter);
             if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
-                Console.WriteLine("Falied to allocate tensors");
+                Console.WriteLine("Failed to allocate tensors");
 
             input = c_api_lite_micro.TfLiteMicroInterpreterGetInput(interpreter, 0);
-            // output = c_api_lite_micro.TfLiteMicroInterpreterGetOutput(interpreter, 0);
 
             if ((c_api_lite_micro.TfLiteMicroDimsSizeData(input) != 4) ||(c_api_lite_micro.TfLiteMicroDimsData(input, 0)!= 1) || 
                 (c_api_lite_micro.TfLiteMicroDimsData(input, 1)!= 128) || (c_api_lite_micro.TfLiteMicroDimsData(input, 2)!= kChannelNumber) ||
@@ -79,7 +78,7 @@ namespace MeadowApp{
                 Console.Write("DimsSizeData error");
             }
 
-            Console.WriteLine("Tensor flow Initialize");
+            Console.WriteLine("TensorFlow Initialize");
         }
 
         public int InputLegth()
@@ -140,7 +139,6 @@ namespace MeadowApp{
 
             if (maxPredictIndex == kNoGesture || (maxPredictScore < kDetectionThreshould) || predictionSupressionCount > 0)
             {
-                // Resolver.Log.Info($"Index - {maxPredictIndex}, Score - {maxPredictScore}, Count - {predictionSupressionCount}");
                 return kNoGesture;
             }
 

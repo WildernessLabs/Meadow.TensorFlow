@@ -49,7 +49,7 @@ namespace MeadowApp
 
                     if (Tensorflow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
                     {
-                        Resolver.Log.Info("Invoke falied");
+                        Resolver.Log.Info("Invoke failed");
                         break;
                     }
 
