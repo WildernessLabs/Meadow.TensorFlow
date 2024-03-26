@@ -13,15 +13,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-enum TrainingStep
-{
-    Idle = 0,
-    RestartTraining = 1,
-    SaveTraining = 2,
-    StartTraining = 3,
-    StopTraning = 4,
-    Traning = 5,
-};
 
 namespace MeadowApp
 {
@@ -37,9 +28,8 @@ namespace MeadowApp
         public string currentfilename;
 
 
-        public const string testerName = "YOUR_NAME";
+        public const string testerName = "YOUR_NAME"; // Separate the training for each people
         public const double acclerometerThreshould = 2.50;
-        public const int numOfSamples = 119;
 
         TrainingStep CurrentStep;
 
@@ -51,10 +41,8 @@ namespace MeadowApp
             projLab.RightButton.Clicked += (s, e) => CurrentStep = TrainingStep.SaveTraining;
             projLab.LeftButton.Clicked += (s, e) => CurrentStep = TrainingStep.RestartTraining;
             projLab.UpButton.Clicked += (s, e) => CurrentStep = TrainingStep.StartTraining;
-            projLab.DownButton.Clicked += (s, e) => CurrentStep = TrainingStep.StopTraning;
+            projLab.DownButton.Clicked += (s, e) => CurrentStep = TrainingStep.StopTraining;
             CurrentStep = TrainingStep.Idle;
-
-            Resolver.Log.Info(currentfilename);
 
             return base.Initialize();
         }
@@ -91,6 +79,11 @@ namespace MeadowApp
                                 Resolver.Log.Info($"{currentfilename} save !");
                                 CloseFile();
                                 indexTraining++;
+
+                                if (indexTraining < trainingFile.Length)
+                                {
+                                    Resolver.Log.Info("Press Up Button to move the next training");
+                                }
                             }
                             break;
                     }
@@ -99,6 +92,8 @@ namespace MeadowApp
 
                 if (indexTraining >= trainingFile.Length)
                 {
+                    // Completed the training you need to extract the file and move to your machine 
+                    // after that press the RST button on board and restart collect more data
                     Resolver.Log.Info("Training Completed");
                     break;
                 }
@@ -123,7 +118,7 @@ namespace MeadowApp
             {
                 if (DetectMoviment() && !IsDetected)
                 {
-                    IsDetected = true;
+                    IsDetected = true; // Detected the first movement
                 }
 
                 if (IsDetected)
@@ -135,9 +130,12 @@ namespace MeadowApp
                         Resolver.Log.Info(value);
                     }
                 }
-                if (CurrentStep == TrainingStep.StopTraning)
+
+                // After completing the movement you can press the down button or 
+                // for some reason didn't work stop the training and restart
+                if (CurrentStep == TrainingStep.StopTraining)
                 {
-                    Resolver.Log.Info("Stop Traning ...");
+                    Resolver.Log.Info("Stop Training ...");
                     break;
                 }
 
@@ -198,5 +196,15 @@ namespace MeadowApp
         }
 
     }
+
+    enum TrainingStep
+    {
+        Idle = 0,
+        RestartTraining = 1,
+        SaveTraining = 2,
+        StartTraining = 3,
+        StopTraining = 4,
+        Training = 5,
+    };
 }
 
