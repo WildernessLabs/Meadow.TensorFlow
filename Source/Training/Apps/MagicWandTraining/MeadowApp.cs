@@ -30,14 +30,14 @@ namespace MeadowApp
         private IProjectLabHardware projLab;
         private static StreamWriter fs;
 
-        public double []accelerometerData = new double[3];
+        public double[] accelerometerData = new double[3];
 
-        public string []trainingFile = {"output_M_", "output_W_", "output_O_", "output_L_"};
-        public string []gestureTraining = {"M", "W", "O", "L"};
+        public string[] trainingFile = { "output_M_", "output_W_", "output_O_", "output_L_" };
+        public string[] gestureTraining = { "M", "W", "O", "L" };
         public string currentfilename;
 
-        
-        public const string testerName = "halysson";
+
+        public const string testerName = "YOUR_NAME";
         public const double acclerometerThreshould = 2.50;
         public const int numOfSamples = 119;
 
@@ -49,8 +49,8 @@ namespace MeadowApp
             projLab.Accelerometer.Updated += onAccelerometerUpdated;
 
             projLab.RightButton.Clicked += (s, e) => CurrentStep = TrainingStep.SaveTraining;
-            projLab.LeftButton.Clicked += (s, e) => CurrentStep =  TrainingStep.RestartTraining;
-            projLab.UpButton.Clicked += (s, e) => CurrentStep = TrainingStep.StartTraining;     
+            projLab.LeftButton.Clicked += (s, e) => CurrentStep = TrainingStep.RestartTraining;
+            projLab.UpButton.Clicked += (s, e) => CurrentStep = TrainingStep.StartTraining;
             projLab.DownButton.Clicked += (s, e) => CurrentStep = TrainingStep.StopTraning;
             CurrentStep = TrainingStep.Idle;
 
@@ -63,7 +63,7 @@ namespace MeadowApp
         {
             int indexTraining = 0;
             projLab.Accelerometer.StartUpdating(TimeSpan.FromMilliseconds(10));
-            
+
             while (true)
             {
                 if (CurrentStep != TrainingStep.Idle)
@@ -71,28 +71,28 @@ namespace MeadowApp
                     switch (CurrentStep)
                     {
                         case TrainingStep.StartTraining:
-                        {
-                            Resolver.Log.Info($"Starting gesture training - {gestureTraining[indexTraining]} ...");
-                            currentfilename = trainingFile[indexTraining] + testerName + ".txt";
-                            CreateFile(currentfilename);
-                            await DataTask();
-                        }
-                        break;
-        
+                            {
+                                Resolver.Log.Info($"Starting gesture training - {gestureTraining[indexTraining]} ...");
+                                currentfilename = trainingFile[indexTraining] + testerName + ".txt";
+                                CreateFile(currentfilename);
+                                await DataTask();
+                            }
+                            break;
+
                         case TrainingStep.RestartTraining:
-                        {
-                            Resolver.Log.Info("Restart Training");
-                            ClearFile(currentfilename);
-                        }
-                        break;
+                            {
+                                Resolver.Log.Info("Restart Training");
+                                ClearFile(currentfilename);
+                            }
+                            break;
 
                         case TrainingStep.SaveTraining:
-                        {
-                            Resolver.Log.Info($"{currentfilename} save !");
-                            CloseFile();
-                            indexTraining ++;    
-                        }
-                        break;
+                            {
+                                Resolver.Log.Info($"{currentfilename} save !");
+                                CloseFile();
+                                indexTraining++;
+                            }
+                            break;
                     }
                     CurrentStep = TrainingStep.Idle;
                 }
@@ -117,34 +117,30 @@ namespace MeadowApp
         }
         void CaptureAccelerometerData()
         {
-            int samples = 0;
+            bool IsDetected = false;
 
             while (true)
             {
+                if (DetectMoviment() && !IsDetected)
+                {
+                    IsDetected = true;
+                }
+
+                if (IsDetected)
+                {
+                    if (projLab.Accelerometer.IsSampling)
+                    {
+                        string value = $"{accelerometerData[0]}, {accelerometerData[1]}, {accelerometerData[2]}";
+                        WriteFile(value);
+                        Resolver.Log.Info(value);
+                    }
+                }
                 if (CurrentStep == TrainingStep.StopTraning)
                 {
                     Resolver.Log.Info("Stop Traning ...");
                     break;
                 }
 
-                if (DetectMoviment())
-                {
-                    Resolver.Log.Info("Moviment detected");
-                    while (samples < numOfSamples)
-                    {
-                        if (projLab.Accelerometer.IsSampling)
-                        {
-                            string value = $"{accelerometerData[0]}, {accelerometerData[1]}, {accelerometerData[2]}";
-                            WriteFile(value);
-                            Resolver.Log.Info(value);
-
-                            samples ++;
-                        }
-                        Thread.Sleep(10);
-                    }
-                    Resolver.Log.Info("Samples collected");
-                    break;
-                }
                 Thread.Sleep(10);
             }
         }
@@ -164,7 +160,7 @@ namespace MeadowApp
         {
             try
             {
-                fs.Close();   
+                fs.Close();
             }
             catch (Exception ex)
             {
