@@ -17,7 +17,7 @@ namespace MeadowApp
     {
         private IProjectLabHardware projLab;
         private const double kDetectionThreshould = 2.5;
-        private string[] gestureList = { "backward", "forward", "rightward", "leftward" };
+        private string[] gestureList = { "thumbsub", "clap"};
 
         public int samplesRead = 0;
         public const int numOfSamples = 119;
@@ -40,45 +40,49 @@ namespace MeadowApp
             {
                 while (samplesRead == numOfSamples)
                 {
-                    if (isMoviment())
+                    if (IsMoviment())
                     {
                         Resolver.Log.Info("Moviment Detected ...");
                         samplesRead = 0;
                         break;
                     }
-                    await Task.Delay(15);
+                    await Task.Delay(1);
                 }
 
                 while (samplesRead < numOfSamples)
                 {
-                    await InputAccelerometerData();
-
-                    if (samplesRead == numOfSamples)
+                    if (InputAccelerometerData())
                     {
-                        if (Tensorflow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                        if (samplesRead == numOfSamples)
                         {
-                            Resolver.Log.Info("Invoke falied");
-                            break;
+                            if (Tensorflow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                            {
+                                Resolver.Log.Info("Invoke falied");
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < gestureList.Length; i++)
+                        {
+                            float tensorData = Tensorflow.Instance.OutputData(i);
+                            if (tensorData > 0.85)
+                            {
+                                Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                            }
                         }
                     }
-                    for (int i = 0; i < gestureList.Length; i++)
-                    {
-                        float tensorData = Tensorflow.Instance.OutputData(i);
-                        if (tensorData > 0.9)
-                            Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
-                    }
+                    await Task.Delay(5);
                 }
-                await Task.Delay(10);
+                await Task.Delay(1);
             }
         }
 
-        public bool isMoviment()
+        public bool IsMoviment()
         {
             double threshould = Math.Abs(accelerometerData[0]) + Math.Abs(accelerometerData[1]) + Math.Abs(accelerometerData[2]);
             return threshould > kDetectionThreshould;
         }
 
-        public async Task InputAccelerometerData()
+        public bool InputAccelerometerData()
         {
             if (projLab.Accelerometer.IsSampling)
             {
@@ -91,7 +95,9 @@ namespace MeadowApp
                 Tensorflow.Instance.InputData(samplesRead * 3 + 2, aZ);
 
                 samplesRead++;
+                return true;
             }
+            return false;
         }
 
         private void onAccelerometerUpdated(object sender, IChangeResult<Acceleration3D> e)
