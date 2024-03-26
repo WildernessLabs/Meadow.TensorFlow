@@ -60,7 +60,7 @@ namespace Tensorflow.litemicro
         public static extern float TfLiteMicroGetFloatData(TfLiteTensor tensor, int index);
 
         [DllImport(TensorFlowLibName)]
-        public static extern float TfLiteMicroSetFloatData(TfLiteTensor tensor, int index, float value);
+        public static extern void TfLiteMicroSetFloatData(TfLiteTensor tensor, int index, float value);
 
         [DllImport(TensorFlowLibName)]
         public static extern int TfLiteMicroGetByte(TfLiteTensor tensor);
