@@ -17,7 +17,7 @@ namespace MeadowApp
     {
         private IProjectLabHardware projLab;
         private const double kDetectionThreshould = 2.5;
-        private string[] gestureList = { "thumbsub", "clap"};
+        private string[] gestureList = { "thumbs up", "wave"};
 
         public int samplesRead = 0;
         public const int numOfSamples = 119;

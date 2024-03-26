@@ -32,8 +32,8 @@ namespace MeadowApp
 
         public double[] accelerometerData = new double[3];
 
-        public string[] trainingFile = { "b", "f", "l", "r" };
-        public string[] gestureTraining = { "backwards", "forward", "left", "right" };
+        public string[] trainingFile = { "thumbs", "wave"};
+        public string[] gestureTraining = { "thumbs up", "wave"};
         public string currentfilename;
 
         public const double acclerometerThreshould = 2.50;
