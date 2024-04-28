@@ -8,8 +8,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-using Tensorflow;
-using Tensorflow.litemicro;
+using TensorFlow;
+using TensorFlow.litemicro;
 
 namespace MeadowApp
 {
@@ -28,7 +28,7 @@ namespace MeadowApp
             projLab = ProjectLab.Create();
             projLab.Accelerometer.Updated += onAccelerometerUpdated;
 
-            Tensorflow.Instance.Initialize();
+            TensorFlow.Instance.Initialize();
 
             return base.Initialize();
         }
@@ -55,7 +55,7 @@ namespace MeadowApp
                     {
                         if (samplesRead == numOfSamples)
                         {
-                            if (Tensorflow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                            if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
                             {
                                 Resolver.Log.Info("Invoke falied");
                                 break;
@@ -63,7 +63,7 @@ namespace MeadowApp
                         }
                         for (int i = 0; i < gestureList.Length; i++)
                         {
-                            float tensorData = Tensorflow.Instance.OutputData(i);
+                            float tensorData = TensorFlow.Instance.OutputData(i);
                             if (tensorData > 0.85)
                             {
                                 Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
@@ -90,9 +90,9 @@ namespace MeadowApp
                 float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
                 float aZ = (float)((accelerometerData[2] + 4.0) / 8.0);
 
-                Tensorflow.Instance.InputData(samplesRead * 3 + 0, aX);
-                Tensorflow.Instance.InputData(samplesRead * 3 + 1, aY);
-                Tensorflow.Instance.InputData(samplesRead * 3 + 2, aZ);
+                TensorFlow.Instance.InputData(samplesRead * 3 + 0, aX);
+                TensorFlow.Instance.InputData(samplesRead * 3 + 1, aY);
+                TensorFlow.Instance.InputData(samplesRead * 3 + 2, aZ);
 
                 samplesRead++;
                 return true;

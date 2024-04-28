@@ -10,9 +10,9 @@ using System;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-using Tensorflow.litemicro;
+using TensorFlow.litemicro;
 using MagicWandMode;
-using Tensorflow;
+using TensorFlow;
 
 namespace MeadowApp
 {
@@ -29,8 +29,8 @@ namespace MeadowApp
         public int InputLegth;
         public override Task Initialize()
         {
-            Tensorflow.Instance.Initialize();
-            InputLegth = Tensorflow.Instance.InputLegth();
+            TensorFlow.Instance.Initialize();
+            InputLegth = TensorFlow.Instance.InputLegth();
 
             mpu = new Mpu6050(Device.CreateI2cBus());
 
@@ -47,14 +47,14 @@ namespace MeadowApp
                if(await ReadAccelerometer(clearBuffer))
                {
 
-                    if (Tensorflow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                    if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
                     {
                         Resolver.Log.Info("Invoke failed");
                         break;
                     }
 
-                    int gestureIndex = Tensorflow.Instance.Predict();
-                    string gesture = Tensorflow.Instance.HandleOutput(gestureIndex);
+                    int gestureIndex = TensorFlow.Instance.Predict();
+                    string gesture = TensorFlow.Instance.HandleOutput(gestureIndex);
                     if ( gesture != null)
                     {
                         Resolver.Log.Info($"Gesture = {gesture}");
@@ -114,15 +114,11 @@ namespace MeadowApp
                }
 
             //    Console.Write($"{(i,(float)saveAccelData[ringArryIndex])}");
-               Tensorflow.Instance.InputData(i, (float)saveAccelData[ringArryIndex]);
+               TensorFlow.Instance.InputData(i, (float)saveAccelData[ringArryIndex]);
             }
 
             return true;
-
         }
-        
-
-
     }
 }
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
 using HelloWorld;
-using Tensorflow.litemicro;
+using TensorFlow.litemicro;
 
 namespace MeadowApp
 {

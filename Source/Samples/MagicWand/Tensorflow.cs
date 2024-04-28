@@ -2,15 +2,15 @@ using System;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-using Tensorflow.litemicro;
+using TensorFlow.litemicro;
 using MagicWandMode;
 using Meadow;
 
 namespace MeadowApp{
 
-    public class Tensorflow
+    public class TensorFlow
     {
-        private static readonly Lazy<Tensorflow> instance = new Lazy<Tensorflow> (()=>new Tensorflow());
+        private static readonly Lazy<TensorFlow> instance = new Lazy<TensorFlow>(() => new TensorFlow());
         private const int kChannelNumber = 3; 
         private const int kGestureCount = 4;
         private const int kPredictionHistoryLength = 5;
@@ -23,7 +23,7 @@ namespace MeadowApp{
         private float [,]predictionHistory = new float[kGestureCount, kPredictionHistoryLength];
         private int predictionSupressionCount = 0;
     
-        public static Tensorflow Instance => instance.Value;
+        public static TensorFlow Instance => instance.Value;
 
         TfLiteStatus tfLiteStatus;
         TfLiteTensor input, output;

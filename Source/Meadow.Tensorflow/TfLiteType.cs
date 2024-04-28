@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 
-namespace Tensorflow.litemicro
+namespace TensorFlow.litemicro
 {
     public enum TfLiteType
     {

@@ -16,11 +16,11 @@
     <None Include="app.config.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="../../../Tensorflow/Tensorflow.so">
+    <None Include="../../../TensorFlow/TensorFlow.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../Meadow.Tensorflow/TensorFlowMicro.csproj" />
+    <ProjectReference Include="../../Meadow.TensorFlow/TensorFlowMicro.csproj" />
   </ItemGroup>
 </Project>

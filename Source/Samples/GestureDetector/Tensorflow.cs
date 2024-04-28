@@ -7,15 +7,15 @@ using System;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
-using Tensorflow.litemicro;
+using TensorFlow.litemicro;
 using GestureDetectorModel;
 
 namespace MeadowApp
 {
-    public class Tensorflow
+    public class TensorFlow
     {
-        private static readonly Lazy<Tensorflow> instance = new Lazy<Tensorflow>(() => new Tensorflow());
-        public static Tensorflow Instance => instance.Value;
+        private static readonly Lazy<TensorFlow> instance = new Lazy<TensorFlow>(() => new TensorFlow());
+        public static TensorFlow Instance => instance.Value;
 
         private TfLiteStatus tfLiteStatus;
         private TfLiteTensor input, output;
