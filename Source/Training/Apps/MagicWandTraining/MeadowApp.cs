@@ -105,7 +105,7 @@ namespace MeadowApp
         {
             return Task.Run(new Action(CaptureAccelerometerData));
         }
-        bool DetectMoviment()
+        bool DetectMovement()
         {
             double threshould = Math.Abs(accelerometerData[0]) + Math.Abs(accelerometerData[1]) + Math.Abs(accelerometerData[2]);
             return threshould > acclerometerThreshould;
@@ -116,7 +116,7 @@ namespace MeadowApp
 
             while (true)
             {
-                if (DetectMoviment() && !IsDetected)
+                if (DetectMovement() && !IsDetected)
                 {
                     IsDetected = true; // Detected the first movement
                 }

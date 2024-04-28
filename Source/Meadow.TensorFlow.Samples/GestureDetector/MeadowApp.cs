@@ -40,9 +40,9 @@ namespace MeadowApp
             {
                 while (samplesRead == numOfSamples)
                 {
-                    if (IsMoviment())
+                    if (IsMovement())
                     {
-                        Resolver.Log.Info("Moviment Detected ...");
+                        Resolver.Log.Info("Movement Detected ...");
                         samplesRead = 0;
                         break;
                     }
@@ -76,7 +76,7 @@ namespace MeadowApp
             }
         }
 
-        public bool IsMoviment()
+        public bool IsMovement()
         {
             double threshould = Math.Abs(accelerometerData[0]) + Math.Abs(accelerometerData[1]) + Math.Abs(accelerometerData[2]);
             return threshould > kDetectionThreshould;
