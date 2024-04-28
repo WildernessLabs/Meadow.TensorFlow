@@ -396,3 +396,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Windows files
+Thumbs.db
+
+# macOS files
+.DS_Store
