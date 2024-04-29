@@ -12,4 +12,9 @@
     <Compile Include="TfLiteTensor.cs" />
     <Compile Include="TfLiteType.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="TensorFlow/TensorFlow.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
