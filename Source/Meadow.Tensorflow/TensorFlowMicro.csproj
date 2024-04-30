@@ -5,7 +5,6 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>10.0</LangVersion>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <AssemblyName>Meadow.TensorFlow</AssemblyName>
     <Company>Wilderness Labs, Inc</Company>
     <PackageProjectUrl>http://developer.wildernesslabs.co/Meadow/</PackageProjectUrl>
@@ -30,7 +29,8 @@
     <Compile Include="TfLiteType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="../../TensorFlow/TensorFlow.so">
+    <None Include="icon.png" Pack="true" PackagePath="" />
+    <None Include="..\..\TensorFlow/TensorFlow.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
