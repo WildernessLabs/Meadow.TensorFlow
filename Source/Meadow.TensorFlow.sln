@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Motion.Bmi270", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meadow.ProjectLab", "..\..\Meadow.ProjectLab\Source\Meadow.ProjectLab\Meadow.ProjectLab.csproj", "{1E3AA68A-DDA8-45FF-A90A-002D68DBB0E4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowMicro", "Meadow.Tensorflow\TensorFlowMicro.csproj", "{1F7D2037-4ED0-459E-AF51-7CAC5C7C0416}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TensorFlowMicro", "Meadow.TensorFlow\TensorFlowMicro.csproj", "{1F7D2037-4ED0-459E-AF51-7CAC5C7C0416}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GestureDetector", "Meadow.TensorFlow.Samples\GestureDetector\GestureDetector.csproj", "{DE51C7A8-3464-4ADF-A91E-FD939A8F8CED}"
 EndProject
