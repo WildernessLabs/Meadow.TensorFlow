@@ -7,9 +7,6 @@
         <LangVersion>10.0</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="meadow.config.yaml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
         <None Include="app.config.yaml">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>

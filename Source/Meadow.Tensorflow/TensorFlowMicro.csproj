@@ -30,7 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="icon.png" Pack="true" PackagePath="" />
-    <None Include="..\..\TensorFlow/TensorFlow.so">
+    <None Include="..\..\TensorFlow\TensorFlow.so">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
