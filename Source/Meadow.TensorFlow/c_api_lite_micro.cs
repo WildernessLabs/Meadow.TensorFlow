@@ -2,11 +2,11 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Tensorflow.litemicro
+namespace TensorFlow.litemicro
 {
     public static class c_api_lite_micro
     {
-        public const string TensorFlowLibName = "Tensorflow.so";
+        public const string TensorFlowLibName = "TensorFlow.so";
 
         [DllImport(TensorFlowLibName)]
         public static extern IntPtr TfLiteMicroGetModel(int arena_size, IntPtr arena ,IntPtr model_data);

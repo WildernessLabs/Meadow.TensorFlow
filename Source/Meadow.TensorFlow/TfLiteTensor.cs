@@ -1,6 +1,7 @@
 using System;
 
-namespace Tensorflow.litemicro {
+namespace TensorFlow.litemicro
+{
     public struct TfLiteTensor
     {
         private IntPtr _handle;
