@@ -4,6 +4,7 @@ using Meadow.Units;
 using System;
 using System.Threading.Tasks;
 using TensorFlow.litemicro;
+using GestureDetector.Controllers;
 
 namespace GestureDetector;
 
@@ -21,7 +22,7 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         projLab = ProjectLab.Create();
         projLab.Accelerometer.Updated += onAccelerometerUpdated;
-
+        DisplayController.Instance.Initialize(projLab.Display);
         TensorFlow.Instance.Initialize();
 
         return base.Initialize();
@@ -30,6 +31,7 @@ public class MeadowApp : App<F7CoreComputeV2>
     public override async Task Run()
     {
         projLab.Accelerometer.StartUpdating(TimeSpan.FromMilliseconds(10));
+        
         while (true)
         {
             while (samplesRead == numOfSamples)
@@ -58,9 +60,10 @@ public class MeadowApp : App<F7CoreComputeV2>
                     for (int i = 0; i < gestureList.Length; i++)
                     {
                         float tensorData = TensorFlow.Instance.OutputData(i);
-                        if (tensorData > 0.85)
+                        if (tensorData > 0.95)
                         {
                             Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                            DisplayController.Instance.UpdateGesture(gestureList[i]);
                         }
                     }
                 }
