@@ -12,7 +12,7 @@ public class MeadowApp : App<F7CoreComputeV2>
 {
     private IProjectLabHardware projLab;
     private const double kDetectionThreshould = 2.5;
-    private string[] gestureList = { "thumbs up", "wave" };
+    private string[] gestureList = { "thumbs up", "thumbs down", "flex", "wave", "punch" };
 
     public int samplesRead = 0;
     public const int numOfSamples = 119;
