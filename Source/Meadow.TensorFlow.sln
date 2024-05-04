@@ -55,6 +55,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicWand", "Meadow.TensorF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Motion.Mpu6050", "..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Motion.Mpu6050\Driver\Sensors.Motion.Mpu6050.csproj", "{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Graphics.MicroLayout", "..\..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Graphics.MicroLayout\Driver\Graphics.MicroLayout.csproj", "{5EB71B0A-02CB-4244-9649-0221EB4DA76C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,10 @@ Global
 		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EB71B0A-02CB-4244-9649-0221EB4DA76C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EB71B0A-02CB-4244-9649-0221EB4DA76C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EB71B0A-02CB-4244-9649-0221EB4DA76C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EB71B0A-02CB-4244-9649-0221EB4DA76C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -181,6 +187,7 @@ Global
 		{E40B2505-8856-41C0-9CA8-EEAA5AAE6B14} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
 		{479675E5-5193-4B86-8F1E-78A07C473048} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
 		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA} = {E34ADEDD-3759-40C8-918C-E10E896F84C0}
+		{5EB71B0A-02CB-4244-9649-0221EB4DA76C} = {E34ADEDD-3759-40C8-918C-E10E896F84C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF0B3E5F-EFD0-4EB3-9197-84B122ADFE42}

@@ -1,10 +1,10 @@
-﻿using Meadow;
+﻿using GestureDetector.Controllers;
+using Meadow;
 using Meadow.Devices;
 using Meadow.Units;
 using System;
 using System.Threading.Tasks;
 using TensorFlow.litemicro;
-using GestureDetector.Controllers;
 
 namespace GestureDetector;
 
@@ -14,6 +14,8 @@ public class MeadowApp : App<F7CoreComputeV2>
     private const double kDetectionThreshould = 2.5;
     private string[] gestureList = { "thumbs up", "thumbs down", "flex", "wave", "punch" };
 
+    private DisplayController displayController;
+
     public int samplesRead = 0;
     public const int numOfSamples = 119;
     public double[] accelerometerData = new double[3];
@@ -22,55 +24,12 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         projLab = ProjectLab.Create();
         projLab.Accelerometer.Updated += onAccelerometerUpdated;
-        DisplayController.Instance.Initialize(projLab.Display);
+
+        displayController = new DisplayController(projLab.Display);
+
         TensorFlow.Instance.Initialize();
 
         return base.Initialize();
-    }
-
-    public override async Task Run()
-    {
-        projLab.Accelerometer.StartUpdating(TimeSpan.FromMilliseconds(10));
-        
-        while (true)
-        {
-            while (samplesRead == numOfSamples)
-            {
-                if (IsMovement())
-                {
-                    Resolver.Log.Info("Movement Detected ...");
-                    samplesRead = 0;
-                    break;
-                }
-                await Task.Delay(1);
-            }
-
-            while (samplesRead < numOfSamples)
-            {
-                if (InputAccelerometerData())
-                {
-                    if (samplesRead == numOfSamples)
-                    {
-                        if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
-                        {
-                            Resolver.Log.Info("Invoke falied");
-                            break;
-                        }
-                    }
-                    for (int i = 0; i < gestureList.Length; i++)
-                    {
-                        float tensorData = TensorFlow.Instance.OutputData(i);
-                        if (tensorData > 0.95)
-                        {
-                            Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
-                            DisplayController.Instance.UpdateGesture(gestureList[i]);
-                        }
-                    }
-                }
-                await Task.Delay(5);
-            }
-            await Task.Delay(1);
-        }
     }
 
     public bool IsMovement()
@@ -104,4 +63,48 @@ public class MeadowApp : App<F7CoreComputeV2>
         accelerometerData[2] = e.New.Z.Gravity;
     }
 
+    public override async Task Run()
+    {
+        projLab.Accelerometer.StartUpdating(TimeSpan.FromMilliseconds(10));
+
+        while (true)
+        {
+            while (samplesRead == numOfSamples)
+            {
+                if (IsMovement())
+                {
+                    Resolver.Log.Info("Movement Detected ...");
+                    samplesRead = 0;
+                    break;
+                }
+                await Task.Delay(1);
+            }
+
+            while (samplesRead < numOfSamples)
+            {
+                if (InputAccelerometerData())
+                {
+                    if (samplesRead == numOfSamples)
+                    {
+                        if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                        {
+                            Resolver.Log.Info("Invoke falied");
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < gestureList.Length; i++)
+                    {
+                        float tensorData = TensorFlow.Instance.OutputData(i);
+                        if (tensorData > 0.95)
+                        {
+                            Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                            displayController.ShowGestureDetected(i);
+                        }
+                    }
+                }
+                await Task.Delay(5);
+            }
+            await Task.Delay(1);
+        }
+    }
 }
