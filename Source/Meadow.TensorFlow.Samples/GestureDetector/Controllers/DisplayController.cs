@@ -14,6 +14,7 @@ public class DisplayController
         Image.LoadFromResource("GestureDetector.Resources.img-flex.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-wave.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-fist.bmp"),
+        Image.LoadFromResource("GestureDetector.Resources.img-thinking.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-ready.bmp"),
     };
 
@@ -53,21 +54,44 @@ public class DisplayController
         displayScreen.Controls.Add(title);
     }
 
+    public void ShowMovementDetected()
+    {
+        picture.Image = images[(int)GesturesType.Thinking];
+        title.Text = "Processing";
+    }
+
+    public void ShowReady()
+    {
+        picture.Image = images[(int)GesturesType.Ready];
+        title.Text = "Ready";
+    }
+
     public void ShowGestureDetected(int state)
     {
         picture.Image = images[state];
         title.Text = state switch
         {
-            0 => "Thumbs Up",
-            1 => "Thumbs Down",
-            2 => "Arm Flex",
-            3 => "Waving",
-            4 => "Punch",
+            (int)GesturesType.ThumbsUp => "Thumbs Up",
+            (int)GesturesType.ThumbsDown => "Thumbs Down",
+            (int)GesturesType.Flex => "Flex",
+            (int)GesturesType.Wave => "Wave",
+            (int)GesturesType.Punch => "Punch",
         };
 
         Thread.Sleep(3000);
 
-        picture.Image = images[images.Length - 1];
+        picture.Image = images[(int)GesturesType.Ready];
         title.Text = "Ready";
     }
+}
+
+public enum GesturesType
+{
+    ThumbsUp = 0,
+    ThumbsDown = 1,
+    Flex = 2,
+    Wave = 3,
+    Punch = 4,
+    Thinking = 5,
+    Ready = 6
 }

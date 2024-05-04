@@ -69,11 +69,14 @@ public class MeadowApp : App<F7CoreComputeV2>
 
         while (true)
         {
+            displayController.ShowReady();
+
             while (samplesRead == numOfSamples)
             {
                 if (IsMovement())
                 {
                     Resolver.Log.Info("Movement Detected ...");
+                    displayController.ShowMovementDetected();
                     samplesRead = 0;
                     break;
                 }
@@ -104,7 +107,8 @@ public class MeadowApp : App<F7CoreComputeV2>
                 }
                 await Task.Delay(5);
             }
-            await Task.Delay(1);
+
+            await Task.Delay(1000);
         }
     }
 }
