@@ -94,14 +94,22 @@ public class MeadowApp : App<F7CoreComputeV2>
                             Resolver.Log.Info("Invoke falied");
                             break;
                         }
-                    }
-                    for (int i = 0; i < gestureList.Length; i++)
-                    {
-                        float tensorData = TensorFlow.Instance.OutputData(i);
-                        if (tensorData > 0.95)
+
+                        bool gestureDetected = false;
+                        for (int i = 0; i < gestureList.Length; i++)
                         {
-                            Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
-                            displayController.ShowGestureDetected(i);
+                            float tensorData = TensorFlow.Instance.OutputData(i);
+                            if (tensorData > 0.95)
+                            {
+                                gestureDetected = true;
+                                Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                                displayController.ShowGestureDetected(i, tensorData);
+                            }
+                        }
+
+                        if (!gestureDetected)
+                        {
+                            displayController.ShowGestureNotRecognized();
                         }
                     }
                 }

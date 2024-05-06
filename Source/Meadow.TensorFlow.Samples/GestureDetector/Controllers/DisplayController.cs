@@ -16,14 +16,17 @@ public class DisplayController
         Image.LoadFromResource("GestureDetector.Resources.img-fist.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-thinking.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-ready.bmp"),
+        Image.LoadFromResource("GestureDetector.Resources.img-shrug.bmp"),
     };
 
     private readonly Font16x24 font16X24 = new Font16x24();
+    private readonly Font12x16 font12X16 = new Font12x16();
 
     private readonly DisplayScreen displayScreen;
 
     private Label title;
     private Picture picture;
+    private Label accuracy;
 
     public DisplayController(IPixelDisplay display)
     {
@@ -38,37 +41,48 @@ public class DisplayController
         displayScreen.Controls.Add(new Picture(274, 190, 36, 40,
             Image.LoadFromResource("GestureDetector.Resources.img-tf-logo.bmp")));
 
-        picture = new Picture(101, 70, 119, 122, images[images.Length - 1]);
-        displayScreen.Controls.Add(picture);
-
-        title = new Label(
-            left: 0,
-            top: 25,
-            width: displayScreen.Width,
-            height: font16X24.Height)
+        title = new Label(0, 23, displayScreen.Width, font16X24.Height)
         {
             Text = "Ready",
             HorizontalAlignment = HorizontalAlignment.Center,
             Font = font16X24
         };
         displayScreen.Controls.Add(title);
+
+        picture = new Picture(100, 59, 119, 122, images[images.Length - 1]);
+        displayScreen.Controls.Add(picture);
+
+        accuracy = new Label(0, 197, displayScreen.Width, font12X16.Height)
+        {
+            Text = "0%",
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Font = font12X16,
+            IsVisible = false
+        };
+        displayScreen.Controls.Add(accuracy);
     }
 
     public void ShowMovementDetected()
     {
-        picture.Image = images[(int)GesturesType.Thinking];
         title.Text = "Processing";
+        picture.Image = images[(int)GesturesType.Thinking];
+
     }
 
     public void ShowReady()
     {
-        picture.Image = images[(int)GesturesType.Ready];
         title.Text = "Ready";
+        picture.Image = images[(int)GesturesType.Ready];
     }
 
-    public void ShowGestureDetected(int state)
+    public void ShowGestureNotRecognized()
     {
-        picture.Image = images[state];
+        title.Text = "Not recognized";
+        picture.Image = images[(int)GesturesType.Shrug];
+    }
+
+    public void ShowGestureDetected(int state, float accuracyValue)
+    {
         title.Text = state switch
         {
             (int)GesturesType.ThumbsUp => "Thumbs Up",
@@ -77,10 +91,14 @@ public class DisplayController
             (int)GesturesType.Wave => "Wave",
             (int)GesturesType.Punch => "Punch",
         };
+        picture.Image = images[state];
+        accuracy.IsVisible = true;
+        accuracy.Text = $"{accuracyValue * 100:N1}%";
 
         Thread.Sleep(3000);
 
         picture.Image = images[(int)GesturesType.Ready];
+        accuracy.IsVisible = false;
         title.Text = "Ready";
     }
 }
@@ -93,5 +111,6 @@ public enum GesturesType
     Wave = 3,
     Punch = 4,
     Thinking = 5,
-    Ready = 6
+    Ready = 6,
+    Shrug = 7
 }
