@@ -402,3 +402,6 @@ Thumbs.db
 
 # macOS files
 .DS_Store
+
+# Rider
+**.idea
