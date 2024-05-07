@@ -12,7 +12,7 @@ public class MeadowApp : App<F7CoreComputeV2>
 {
     private IProjectLabHardware projLab;
     private const double kDetectionThreshould = 2.5;
-    private string[] gestureList = { "thumbs up", "thumbs down", "flex", "wave", "punch" };
+    private string[] gestureList = {"thumbs down", "flex", "wave", "punch", "spin"};
 
     private DisplayController displayController;
 
@@ -85,35 +85,35 @@ public class MeadowApp : App<F7CoreComputeV2>
 
             while (samplesRead < numOfSamples)
             {
-                if (InputAccelerometerData())
+                InputAccelerometerData();
+                await Task.Delay(1);
+            }
+
+            if (samplesRead == numOfSamples)
+            {
+                if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
                 {
-                    if (samplesRead == numOfSamples)
-                    {
-                        if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
-                        {
-                            Resolver.Log.Info("Invoke falied");
-                            break;
-                        }
-
-                        bool gestureDetected = false;
-                        for (int i = 0; i < gestureList.Length; i++)
-                        {
-                            float tensorData = TensorFlow.Instance.OutputData(i);
-                            if (tensorData > 0.95)
-                            {
-                                gestureDetected = true;
-                                Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
-                                displayController.ShowGestureDetected(i, tensorData);
-                            }
-                        }
-
-                        if (!gestureDetected)
-                        {
-                            displayController.ShowGestureNotRecognized();
-                        }
-                    }
+                    Resolver.Log.Info("Invoke falied");
+                    break;
                 }
-                await Task.Delay(5);
+            }
+
+            bool gestureDetected = false;
+            for (int i = 0; i < gestureList.Length; i++)
+            {
+                float tensorData = TensorFlow.Instance.OutputData(i);
+                 if (tensorData > 0.95)
+                {
+                    gestureDetected = true;
+                    Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                    displayController.ShowGestureDetected(i, tensorData);
+                }
+
+            }
+
+            if (!gestureDetected)
+            {
+                displayController.ShowGestureNotRecognized();
             }
 
             await Task.Delay(1000);
