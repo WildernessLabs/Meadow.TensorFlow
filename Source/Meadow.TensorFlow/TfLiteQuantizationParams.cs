@@ -4,7 +4,7 @@ using System.Collections;
 namespace TensorFlow.litemicro
 {
     /// <summary>
-    /// Scruct representing the parameters for asymmetric quantization in TensorFlow Lite .
+    /// Struct representing the parameters for asymmetric quantization in TensorFlow Lite .
     /// </summary>
     public struct TfLiteQuantizationParams
     {
