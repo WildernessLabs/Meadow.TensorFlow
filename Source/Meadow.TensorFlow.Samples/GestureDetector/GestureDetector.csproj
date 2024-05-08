@@ -12,10 +12,10 @@
       <None Remove="Resources\img-flex.bmp" />
       <None Remove="Resources\img-ready.bmp" />
       <None Remove="Resources\img-shrug.bmp" />
+      <None Remove="Resources\img-spin.bmp" />
       <None Remove="Resources\img-tf-logo.bmp" />
       <None Remove="Resources\img-thinking.bmp" />
       <None Remove="Resources\img-thumb-down.bmp" />
-      <None Remove="Resources\img-thumb-up.bmp" />
       <None Remove="Resources\img-wave.bmp" />
     </ItemGroup>
     <ItemGroup>
@@ -24,10 +24,10 @@
       <EmbeddedResource Include="Resources\img-flex.bmp" />
       <EmbeddedResource Include="Resources\img-ready.bmp" />
       <EmbeddedResource Include="Resources\img-shrug.bmp" />
+      <EmbeddedResource Include="Resources\img-spin.bmp" />
       <EmbeddedResource Include="Resources\img-tf-logo.bmp" />
       <EmbeddedResource Include="Resources\img-thinking.bmp" />
       <EmbeddedResource Include="Resources\img-thumb-down.bmp" />
-      <EmbeddedResource Include="Resources\img-thumb-up.bmp" />
       <EmbeddedResource Include="Resources\img-wave.bmp" />
     </ItemGroup>
     <ItemGroup>

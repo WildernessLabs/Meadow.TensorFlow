@@ -9,11 +9,11 @@ public class DisplayController
 {
     private readonly Image[] images =
     {
-        Image.LoadFromResource("GestureDetector.Resources.img-thumb-up.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-thumb-down.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-flex.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-wave.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-fist.bmp"),
+        Image.LoadFromResource("GestureDetector.Resources.img-spin.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-thinking.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-ready.bmp"),
         Image.LoadFromResource("GestureDetector.Resources.img-shrug.bmp"),
@@ -85,11 +85,11 @@ public class DisplayController
     {
         title.Text = state switch
         {
-            (int)GesturesType.ThumbsUp => "Thumbs Up",
             (int)GesturesType.ThumbsDown => "Thumbs Down",
             (int)GesturesType.Flex => "Flex",
             (int)GesturesType.Wave => "Wave",
             (int)GesturesType.Punch => "Punch",
+            (int)GesturesType.Spin => "Spin",
         };
         picture.Image = images[state];
         accuracy.IsVisible = true;
@@ -105,11 +105,11 @@ public class DisplayController
 
 public enum GesturesType
 {
-    ThumbsUp = 0,
-    ThumbsDown = 1,
-    Flex = 2,
-    Wave = 3,
-    Punch = 4,
+    ThumbsDown = 0,
+    Flex = 1,
+    Wave = 2,
+    Punch = 3,
+    Spin = 4,
     Thinking = 5,
     Ready = 6,
     Shrug = 7

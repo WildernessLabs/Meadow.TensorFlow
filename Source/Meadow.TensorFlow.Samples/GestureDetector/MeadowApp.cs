@@ -12,7 +12,7 @@ public class MeadowApp : App<F7CoreComputeV2>
 {
     private IProjectLabHardware projLab;
     private const double kDetectionThreshould = 2.5;
-    private string[] gestureList = {"thumbs down", "flex", "wave", "punch", "spin"};
+    private string[] gestureList = { "thumbs down", "flex", "wave", "punch", "spin" };
 
     private DisplayController displayController;
 
