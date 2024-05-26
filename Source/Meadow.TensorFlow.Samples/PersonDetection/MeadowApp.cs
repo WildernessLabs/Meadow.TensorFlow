@@ -5,15 +5,25 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+
 using TensorFlow.litemicro;
+
 using Meadow.Foundation.Graphics;
+using Meadow.Foundation.Graphics.MicroLayout;
+using Meadow.Peripherals.Displays;
+using Meadow.Foundation.Sensors.Camera;
+
+using BitMiracle.LibJpeg;
+using SimpleJpegDecoder;
 
 namespace PersonDetection;
 
-public class MeadowApp : App<F7FeatherV2>
+public class MeadowApp : App<F7CoreComputeV2>
 {
-    PersonDetectionModel personDetectionModel = new PersonDetectionModel();
+    private IProjectLabHardware projLab;
+    
     const int ArenaSize = 134 * 1024;
+    PersonDetectionModel personDetectionModel = new PersonDetectionModel();
     TfLiteStatus tfLiteStatus;
     IntPtr interpreter;
     TfLiteTensor input, output;
@@ -22,9 +32,20 @@ public class MeadowApp : App<F7FeatherV2>
         Image.LoadFromResource("Resources.no_person.bmp"),
         Image.LoadFromResource("Resources.person.bmp"),
     };
+    Vc0706 camera;
+    private DisplayScreen displayScreen;
 
     public override Task Initialize()
     {
+        projLab = ProjectLab.Create();
+        displayScreen = new DisplayScreen(projLab.Display,RotationType._270Degrees);
+
+        camera = new Vc0706(Device, Device.PlatformOS.GetSerialPortName("COM1"), 38400);
+        if(camera.SetCaptureResolution(Vc0706.ImageResolution._320x240))
+        {
+            Resolver.Log.Info("Resolution successfully changed");
+        }
+
         Resolver.Log.Info("Initialize TensorFlow ...");
 
         IntPtr model = Marshal.AllocHGlobal(personDetectionModel.GetSize() * sizeof(int));
@@ -78,6 +99,8 @@ public class MeadowApp : App<F7FeatherV2>
 
     public override Task Run()
     {
+        _ = TakePicture();
+
         TfLiteStatus tfLiteStatus;
         tfLiteStatus = c_api_lite_micro.TfLiteMicroInterpreterInvoke(interpreter);
         if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
@@ -97,7 +120,21 @@ public class MeadowApp : App<F7FeatherV2>
         int noPersonScore = (int)c_api_lite_micro.TfLiteMicroGeInt8tData(output, 0);
         Resolver.Log.Info($"Score \n - Person:{personScore}\n - No Person:{noPersonScore}");
         Resolver.Log.Info("Sample completed");
+
         return Task.CompletedTask;
+    }
+
+    async Task TakePicture()
+    {
+        Resolver.Log.Info($"Image size is {camera.GetCaptureResolution()}");
+
+        camera.CapturePhoto();
+
+        using var jpegStream = await camera.GetPhotoStream();
+
+        var decoder = new JpegDecoder();
+        var jpg = decoder.DecodeJpeg(jpegStream);
+        Resolver.Log.Info($"Jpeg decoded is {jpg.Length} bytes, W: {decoder.Width}, H: {decoder.Height}");
     }
 
     public static void CopyImageToTensor(Image img, TfLiteTensor tensor)
