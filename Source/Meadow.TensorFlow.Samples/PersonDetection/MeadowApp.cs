@@ -120,7 +120,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         // return Task.CompletedTask;
     }
 
-    async Task<IPixelBuffer> TakePicture()
+    public async Task<IPixelBuffer> TakePicture()
     {
         Resolver.Log.Info("Take a picture");
         camera.CapturePhoto();
@@ -130,10 +130,14 @@ public class MeadowApp : App<F7CoreComputeV2>
 
         using var memoryStream = new MemoryStream();
 
-        await jpegStream.CopyToAsync(memoryStream);
+        jpeg.WriteBitmap(memoryStream);
         byte[] bitmapData = memoryStream.ToArray();
 
-        var pixelBuffer = new BufferRgb888(jpeg.Width, jpeg.Height, bitmapData);
+        // Skip the first 54 bytes (bitmap header)
+        byte[] pixelData = new byte[bitmapData.Length - 54];
+        Array.Copy(bitmapData, 54, pixelData, 0, pixelData.Length);
+
+        var pixelBuffer = new BufferRgb888(jpeg.Width, jpeg.Height, pixelData);
 
         return pixelBuffer.Resize<BufferGray8>(96, 96);
     }
