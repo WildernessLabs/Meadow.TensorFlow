@@ -97,6 +97,7 @@ public class MeadowApp : App<F7CoreComputeV2>
     public override async Task Run()
     {
         var imageBuffer = await TakePicture();
+        displayScreen.Controls.Add(new Picture(150,150, 96, 96,Image.LoadFromPixelData(imageBuffer)));
         CopyPixelBufferToTensor(imageBuffer, input);
 
         TfLiteStatus tfLiteStatus;
