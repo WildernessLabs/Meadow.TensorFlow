@@ -15,11 +15,13 @@
     <ItemGroup>
         <None Remove="Resources\no_person.bmp" />
         <None Remove="Resources\person.bmp" />
+        <None Remove="Resources\img-tf-logo.bmp" />
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Include="Resources\no_person.bmp" />
         <EmbeddedResource Include="Resources\person.bmp" />
+        <EmbeddedResource Include="Resources\img-tf-logo.bmp" />
     </ItemGroup>
     
     <ItemGroup>
