@@ -6,23 +6,22 @@ using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Foundation.Graphics.MicroLayout;
 using Meadow.Foundation.Sensors.Camera;
 using Meadow.Peripherals.Displays;
-using PersonDetection.Models;
-using System.Runtime.InteropServices;
+using PersonDetection.Controllers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using TensorFlow.litemicro;
 
 namespace PersonDetection;
+using tf = TensorFlow;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
     private IProjectLabHardware projLab;
+    private DisplayController displayController;
+    public const sbyte Person = 1;
+    public const sbyte noPerson = 0;
 
-    const int ArenaSize = 134 * 1024;
-    readonly PersonDetectionModel personDetectionModel = new PersonDetectionModel();
-    TfLiteStatus tfLiteStatus;
-    IntPtr interpreter;
     TfLiteTensor input, output;
     public readonly Image[] images =
     {
@@ -35,7 +34,8 @@ public class MeadowApp : App<F7CoreComputeV2>
     public override Task Initialize()
     {
         projLab = ProjectLab.Create();
-        displayScreen = new DisplayScreen(projLab.Display, RotationType._270Degrees);
+        // displayScreen = new DisplayScreen(projLab.Display, RotationType._270Degrees);
+        displayController = new DisplayController(projLab.Display);
 
         camera = new Vc0706(Device, Device.PlatformOS.GetSerialPortName("COM1"), 38400);
         if (camera.SetCaptureResolution(Vc0706.ImageResolution._320x240))
@@ -44,82 +44,42 @@ public class MeadowApp : App<F7CoreComputeV2>
         }
 
         Resolver.Log.Info("Initialize TensorFlow ...");
+        tf.Initialize();
 
-        IntPtr model = Marshal.AllocHGlobal(personDetectionModel.GetSize() * sizeof(int));
-
-        if (model == IntPtr.Zero)
-        {
-            Resolver.Log.Info("Failed to allocated model");
-            return base.Initialize();
-        }
-
-        IntPtr arena = Marshal.AllocHGlobal(ArenaSize * sizeof(int));
-
-        if (arena == IntPtr.Zero)
-        {
-            Resolver.Log.Info("Failed to allocated arena");
-            Marshal.FreeHGlobal(model);
-            return base.Initialize();
-        }
-
-        Marshal.Copy(personDetectionModel.GetData(), 0, model, personDetectionModel.GetSize());
-
-        var model_options = c_api_lite_micro.TfLiteMicroGetModel(ArenaSize, arena, model);
-        if (model_options == null)
-        {
-            Resolver.Log.Info("Failed to loaded the model");
-        }
-
-        var interpreter_options = c_api_lite_micro.TfLiteMicroInterpreterOptionCreate(model_options);
-        if (interpreter_options == null)
-        {
-            Resolver.Log.Info("Failed to create interpreter option");
-        }
-
-        interpreter = c_api_lite_micro.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
-        if (interpreter == null)
-        {
-            Resolver.Log.Info("Failed to Interpreter");
-        }
-
-        tfLiteStatus = c_api_lite_micro.TfLiteMicroInterpreterAllocateTensors(interpreter);
-        if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
-        {
-            Resolver.Log.Info("Failed to allocate tensors");
-        }
-
-        input = c_api_lite_micro.TfLiteMicroInterpreterGetInput(interpreter, 0);
-        // CopyImageToTensor(images[1], input);
-
+        input = tf.GetInput();
         return Task.CompletedTask;
     }
 
     public override async Task Run()
     {
         var imageBuffer = await TakePicture();
-        displayScreen.Controls.Add(new Picture(150,150, 96, 96,Image.LoadFromPixelData(imageBuffer)));
         CopyPixelBufferToTensor(imageBuffer, input);
 
         TfLiteStatus tfLiteStatus;
-        tfLiteStatus = c_api_lite_micro.TfLiteMicroInterpreterInvoke(interpreter);
+        tfLiteStatus = tf.Invoke();
         if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
         {
             Resolver.Log.Info("Invoke failed");
             return;
         }
-        output = c_api_lite_micro.TfLiteMicroInterpreterGetOutput(interpreter, 0);
-        int outputDimsSize = c_api_lite_micro.TfLiteMicroDimsSizeData(output);
-        int outputData0 = c_api_lite_micro.TfLiteMicroDimsData(output, 0);
-        int outputDimsData0Size = c_api_lite_micro.TfLiteMicroDimsData(output, 1);
-        TfLiteType tfLiteType = c_api_lite_micro.TfLiteMicroGetType(output);
 
-        Resolver.Log.Info($" Dims Size:{outputDimsSize}, Data 0: {outputData0},  Size:{outputDimsData0Size}");
-        int personScore = (int)c_api_lite_micro.TfLiteMicroGeInt8tData(output, 1);
-        int noPersonScore = (int)c_api_lite_micro.TfLiteMicroGeInt8tData(output, 0);
-        Resolver.Log.Info($"Score \n - Person:{personScore}\n - No Person:{noPersonScore}");
-        Resolver.Log.Info("Sample completed");
+        output = tf.GetOutput();
+        int outputDimsSize = tf.DimsSize(output);
+        int outputData0 = tf.DimsData(output, 0);
+        int outputDimsData0Size = tf.DimsData(output, 1);
 
-        // return Task.CompletedTask;
+        Resolver.Log.Info($" Dims Size: {outputDimsSize}, Data 0: {outputData0},  Size:{outputDimsData0Size}");
+
+        sbyte personScore = tf.GetInt8Data(output, 1);
+        sbyte noPersonScore = tf.GetInt8Data(output, 0);
+        
+        Resolver.Log.Info($"Score \n - Person: {personScore}\n - No Person:{noPersonScore}");
+
+        int state = noPersonScore > personScore ? noPerson : Person;
+        int score = state != Person ? noPersonScore : personScore;
+
+        displayController.ShowImage(96, 96, imageBuffer);
+        displayController.ShowClassification(state, score);
     }
 
     public async Task<IPixelBuffer> TakePicture()
@@ -154,7 +114,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         memStream.Seek(0, SeekOrigin.Begin);
         while (index < memStream.Length)
         {
-            c_api_lite_micro.TfLiteMicroSetInt8Data(tensor, index++, (sbyte)memStream.ReadByte());
+            tf.SetInt8Data(tensor, index++, (sbyte)memStream.ReadByte());
         }
     }
     public static void CopyPixelBufferToTensor(IPixelBuffer pixel, TfLiteTensor tensor)
@@ -164,7 +124,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         memStream.Seek(0, SeekOrigin.Begin);
         while (index < memStream.Length)
         {
-            c_api_lite_micro.TfLiteMicroSetInt8Data(tensor, index++, (sbyte)memStream.ReadByte());
+            tf.SetInt8Data(tensor, index++, (sbyte)memStream.ReadByte());
         }
     }
 }
