@@ -76,7 +76,6 @@ public class MeadowApp : App<F7FeatherV2>
 
         for (int i = 0; i < result.Length; i++)
         {
-
             float position = helloWorld.interferece_count / (float)helloWorld.kInterferencesPerCycles;
             float x = position * helloWorld.kXrange;
 
@@ -93,7 +92,7 @@ public class MeadowApp : App<F7FeatherV2>
 
             sbyte y_quantized = TensorFlowLiteBindings.TfLiteMicroGeInt8tData(output, 0);
 
-            float y = ((float)(y_quantized - outputParam.ZeroPoint)) * outputParam.Scale;
+            float y = (y_quantized - outputParam.ZeroPoint) * outputParam.Scale;
 
             Resolver.Log.Info($" {i} - {(x, y)} ");
 

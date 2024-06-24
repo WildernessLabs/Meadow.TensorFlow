@@ -50,36 +50,36 @@ public static class TensorFlowLiteBindings
     public static extern TensorFlowLiteStatus TfLiteMicroInterpreterAllocateTensors(IntPtr interpreter);
 
     /// <summary>
-    /// Get an input tensor from the TensorFlow Lite Micro interpreter.
+    /// Get an Input tensor from the TensorFlow Lite Micro interpreter.
     /// </summary>
     /// <param name="interpreter">The interpreter.</param>
-    /// <param name="index">The index of the input tensor.</param>
-    /// <returns>The input tensor.</returns>
+    /// <param name="index">The index of the Input tensor.</param>
+    /// <returns>The Input tensor.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorFlowLiteTensor TfLiteMicroInterpreterGetInput(IntPtr interpreter, int index);
 
     /// <summary>
-    /// Get an output tensor from the TensorFlow Lite Micro interpreter.
+    /// Get an Output tensor from the TensorFlow Lite Micro interpreter.
     /// </summary>
     /// <param name="interpreter">The interpreter.</param>
-    /// <param name="index">The index of the output tensor.</param>
-    /// <returns>The output tensor.</returns>
+    /// <param name="index">The index of the Output tensor.</param>
+    /// <returns>The Output tensor.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorFlowLiteTensor TfLiteMicroInterpreterGetOutput(IntPtr interpreter, int index);
 
     /// <summary>
-    /// Get the number of output tensors from the TensorFlow Lite Micro interpreter.
+    /// Get the number of Output tensors from the TensorFlow Lite Micro interpreter.
     /// </summary>
     /// <param name="interpreter">The interpreter.</param>
-    /// <returns>The number of output tensors.</returns>
+    /// <returns>The number of Output tensors.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern int TfLiteMicroInterpreterGetOutputCount(IntPtr interpreter);
 
     /// <summary>
-    /// Get the number of input tensors from the TensorFlow Lite Micro interpreter.
+    /// Get the number of Input tensors from the TensorFlow Lite Micro interpreter.
     /// </summary>
     /// <param name="interpreter">The interpreter.</param>
-    /// <returns>The number of input tensors.</returns>
+    /// <returns>The number of Input tensors.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern int TfLiteMicroInterpreterGetInputCount(IntPtr interpreter);
 
