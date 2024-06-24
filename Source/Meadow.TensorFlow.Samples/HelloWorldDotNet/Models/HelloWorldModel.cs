@@ -1,9 +1,8 @@
 using Meadow.TensorFlow;
-using System;
 
 namespace HelloWorld.Models;
 
-public class HelloWorldModel : ITensorModel
+public partial class HelloWorldModel : ITensorModel
 {
     public int Size => Data.Length;
 
@@ -146,46 +145,37 @@ public class HelloWorldModel : ITensorModel
         0x00,0x00,0x10,0x00,0x00,0x00,0x0c,0x00,0x10,0x00,0x0f,0x00,0x00,0x00,0x08,0x00,0x04,
         0x00,0x0c,0x00,0x00,0x00,0x09,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x09,
     };
-    private readonly HelloWorldResult[] helloWorldResult_S = new HelloWorldResult[]
+
+    private readonly HelloWorldResult[] helloWorldResult = new HelloWorldResult[]
     {
-        new  HelloWorldResult  {x = 0.000000f, y = 0.000000f },
-        new  HelloWorldResult  {x = 0.314159f, y = 0.372768f },
-        new  HelloWorldResult  {x = 0.628318f, y = 0.559152f },
-        new  HelloWorldResult  {x = 0.942477f, y = 0.838728f },
-        new  HelloWorldResult  {x = 1.256637f, y = 0.965808f },
-        new  HelloWorldResult  {x = 1.570796f, y = 1.042057f },
-        new  HelloWorldResult  {x = 1.884956f, y = 0.957336f },
-        new  HelloWorldResult  {x = 2.199115f, y = 0.821784f },
-        new  HelloWorldResult  {x = 2.513274f, y = 0.533736f },
-        new  HelloWorldResult  {x = 2.827433f, y = 0.237216f },
-        new  HelloWorldResult  {x = 3.141593f, y = 0.008472f },
-        new  HelloWorldResult  {x = 3.455752f, y = -0.304992f },
-        new  HelloWorldResult  {x = 3.769912f, y = -0.533736f },
-        new  HelloWorldResult  {x = 4.084070f, y = -0.779424f },
-        new  HelloWorldResult  {x = 4.398230f, y = -0.965808f },
-        new  HelloWorldResult  {x = 4.712389f, y = -1.109833f },
-        new  HelloWorldResult  {x = 5.026548f, y = -0.982752f },
-        new  HelloWorldResult  {x = 5.340708f, y = -0.745536f },
-        new  HelloWorldResult  {x = 5.654867f, y = -0.533736f },
-        new  HelloWorldResult  {x = 5.969026f, y = -0.355824f }
-    };
-    public struct HelloWorldResult
-    {
-        public float x;
-        public float y;
+        new() {x = 0.000000f, y = 0.000000f },
+        new() {x = 0.314159f, y = 0.372768f },
+        new() {x = 0.628318f, y = 0.559152f },
+        new() {x = 0.942477f, y = 0.838728f },
+        new() {x = 1.256637f, y = 0.965808f },
+        new() {x = 1.570796f, y = 1.042057f },
+        new() {x = 1.884956f, y = 0.957336f },
+        new() {x = 2.199115f, y = 0.821784f },
+        new() {x = 2.513274f, y = 0.533736f },
+        new() {x = 2.827433f, y = 0.237216f },
+        new() {x = 3.141593f, y = 0.008472f },
+        new() {x = 3.455752f, y = -0.304992f },
+        new() {x = 3.769912f, y = -0.533736f },
+        new() {x = 4.084070f, y = -0.779424f },
+        new() {x = 4.398230f, y = -0.965808f },
+        new() {x = 4.712389f, y = -1.109833f },
+        new() {x = 5.026548f, y = -0.982752f },
+        new() {x = 5.340708f, y = -0.745536f },
+        new() {x = 5.654867f, y = -0.533736f },
+        new() {x = 5.969026f, y = -0.355824f }
     };
 
-    public int kInterferencesPerCycles = 20;
-    public int interferenceCount;
-    public float kXrange = 6.2831855F;
+    public int InterferencesPerCycles => 20;
+    public int InterferenceCount { get; set; }
+    public float XRange => 6.2831855F;
 
     public HelloWorldResult[] PopulateResult()
     {
-        return helloWorldResult_S;
-    }
-
-    public bool FloatNotEqual(float x, float y)
-    {
-        return Math.Abs(x - y) > 1e-6;
+        return helloWorldResult;
     }
 }

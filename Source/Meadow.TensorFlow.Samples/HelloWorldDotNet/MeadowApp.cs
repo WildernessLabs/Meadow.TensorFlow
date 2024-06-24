@@ -2,6 +2,7 @@
 using Meadow;
 using Meadow.Devices;
 using Meadow.TensorFlow;
+using System;
 using System.Threading.Tasks;
 
 namespace HelloWorld;
@@ -10,28 +11,28 @@ public class MeadowApp : App<F7FeatherV2>
 {
     TensorFlowLite tensorFlowLite;
 
-    readonly HelloWorldModel helloWorld = new();
+    readonly HelloWorldModel helloWorldModel = new();
     const int ArenaSize = 2000;
 
     public override Task Initialize()
     {
         Resolver.Log.Info("Initialize TensorFlow ...");
 
-        tensorFlowLite = new TensorFlowLite(helloWorld, ArenaSize);
+        tensorFlowLite = new TensorFlowLite(helloWorldModel, ArenaSize);
 
-        helloWorld.interferenceCount = 0;
+        helloWorldModel.InterferenceCount = 0;
 
         return Task.CompletedTask;
     }
 
     public override Task Run()
     {
-        HelloWorldModel.HelloWorldResult[] result = helloWorld.PopulateResult();
+        var result = helloWorldModel.PopulateResult();
 
         for (int i = 0; i < result.Length; i++)
         {
-            float position = helloWorld.interferenceCount / (float)helloWorld.kInterferencesPerCycles;
-            float x = position * helloWorld.kXrange;
+            float position = helloWorldModel.InterferenceCount / (float)helloWorldModel.InterferencesPerCycles;
+            float x = position * helloWorldModel.XRange;
 
             sbyte xQuantized = (sbyte)((x / tensorFlowLite.InputParam.Scale) + tensorFlowLite.InputParam.ZeroPoint);
 
@@ -51,22 +52,27 @@ public class MeadowApp : App<F7FeatherV2>
 
             Resolver.Log.Info($" {i} - {(x, y)} ");
 
-            if (helloWorld.FloatNotEqual(x, result[i].x) || helloWorld.FloatNotEqual(y, result[i].y))
+            if (FloatNotEqual(x, result[i].x) || FloatNotEqual(y, result[i].y))
             {
                 Resolver.Log.Info($"Test {i} failed");
                 Resolver.Log.Info($"Expeced {(result[i].x, result[i].y)}");
                 break;
             }
 
-            helloWorld.interferenceCount += 1;
+            helloWorldModel.InterferenceCount += 1;
 
-            if (helloWorld.interferenceCount >= helloWorld.kInterferencesPerCycles)
+            if (helloWorldModel.InterferenceCount >= helloWorldModel.InterferencesPerCycles)
             {
-                helloWorld.interferenceCount = 0;
+                helloWorldModel.InterferenceCount = 0;
             }
         }
 
         Resolver.Log.Info("Sample completed");
         return Task.CompletedTask;
+    }
+
+    bool FloatNotEqual(float x, float y)
+    {
+        return Math.Abs(x - y) > 1e-6;
     }
 }
