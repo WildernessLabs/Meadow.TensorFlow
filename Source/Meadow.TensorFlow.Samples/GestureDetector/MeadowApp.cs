@@ -14,7 +14,7 @@ public class MeadowApp : App<F7CoreComputeV2>
     private readonly string[] gestureList = { "thumbs up", "wave" };
 
     public int samplesRead = 0;
-    public const int numOfSamples = 119;
+    public const int sampleCount = 119;
     public double[] accelerometerData = new double[3];
 
     public override Task Initialize()
@@ -32,7 +32,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         projLab.Accelerometer.StartUpdating(TimeSpan.FromMilliseconds(10));
         while (true)
         {
-            while (samplesRead == numOfSamples)
+            while (samplesRead == sampleCount)
             {
                 if (IsMovement())
                 {
@@ -43,11 +43,11 @@ public class MeadowApp : App<F7CoreComputeV2>
                 await Task.Delay(1);
             }
 
-            while (samplesRead < numOfSamples)
+            while (samplesRead < sampleCount)
             {
                 if (InputAccelerometerData())
                 {
-                    if (samplesRead == numOfSamples)
+                    if (samplesRead == sampleCount)
                     {
                         if (TensorFlow.Instance.Invoke() != TensorFlowLiteStatus.Ok)
                         {

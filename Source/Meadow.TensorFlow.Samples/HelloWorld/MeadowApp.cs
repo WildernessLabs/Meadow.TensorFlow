@@ -90,7 +90,7 @@ public class MeadowApp : App<F7FeatherV2>
                 return Task.CompletedTask;
             }
 
-            sbyte y_quantized = TensorFlowLiteBindings.TfLiteMicroGeInt8tData(output, 0);
+            sbyte y_quantized = TensorFlowLiteBindings.TfLiteMicroGetInt8tData(output, 0);
 
             float y = (y_quantized - outputParam.ZeroPoint) * outputParam.Scale;
 

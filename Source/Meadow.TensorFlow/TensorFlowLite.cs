@@ -5,13 +5,16 @@ namespace Meadow.TensorFlow;
 
 public class TensorFlowLite
 {
-    public TensorFlowLiteTensor Input { get; private set; }
-    public TensorFlowLiteTensor Output { get; private set; }
+    public TensorFlowLiteQuantizationParams InputParam { get; private set; }
+    public TensorFlowLiteQuantizationParams OutputParam { get; private set; }
 
-    private readonly TensorFlowLiteStatus status;
+    public TensorFlowLiteStatus Status { get; set; } = TensorFlowLiteStatus.Ok;
 
-    readonly IntPtr interpreter;
-    readonly int arenaSize;
+    private TensorFlowLiteTensor Input { get; set; }
+    private TensorFlowLiteTensor Output { get; set; }
+
+    private readonly IntPtr interpreter;
+    private readonly int arenaSize;
 
     public TensorFlowLite(ITensorModel tensorModel, int arenaSize)
     {
@@ -52,14 +55,47 @@ public class TensorFlowLite
             throw new Exception("Failed to Interpreter");
         }
 
-        status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
+        Status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
 
-        if (status != TensorFlowLiteStatus.Ok)
+        if (Status != TensorFlowLiteStatus.Ok)
         {
             throw new Exception("Failed to allocate tensors");
         }
 
         Input = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
         Output = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0);
+
+        InputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(Input);
+        OutputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(Output);
+    }
+
+    public int InputLength()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroGetByte(Input) / sizeof(float);
+    }
+
+    public void InputInt8Data(int index, sbyte value)
+    {
+        TensorFlowLiteBindings.TfLiteMicroSetInt8Data(Input, index, value);
+    }
+
+    public sbyte OutputInt8Data(int index)
+    {
+        return TensorFlowLiteBindings.TfLiteMicroGetInt8tData(Output, index);
+    }
+
+    public void InputFloatData(int index, float value)
+    {
+        TensorFlowLiteBindings.TfLiteMicroSetFloatData(Input, index, value);
+    }
+
+    public float OutputFloatData(int index)
+    {
+        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0), index);
+    }
+
+    public void Invoke()
+    {
+        Status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
     }
 }
