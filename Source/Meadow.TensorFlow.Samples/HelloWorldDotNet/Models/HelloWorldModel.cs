@@ -146,7 +146,7 @@ public partial class HelloWorldModel : ITensorModel
         0x00,0x0c,0x00,0x00,0x00,0x09,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x09,
     };
 
-    private readonly HelloWorldResult[] helloWorldResult = new HelloWorldResult[]
+    private readonly HelloWorldResult[] helloWorldResult =
     {
         new() {x = 0.000000f, y = 0.000000f },
         new() {x = 0.314159f, y = 0.372768f },
