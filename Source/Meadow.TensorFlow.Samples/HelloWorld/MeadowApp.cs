@@ -12,9 +12,9 @@ public class MeadowApp : App<F7FeatherV2>
 {
     readonly HelloWorldModel helloWorld = new();
     const int ArenaSize = 2000;
-    TensorFlowLiteStatus tfLiteStatus;
+    TensorFlowLiteStatus status;
     TensorFlowLiteTensor input, output;
-    TensorFlowLiteQuantizationParams input_param, output_param;
+    TensorFlowLiteQuantizationParams inputParam, outputParam;
     IntPtr interpreter;
 
     public override Task Initialize()
@@ -52,8 +52,8 @@ public class MeadowApp : App<F7FeatherV2>
         if (interpreter == null)
             Resolver.Log.Info("Failed to Interpreter");
 
-        tfLiteStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
-        if (tfLiteStatus != TensorFlowLiteStatus.Ok)
+        status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
+        if (status != TensorFlowLiteStatus.Ok)
         {
             Resolver.Log.Info("Failed to allocate tensors");
         }
@@ -64,8 +64,8 @@ public class MeadowApp : App<F7FeatherV2>
 
         helloWorld.interferece_count = 0;
 
-        input_param = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(input);
-        output_param = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(output);
+        inputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(input);
+        outputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(output);
 
         return Task.CompletedTask;
     }
@@ -80,12 +80,12 @@ public class MeadowApp : App<F7FeatherV2>
             float position = helloWorld.interferece_count / (float)helloWorld.kInterferencesPerCycles;
             float x = position * helloWorld.kXrange;
 
-            sbyte x_quantized = (sbyte)((x / input_param.Scale) + input_param.ZeroPoint);
+            sbyte x_quantized = (sbyte)((x / inputParam.Scale) + inputParam.ZeroPoint);
 
             TensorFlowLiteBindings.TfLiteMicroSetInt8Data(input, 0, x_quantized);
 
-            tfLiteStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
-            if (tfLiteStatus != TensorFlowLiteStatus.Ok)
+            status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
+            if (status != TensorFlowLiteStatus.Ok)
             {
                 Resolver.Log.Info("Failed to Invoke");
                 return Task.CompletedTask;
@@ -93,7 +93,7 @@ public class MeadowApp : App<F7FeatherV2>
 
             sbyte y_quantized = TensorFlowLiteBindings.TfLiteMicroGeInt8tData(output, 0);
 
-            float y = ((float)(y_quantized - output_param.ZeroPoint)) * output_param.Scale;
+            float y = ((float)(y_quantized - outputParam.ZeroPoint)) * outputParam.Scale;
 
             Resolver.Log.Info($" {i} - {(x, y)} ");
 
