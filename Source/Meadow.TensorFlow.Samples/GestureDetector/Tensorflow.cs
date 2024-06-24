@@ -8,17 +8,19 @@ namespace GestureDetector;
 
 public class TensorFlow
 {
-    private static readonly Lazy<TensorFlow> instance = new Lazy<TensorFlow>(() => new TensorFlow());
+    private static readonly Lazy<TensorFlow> instance = new();
     public static TensorFlow Instance => instance.Value;
 
     private TensorFlowLiteStatus tfLiteStatus;
-    private TensorFlowLiteTensor input, output;
+    private TensorFlowLiteTensor input;
+    private TensorFlowLiteTensor output;
+
     private IntPtr interpreter;
     private readonly int ArenaSize = 60 * 1024;
 
     public void Initialize()
     {
-        Model gestureDetectorModel = new Model();
+        Model gestureDetectorModel = new();
 
         IntPtr model = Marshal.AllocHGlobal(gestureDetectorModel.GetSize() * sizeof(byte));
 

@@ -7,7 +7,7 @@ namespace MagicWand;
 
 public class TensorFlow
 {
-    private static readonly Lazy<TensorFlow> instance = new Lazy<TensorFlow>(() => new TensorFlow());
+    private static readonly Lazy<TensorFlow> instance = new();
     private const int kChannelNumber = 3;
     private const int kGestureCount = 4;
     private const int kPredictionHistoryLength = 5;
@@ -24,13 +24,12 @@ public class TensorFlow
 
     private TensorFlowLiteStatus tfLiteStatus;
     private TensorFlowLiteTensor input;
-    private readonly TensorFlowLiteTensor output;
     IntPtr interpreter;
     readonly int ArenaSize = 60 * 1024;
 
     public void Initialize()
     {
-        MagicWandModel magicWandModel = new MagicWandModel();
+        MagicWandModel magicWandModel = new();
 
         IntPtr model = Marshal.AllocHGlobal(magicWandModel.GetSize() * sizeof(byte));
 
