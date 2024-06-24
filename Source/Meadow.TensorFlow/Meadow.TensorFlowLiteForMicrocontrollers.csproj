@@ -1,22 +1,22 @@
-<Project Sdk="Meadow.Sdk/1.1.0">
+﻿<Project Sdk="Meadow.Sdk/1.1.0">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>10.0</LangVersion>
-    <AssemblyName>Meadow.TensorFlowLite.F7</AssemblyName>
+    <AssemblyName>Meadow.TensorFlowLiteForMicrocontrollers</AssemblyName>
     <Company>Wilderness Labs, Inc</Company>
     <PackageProjectUrl>http://developer.wildernesslabs.co/Meadow/</PackageProjectUrl>
-    <PackageId>Meadow.TensorFlowLite.F7</PackageId>
+    <PackageId>Meadow.TensorFlowLiteForMicrocontrollers</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/WildernessLabs/Meadow.TensorFlow</RepositoryUrl>
-    <PackageTags>Meadow,Tensor,Flow,TensorFlow,Machine,Learning,ML,AI,artifical,intelligence,edge</PackageTags>
+    <PackageTags>Meadow,Tensor,Flow,TensorFlow,Machine,Learning,ML,AI,artifical,intelligence,edge,microcontroller,microcontrollers</PackageTags>
     <Version>0.1.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Meadow.TensorFlow</RootNamespace>
     <Nullable>enable</Nullable>
-    <Description>TensorFlow Lite for Microcontrollers for use with Wilderness Labs Meadow F7</Description>
+    <Description>TensorFlow Lite for Microcontrollers for use with Wilderness Labs Meadow</Description>
     <Authors>Wilderness Labs, Inc</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
