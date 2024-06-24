@@ -1,9 +1,9 @@
 ﻿using Meadow;
 using Meadow.Devices;
+using Meadow.TensorFlow;
 using Meadow.Units;
 using System;
 using System.Threading.Tasks;
-using TensorFlow.litemicro;
 
 namespace GestureDetector;
 
@@ -11,7 +11,7 @@ public class MeadowApp : App<F7CoreComputeV2>
 {
     private IProjectLabHardware projLab;
     private const double kDetectionThreshould = 2.5;
-    private string[] gestureList = { "thumbs up", "wave" };
+    private readonly string[] gestureList = { "thumbs up", "wave" };
 
     public int samplesRead = 0;
     public const int numOfSamples = 119;
@@ -49,7 +49,7 @@ public class MeadowApp : App<F7CoreComputeV2>
                 {
                     if (samplesRead == numOfSamples)
                     {
-                        if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                        if (TensorFlow.Instance.Invoke() != TensorFlowLiteStatus.Ok)
                         {
                             Resolver.Log.Info("Invoke falied");
                             break;

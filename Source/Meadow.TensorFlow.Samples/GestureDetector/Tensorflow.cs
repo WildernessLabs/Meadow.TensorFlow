@@ -1,8 +1,8 @@
 using GestureDetector.Models;
 using Meadow;
+using Meadow.TensorFlow;
 using System;
 using System.Runtime.InteropServices;
-using TensorFlow.litemicro;
 
 namespace GestureDetector;
 
@@ -11,10 +11,10 @@ public class TensorFlow
     private static readonly Lazy<TensorFlow> instance = new Lazy<TensorFlow>(() => new TensorFlow());
     public static TensorFlow Instance => instance.Value;
 
-    private TfLiteStatus tfLiteStatus;
-    private TfLiteTensor input, output;
+    private TensorFlowLiteStatus tfLiteStatus;
+    private TensorFlowLiteTensor input, output;
     private IntPtr interpreter;
-    private int ArenaSize = 60 * 1024;
+    private readonly int ArenaSize = 60 * 1024;
 
     public void Initialize()
     {
@@ -39,45 +39,45 @@ public class TensorFlow
             return;
         }
 
-        var model_options = c_api_lite_micro.TfLiteMicroGetModel(ArenaSize, arena, model);
+        var model_options = TensorFlowLiteBindings.TfLiteMicroGetModel(ArenaSize, arena, model);
         if (model_options == null)
             Resolver.Log.Info("Failed to loaded the model");
 
-        var interpreter_options = c_api_lite_micro.TfLiteMicroInterpreterOptionCreate(model_options);
+        var interpreter_options = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(model_options);
         if (interpreter_options == null)
             Resolver.Log.Info("Failed to create interpreter option");
 
-        interpreter = c_api_lite_micro.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
+        interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
         if (interpreter == null)
             Resolver.Log.Info("Failed to Interpreter");
 
-        tfLiteStatus = c_api_lite_micro.TfLiteMicroInterpreterAllocateTensors(interpreter);
-        if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
+        tfLiteStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
+        if (tfLiteStatus != TensorFlowLiteStatus.Ok)
             Resolver.Log.Info("Failed to allocate tensors");
 
-        input = c_api_lite_micro.TfLiteMicroInterpreterGetInput(interpreter, 0);
-        output = c_api_lite_micro.TfLiteMicroInterpreterGetOutput(interpreter, 0);
+        input = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
+        output = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0);
 
         Resolver.Log.Info("Tensor flow Initialize");
     }
 
     public int InputLegth()
     {
-        return c_api_lite_micro.TfLiteMicroGetByte(input) / sizeof(float);
+        return TensorFlowLiteBindings.TfLiteMicroGetByte(input) / sizeof(float);
     }
 
     public void InputData(int index, float value)
     {
-        c_api_lite_micro.TfLiteMicroSetFloatData(input, index, value);
+        TensorFlowLiteBindings.TfLiteMicroSetFloatData(input, index, value);
     }
 
     public float OutputData(int index)
     {
-        return c_api_lite_micro.TfLiteMicroGetFloatData(c_api_lite_micro.TfLiteMicroInterpreterGetOutput(interpreter, 0), index);
+        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0), index);
     }
 
-    public TfLiteStatus Invoke()
+    public TensorFlowLiteStatus Invoke()
     {
-        return c_api_lite_micro.TfLiteMicroInterpreterInvoke(interpreter);
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
     }
 }

@@ -1,9 +1,9 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation.Sensors.Motion;
+using Meadow.TensorFlow;
 using System;
 using System.Threading.Tasks;
-using TensorFlow.litemicro;
 
 namespace MagicWand;
 
@@ -16,7 +16,7 @@ public class MeadowApp : App<F7FeatherV2>
     public double[] saveAccelData = new double[ringBuffer];
     public int beingIndex = 0;
     bool pendingInitialData = true;
-    bool clearBuffer = false;
+    readonly bool clearBuffer = false;
     public int InputLegth;
 
     public override Task Initialize()
@@ -38,7 +38,7 @@ public class MeadowApp : App<F7FeatherV2>
             if (await ReadAccelerometer(clearBuffer))
             {
 
-                if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                if (TensorFlow.Instance.Invoke() != TensorFlowLiteStatus.Ok)
                 {
                     Resolver.Log.Info("Invoke failed");
                     break;
