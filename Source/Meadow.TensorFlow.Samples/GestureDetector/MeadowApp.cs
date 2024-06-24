@@ -20,7 +20,7 @@ public class MeadowApp : App<F7CoreComputeV2>
     public override Task Initialize()
     {
         projLab = ProjectLab.Create();
-        projLab.Accelerometer.Updated += onAccelerometerUpdated;
+        projLab.Accelerometer.Updated += OnAccelerometerUpdated;
 
         TensorFlow.Instance.Initialize();
 
@@ -94,7 +94,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         return false;
     }
 
-    private void onAccelerometerUpdated(object sender, IChangeResult<Acceleration3D> e)
+    private void OnAccelerometerUpdated(object sender, IChangeResult<Acceleration3D> e)
     {
         accelerometerData[0] = e.New.X.Gravity;
         accelerometerData[1] = e.New.Y.Gravity;

@@ -1,10 +1,13 @@
+using Meadow.TensorFlow;
 using System;
 
 namespace HelloWorld.Models;
 
-public class HelloWorldModel
+public class HelloWorldModel : ITensorModel
 {
-    private static readonly byte[] Data =
+    public int Size => Data.Length;
+
+    public byte[] Data { get; } =
     {
         0x20,0x00,0x00,0x00,0x54,0x46,0x4c,0x33,0x00,0x00,0x00,0x00,0x14,0x00,0x20,0x00,0x1c,
         0x00,0x18,0x00,0x14,0x00,0x10,0x00,0x0c,0x00,0x00,0x00,0x08,0x00,0x04,0x00,0x14,0x00,
@@ -175,14 +178,6 @@ public class HelloWorldModel
     public int kInterferencesPerCycles = 20;
     public int interferece_count;
     public float kXrange = 6.2831855F;
-    public byte[] GetData()
-    {
-        return Data;
-    }
-    public int GetSize()
-    {
-        return Data.Length;
-    }
 
     public HelloWorldResult_t[] populateResult()
     {

@@ -19,6 +19,8 @@ public class MeadowApp : App<F7FeatherV2>
     readonly bool clearBuffer = false;
     public int InputLegth;
 
+    long millis => DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+
     public override Task Initialize()
     {
         TensorFlow.Instance.Initialize();
@@ -56,20 +58,17 @@ public class MeadowApp : App<F7FeatherV2>
         }
     }
 
-    long millis()
-    {
-        return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-    }
+
 
     public async Task<bool> ReadAccelerometer(bool resetBuffer)
     {
 
-        if (millis() - lastTime < updateTime)
+        if (millis - lastTime < updateTime)
         {
             return false;
         }
 
-        lastTime = millis();
+        lastTime = millis;
 
         var result = await mpu.Read();
         double x = (double)result.Acceleration3D?.X.Gravity;

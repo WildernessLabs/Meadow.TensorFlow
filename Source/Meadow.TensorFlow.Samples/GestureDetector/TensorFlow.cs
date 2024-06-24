@@ -22,7 +22,7 @@ public class TensorFlow
     {
         Model gestureDetectorModel = new();
 
-        IntPtr model = Marshal.AllocHGlobal(gestureDetectorModel.GetSize() * sizeof(byte));
+        IntPtr model = Marshal.AllocHGlobal(gestureDetectorModel.Size * sizeof(byte));
 
         if (model == IntPtr.Zero)
         {
@@ -30,7 +30,7 @@ public class TensorFlow
             return;
         }
 
-        Marshal.Copy(gestureDetectorModel.GetData(), 0, model, gestureDetectorModel.GetSize());
+        Marshal.Copy(gestureDetectorModel.Data, 0, model, gestureDetectorModel.Size);
 
         IntPtr arena = Marshal.AllocHGlobal(ArenaSize * sizeof(int));
 

@@ -21,7 +21,7 @@ public class MeadowApp : App<F7FeatherV2>
     {
         Resolver.Log.Info("Initialize TensorFlow ...");
 
-        IntPtr model = Marshal.AllocHGlobal(helloWorld.GetSize() * sizeof(int));
+        IntPtr model = Marshal.AllocHGlobal(helloWorld.Size * sizeof(int));
 
         if (model == IntPtr.Zero)
         {
@@ -38,7 +38,7 @@ public class MeadowApp : App<F7FeatherV2>
             return base.Initialize();
         }
 
-        Marshal.Copy(helloWorld.GetData(), 0, model, helloWorld.GetSize());
+        Marshal.Copy(helloWorld.Data, 0, model, helloWorld.Size);
 
         var model_options = TensorFlowLiteBindings.TfLiteMicroGetModel(ArenaSize, arena, model);
         if (model_options == null)
