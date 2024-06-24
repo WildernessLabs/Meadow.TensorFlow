@@ -25,7 +25,7 @@ public class TensorFlow
 
     private TensorFlowLiteStatus tfLiteStatus;
     private TensorFlowLiteTensor input;
-    IntPtr interpreter;
+    private IntPtr interpreter;
     readonly int ArenaSize = 60 * 1024;
 
     public void Initialize()
@@ -79,7 +79,7 @@ public class TensorFlow
         Console.WriteLine("TensorFlow Initialize");
     }
 
-    public int InputLegth()
+    public int InputLength()
     {
         return TensorFlowLiteBindings.TfLiteMicroGetByte(input) / sizeof(float);
     }

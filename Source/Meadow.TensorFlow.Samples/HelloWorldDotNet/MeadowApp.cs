@@ -52,10 +52,10 @@ public class MeadowApp : App<F7FeatherV2>
 
             Resolver.Log.Info($" {i} - {(x, y)} ");
 
-            if (FloatNotEqual(x, result[i].x) || FloatNotEqual(y, result[i].y))
+            if (!AreFloatsEqual(x, result[i].X) || !AreFloatsEqual(y, result[i].Y))
             {
                 Resolver.Log.Info($"Test {i} failed");
-                Resolver.Log.Info($"Expeced {(result[i].x, result[i].y)}");
+                Resolver.Log.Info($"Expeced {(result[i].X, result[i].Y)}");
                 break;
             }
 
@@ -71,8 +71,8 @@ public class MeadowApp : App<F7FeatherV2>
         return Task.CompletedTask;
     }
 
-    bool FloatNotEqual(float x, float y)
+    bool AreFloatsEqual(float x, float y)
     {
-        return Math.Abs(x - y) > 1e-6;
+        return Math.Abs(x - y) < 1e-6;
     }
 }

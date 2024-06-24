@@ -63,7 +63,7 @@ public class TensorFlow
         Resolver.Log.Info("Tensor flow Initialize");
     }
 
-    public int InputLegth()
+    public int InputLength()
     {
         return TensorFlowLiteBindings.TfLiteMicroGetByte(input) / sizeof(float);
     }

@@ -24,7 +24,7 @@ public class MeadowApp : App<F7FeatherV2>
     public override Task Initialize()
     {
         TensorFlow.Instance.Initialize();
-        InputLegth = TensorFlow.Instance.InputLegth();
+        InputLegth = TensorFlow.Instance.InputLength();
 
         mpu = new Mpu6050(Device.CreateI2cBus());
 
