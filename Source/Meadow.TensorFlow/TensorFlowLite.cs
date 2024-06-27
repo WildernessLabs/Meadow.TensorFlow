@@ -10,10 +10,10 @@ public class TensorFlowLite
 
     public TensorFlowLiteStatus Status { get; set; } = TensorFlowLiteStatus.Ok;
 
-    private TensorFlowLiteTensor Input { get; set; }
-    private TensorFlowLiteTensor Output { get; set; }
+    protected TensorFlowLiteTensor Input { get; set; }
+    protected TensorFlowLiteTensor Output { get; set; }
 
-    private readonly IntPtr interpreter;
+    protected readonly IntPtr interpreter;
     private readonly int arenaSize;
 
     public TensorFlowLite(ITensorModel tensorModel, int arenaSize)
@@ -81,7 +81,7 @@ public class TensorFlowLite
 
     public sbyte OutputInt8Data(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetInt8tData(Output, index);
+        return TensorFlowLiteBindings.TfLiteMicroGeInt8tData(Output, index);
     }
 
     public void InputFloatData(int index, float value)

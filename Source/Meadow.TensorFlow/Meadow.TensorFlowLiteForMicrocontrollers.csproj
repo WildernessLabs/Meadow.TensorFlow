@@ -10,8 +10,8 @@
     <PackageId>Meadow.TensorFlowLiteForMicrocontrollers</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/WildernessLabs/Meadow.TensorFlow</RepositoryUrl>
-    <PackageTags>Meadow,Tensor,Flow,TensorFlow,Machine,Learning,ML,AI,artifical,intelligence,edge,microcontroller,microcontrollers</PackageTags>
-    <Version>0.1.0</Version>
+    <PackageTags>Meadow,Tensor,Flow,TensorFlow,Machine,Learning,ML,AI,artificial,intelligence,edge,microcontroller,microcontrollers</PackageTags>
+    <Version>0.1.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <RootNamespace>Meadow.TensorFlow</RootNamespace>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HelloWorld;
 
-public class MeadowApp : App<F7FeatherV2>
+public class MeadowApp : App<F7CoreComputeV2>
 {
     TensorFlowLite tensorFlowLite;
 

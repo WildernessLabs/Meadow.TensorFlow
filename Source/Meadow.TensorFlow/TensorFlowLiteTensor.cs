@@ -5,7 +5,7 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Structure representing a tensor in TensorFlow Lite.
 /// </summary>
-public struct TensorFlowLiteTensor
+public readonly struct TensorFlowLiteTensor
 {
     private readonly IntPtr _handle;
 

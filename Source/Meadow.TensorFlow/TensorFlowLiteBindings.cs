@@ -98,7 +98,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index of the int8 data.</param>
     /// <returns>The int8 data at the specified index.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern sbyte TfLiteMicroGetInt8tData(TensorFlowLiteTensor tensor, int index);
+    public static extern sbyte TfLiteMicroGeInt8tData(TensorFlowLiteTensor tensor, int index);
 
     /// <summary>
     /// Sets the int8 data in a tensor at the specified index.
