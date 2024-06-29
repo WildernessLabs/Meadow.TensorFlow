@@ -1,7 +1,7 @@
 namespace Meadow.TensorFlow;
 
 /// <summary>
-/// Enum representing the types supported by tensor in TensorFlow Lite.
+/// Enum representing the types supported by tensors in TensorFlow Lite.
 /// </summary>
 public enum TensorDataType
 {
@@ -21,7 +21,7 @@ public enum TensorDataType
     Int32 = 2,
 
     /// <summary>
-    /// Unsigned integer type with regular size of 1 bytes.
+    /// Unsigned integer type with a size of 1 byte.
     /// </summary>
     UInt8 = 3,
 
@@ -46,12 +46,12 @@ public enum TensorDataType
     Int16 = 7,
 
     /// <summary>
-    /// Single-presion complext type.
+    /// Single-precision complex type.
     /// </summary>
     Complex64 = 8,
 
     /// <summary>
-    /// Integer type with regular size of 1 bytes.
+    /// Integer type with regular size of 1 byte.
     /// </summary>
     Int8 = 9,
 
@@ -66,7 +66,7 @@ public enum TensorDataType
     Float64 = 11,
 
     /// <summary>
-    /// Double-precision comple type.
+    /// Double-precision complex type.
     /// </summary>
     Complex128 = 12,
 
@@ -81,7 +81,7 @@ public enum TensorDataType
     Resource = 14,
 
     /// <summary>
-    /// Variant type, identifies conversion image objects in a variant.
+    /// Identifies variant data types.
     /// </summary>
     Variant = 15,
 
