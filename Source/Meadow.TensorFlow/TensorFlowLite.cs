@@ -6,7 +6,7 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Represents TensorFlow Lite interpreter for microcontrollers.
 /// </summary>
-public class TensorFlowLite
+public class TensorFlowLite : ITensorFlowLiteInterpreter
 {
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
