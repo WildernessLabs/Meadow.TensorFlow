@@ -1,11 +1,10 @@
-
 using System;
 using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
 
 /// <summary>
-/// Provides C API bindings for TensorFlow Lite for Microcontrollers
+/// Provides C API bindings for TensorFlow Lite for Microcontrollers.
 /// </summary>
 public static class TensorFlowLiteBindings
 {
@@ -15,28 +14,28 @@ public static class TensorFlowLiteBindings
     private const string TensorFlowLibName = "TensorFlow.so";
 
     /// <summary>
-    /// Get the model from TensorFlow Lite Micro.
+    /// Retrieves the model from TensorFlow Lite Micro.
     /// </summary>
     /// <param name="arenaSize">The size of the arena.</param>
-    /// <param name="arena">The arena.</param>
-    /// <param name="modelData">The model data.</param>
+    /// <param name="arena">The arena pointer.</param>
+    /// <param name="modelData">The model data pointer.</param>
     /// <returns>A pointer to the model.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern IntPtr TfLiteMicroGetModel(int arenaSize, IntPtr arena, IntPtr modelData);
 
     /// <summary>
-    /// Creates an interpreter option for TensorFlow Lite Micro.
+    /// Creates an interpreter options object for TensorFlow Lite Micro.
     /// </summary>
-    /// <param name="option">The interpreter option.</param>
-    /// <returns>A pointer to the interpreter option.</returns>
+    /// <param name="option">The interpreter option pointer.</param>
+    /// <returns>A pointer to the interpreter options.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern IntPtr TfLiteMicroInterpreterOptionCreate(IntPtr option);
 
     /// <summary>
     /// Creates a TensorFlow Lite Micro interpreter.
     /// </summary>
-    /// <param name="interpreterOption">The interpreter option.</param>
-    /// <param name="modelOption">The model option.</param>
+    /// <param name="interpreterOption">The interpreter option pointer.</param>
+    /// <param name="modelOption">The model option pointer.</param>
     /// <returns>A pointer to the interpreter.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern IntPtr TfLiteMicroInterpreterCreate(IntPtr interpreterOption, IntPtr modelOption);
@@ -44,50 +43,50 @@ public static class TensorFlowLiteBindings
     /// <summary>
     /// Allocates tensors for the TensorFlow Lite Micro interpreter.
     /// </summary>
-    /// <param name="interpreter">The interpreter.</param>
-    /// <returns>OperationStatus of the tensor allocation.</returns>
+    /// <param name="interpreter">The interpreter pointer.</param>
+    /// <returns>The operation status of the tensor allocation.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorFlowLiteStatus TfLiteMicroInterpreterAllocateTensors(IntPtr interpreter);
 
     /// <summary>
-    /// Get an InputTensor tensor from the TensorFlow Lite Micro interpreter.
+    /// Retrieves an input tensor from the TensorFlow Lite Micro interpreter.
     /// </summary>
-    /// <param name="interpreter">The interpreter.</param>
-    /// <param name="index">The index of the InputTensor tensor.</param>
-    /// <returns>The InputTensor tensor.</returns>
+    /// <param name="interpreter">The interpreter pointer.</param>
+    /// <param name="index">The index of the input tensor.</param>
+    /// <returns>The input tensor.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorFlowLiteTensor TfLiteMicroInterpreterGetInput(IntPtr interpreter, int index);
 
     /// <summary>
-    /// Get an OutputTensor tensor from the TensorFlow Lite Micro interpreter.
+    /// Retrieves an output tensor from the TensorFlow Lite Micro interpreter.
     /// </summary>
-    /// <param name="interpreter">The interpreter.</param>
-    /// <param name="index">The index of the OutputTensor tensor.</param>
-    /// <returns>The OutputTensor tensor.</returns>
+    /// <param name="interpreter">The interpreter pointer.</param>
+    /// <param name="index">The index of the output tensor.</param>
+    /// <returns>The output tensor.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorFlowLiteTensor TfLiteMicroInterpreterGetOutput(IntPtr interpreter, int index);
 
     /// <summary>
-    /// Get the number of OutputTensor tensors from the TensorFlow Lite Micro interpreter.
+    /// Retrieves the number of output tensors from the TensorFlow Lite Micro interpreter.
     /// </summary>
-    /// <param name="interpreter">The interpreter.</param>
-    /// <returns>The number of OutputTensor tensors.</returns>
+    /// <param name="interpreter">The interpreter pointer.</param>
+    /// <returns>The number of output tensors.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern int TfLiteMicroInterpreterGetOutputCount(IntPtr interpreter);
 
     /// <summary>
-    /// Get the number of InputTensor tensors from the TensorFlow Lite Micro interpreter.
+    /// Retrieves the number of input tensors from the TensorFlow Lite Micro interpreter.
     /// </summary>
-    /// <param name="interpreter">The interpreter.</param>
-    /// <returns>The number of InputTensor tensors.</returns>
+    /// <param name="interpreter">The interpreter pointer.</param>
+    /// <returns>The number of input tensors.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern int TfLiteMicroInterpreterGetInputCount(IntPtr interpreter);
 
     /// <summary>
     /// Invokes the TensorFlow Lite Micro interpreter for inference.
     /// </summary>
-    /// <param name="interpreter">The interpreter.</param>
-    /// <returns>OperationStatus of the interpreter invocation.</returns>
+    /// <param name="interpreter">The interpreter pointer.</param>
+    /// <returns>The operation status of the interpreter invocation.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorFlowLiteStatus TfLiteMicroInterpreterInvoke(IntPtr interpreter);
 
@@ -121,28 +120,28 @@ public static class TensorFlowLiteBindings
     /// Sets a mutable option for TensorFlow Lite Micro.
     /// </summary>
     /// <param name="option">The option to set.</param>
-    /// <returns>OperationStatus of the option setting.</returns>
+    /// <returns>The operation status of the option setting.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorFlowLiteStatus TfLiteMicroMutableSetOption(sbyte option);
 
     /// <summary>
-    /// Get the type of a tensor.
+    /// Retrieves the data type of a tensor.
     /// </summary>
     /// <param name="tensor">The tensor.</param>
-    /// <returns>The type of the tensor.</returns>
+    /// <returns>The data type of the tensor.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern TensorDataType TfLiteMicroGetType(TensorFlowLiteTensor tensor);
 
     /// <summary>
-    /// Get the size of dimensions data of a tensor.
+    /// Retrieves the size of the dimensions data of a tensor.
     /// </summary>
     /// <param name="tensor">The tensor.</param>
-    /// <returns>The size of dimensions data.</returns>
+    /// <returns>The size of the dimensions data.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern int TfLiteMicroDimsSizeData(TensorFlowLiteTensor tensor);
 
     /// <summary>
-    /// Get the dimension data of a tensor at the specified index.
+    /// Retrieves the dimension data of a tensor at the specified index.
     /// </summary>
     /// <param name="tensor">The tensor.</param>
     /// <param name="index">The index of the dimension data.</param>
@@ -151,7 +150,7 @@ public static class TensorFlowLiteBindings
     public static extern int TfLiteMicroDimsData(TensorFlowLiteTensor tensor, int index);
 
     /// <summary>
-    /// Get the float data from a tensor at the specified index.
+    /// Retrieves the float data from a tensor at the specified index.
     /// </summary>
     /// <param name="tensor">The tensor containing the float data.</param>
     /// <param name="index">The index of the float data.</param>
@@ -169,7 +168,7 @@ public static class TensorFlowLiteBindings
     public static extern void TfLiteMicroSetFloatData(TensorFlowLiteTensor tensor, int index, float value);
 
     /// <summary>
-    /// Get the byte data from a tensor.
+    /// Retrieves the byte data from a tensor.
     /// </summary>
     /// <param name="tensor">The tensor containing the byte data.</param>
     /// <returns>The byte data from the tensor.</returns>

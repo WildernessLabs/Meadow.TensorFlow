@@ -10,7 +10,7 @@ public readonly struct TensorFlowLiteTensor
     private readonly IntPtr _handle;
 
     /// <summary>
-    /// Constructor of the TensorFlowLiteTensor class.
+    /// Constructor of the TensorFlowLiteTensor struct.
     /// </summary>
     /// <param name="handle">The tensor handle.</param>
     public TensorFlowLiteTensor(IntPtr handle)
@@ -20,14 +20,14 @@ public readonly struct TensorFlowLiteTensor
     /// Implicit conversion from IntPtr to TensorFlowLiteTensor.
     /// </summary>
     /// <param name="handle">The tensor handle.</param>
-    /// <returns>The tensor corresponding to the handle.</returns>
+    /// <returns>The TensorFlowLiteTensor corresponding to the handle.</returns>
     public static implicit operator TensorFlowLiteTensor(IntPtr handle)
         => new TensorFlowLiteTensor(handle);
 
     /// <summary>
     /// Implicit conversion from TensorFlowLiteTensor to IntPtr.
     /// </summary>
-    /// <param name="tensor">The tensor to be converted.</param>
+    /// <param name="tensor">The TensorFlowLiteTensor to be converted.</param>
     /// <returns>The handle of the tensor.</returns>
     public static implicit operator IntPtr(TensorFlowLiteTensor tensor)
         => tensor._handle;

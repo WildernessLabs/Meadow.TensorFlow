@@ -6,43 +6,43 @@ namespace Meadow.TensorFlow;
 public enum TensorFlowLiteStatus
 {
     /// <summary>
-    /// Generally refers to a successful execution in the runtime.
+    /// Generally refers to a successful execution in the TensorFlow Lite runtime.
     /// </summary>
     Ok = 0,
 
     /// <summary>
-    /// Generally referring to an error in the runtime.
+    /// Generally refers to an error in the TensorFlow Lite runtime.
     /// </summary>
     Error = 1,
 
     /// <summary>
-    /// Generally referring to an error from a TfLiteDelegate itself.
+    /// Generally refers to an error from a TensorFlow Lite delegate itself.
     /// </summary>
     DelegateError = 2,
 
     /// <summary>
-    /// Generally referring to an error in applying a delegate due to incompatibility 
-    /// between runtime and delegate.
+    /// Generally refers to an error in applying a delegate due to incompatibility 
+    /// between the TensorFlow Lite runtime and the delegate.
     /// </summary>
     ApplicationError = 3,
 
     /// <summary>
-    /// Generally referring to serialized delegate data not being found.
+    /// Generally refers to serialized delegate data not being found.
     /// </summary>
-    kTfLiteDelegateDataNotFound = 4,
+    DelegateDataNotFound = 4,
 
     /// <summary>
-    /// Generally referring to data-writing issues in delegate serialization.
+    /// Generally refers to data-writing issues in delegate serialization.
     /// </summary>
     DelegateDataWriteError = 5,
 
     /// <summary>
-    /// Generally referring to data-reading issues in delegate serialization.
+    /// Generally refers to data-reading issues in delegate serialization.
     /// </summary>
     DelegateDataReadError = 6,
 
     /// <summary>
-    /// Generally referring to issues when the TF Lite model has ops that cannot
+    /// Generally refers to issues when the TensorFlow Lite model has operations that cannot
     /// be resolved at runtime.
     /// </summary>
     UnresolvedOps = 7,
