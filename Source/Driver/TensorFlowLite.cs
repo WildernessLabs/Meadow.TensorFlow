@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Meadow.TensorFlow;
 
 /// <summary>
-/// Represents TensorFlow Lite interpreter for microcontrollers.
+/// Represents TensorFlow Lite for microcontrollers interpreter.
 /// </summary>
 public class TensorFlowLite : ITensorFlowLiteInterpreter
 {

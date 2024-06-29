@@ -21,7 +21,7 @@ public interface ITensorFlowLiteInterpreter
     TensorFlowLiteStatus OperationStatus { get; set; }
 
     /// <summary>
-    /// Retrieves the length of the input tensor in elements of type float.
+    /// Retrieves the length of the input tensor.
     /// </summary>
     /// <returns>The length of the input tensor.</returns>
     int GetInputTensorLength();
