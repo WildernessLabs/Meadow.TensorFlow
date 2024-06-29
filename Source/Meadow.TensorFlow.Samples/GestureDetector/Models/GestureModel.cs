@@ -2,7 +2,7 @@ using Meadow.TensorFlow;
 
 namespace GestureDetector.Models;
 
-public class Model : ITensorModel
+public class GestureModel : ITensorModel
 {
     public int Size => Data.Length;
 

@@ -3,115 +3,76 @@ using Meadow;
 using Meadow.Devices;
 using Meadow.TensorFlow;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace HelloWorld;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
-    readonly HelloWorldModel helloWorld = new();
+    TensorFlowLite tensorFlowLite;
+
+    readonly HelloWorldModel helloWorldModel = new();
     const int ArenaSize = 2000;
-    TensorFlowLiteStatus status;
-    TensorFlowLiteTensor input, output;
-    TensorFlowLiteQuantizationParams inputParam, outputParam;
-    IntPtr interpreter;
 
     public override Task Initialize()
     {
         Resolver.Log.Info("Initialize TensorFlow ...");
 
-        IntPtr model = Marshal.AllocHGlobal(helloWorld.Size * sizeof(int));
+        tensorFlowLite = new TensorFlowLite(helloWorldModel, ArenaSize);
 
-        if (model == IntPtr.Zero)
-        {
-            Resolver.Log.Info("Failed to allocated model");
-            return base.Initialize();
-        }
-
-        IntPtr arena = Marshal.AllocHGlobal(ArenaSize * sizeof(int));
-
-        if (arena == IntPtr.Zero)
-        {
-            Resolver.Log.Info("Failed to allocated arena");
-            Marshal.FreeHGlobal(model);
-            return base.Initialize();
-        }
-
-        Marshal.Copy(helloWorld.Data, 0, model, helloWorld.Size);
-
-        var model_options = TensorFlowLiteBindings.TfLiteMicroGetModel(ArenaSize, arena, model);
-        if (model_options == null)
-            Resolver.Log.Info("Failed to loaded the model");
-
-        var interpreter_options = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(model_options);
-        if (interpreter_options == null)
-            Resolver.Log.Info("Failed to create interpreter option");
-
-        interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
-        if (interpreter == null)
-            Resolver.Log.Info("Failed to Interpreter");
-
-        status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
-        if (status != TensorFlowLiteStatus.Ok)
-        {
-            Resolver.Log.Info("Failed to allocate tensors");
-        }
-
-        input = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
-
-        output = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0);
-
-        helloWorld.interferece_count = 0;
-
-        inputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(input);
-        outputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(output);
+        helloWorldModel.InterferenceCount = 0;
 
         return Task.CompletedTask;
     }
 
     public override Task Run()
     {
-        HelloWorldModel.HelloWorldResult_t[] result = helloWorld.populateResult();
+        var result = helloWorldModel.PopulateResult();
 
         for (int i = 0; i < result.Length; i++)
         {
-            float position = helloWorld.interferece_count / (float)helloWorld.kInterferencesPerCycles;
-            float x = position * helloWorld.kXrange;
+            float position = helloWorldModel.InterferenceCount / (float)helloWorldModel.InterferencesPerCycles;
+            float x = position * helloWorldModel.XRange;
 
-            sbyte x_quantized = (sbyte)((x / inputParam.Scale) + inputParam.ZeroPoint);
+            sbyte xQuantized = (sbyte)((x / tensorFlowLite.InputQuantizationParams.Scale) + tensorFlowLite.InputQuantizationParams.ZeroPoint);
 
-            TensorFlowLiteBindings.TfLiteMicroSetInt8Data(input, 0, x_quantized);
+            tensorFlowLite.SetInputTensorInt8Data(0, xQuantized);
 
-            status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
-            if (status != TensorFlowLiteStatus.Ok)
+            tensorFlowLite.InvokeInterpreter();
+
+            if (tensorFlowLite.OperationStatus != TensorFlowLiteStatus.Ok)
             {
                 Resolver.Log.Info("Failed to Invoke");
                 return Task.CompletedTask;
             }
 
-            sbyte y_quantized = TensorFlowLiteBindings.TfLiteMicroGeInt8tData(output, 0);
+            sbyte yQuantized = tensorFlowLite.GetOutputTensorInt8Data(0);
 
-            float y = (y_quantized - outputParam.ZeroPoint) * outputParam.Scale;
+            float y = (yQuantized - tensorFlowLite.OutputQuantizationParams.ZeroPoint) * tensorFlowLite.OutputQuantizationParams.Scale;
 
             Resolver.Log.Info($" {i} - {(x, y)} ");
 
-            if (helloWorld.floatNoTEqual(x, result[i].x) || helloWorld.floatNoTEqual(y, result[i].y))
+            if (!AreFloatsEqual(x, result[i].X) || !AreFloatsEqual(y, result[i].Y))
             {
                 Resolver.Log.Info($"Test {i} failed");
-                Resolver.Log.Info($"Expeced {(result[i].x, result[i].y)}");
+                Resolver.Log.Info($"Expeced {(result[i].X, result[i].Y)}");
                 break;
             }
 
-            helloWorld.interferece_count += 1;
+            helloWorldModel.InterferenceCount += 1;
 
-            if (helloWorld.interferece_count >= helloWorld.kInterferencesPerCycles)
+            if (helloWorldModel.InterferenceCount >= helloWorldModel.InterferencesPerCycles)
             {
-                helloWorld.interferece_count = 0;
+                helloWorldModel.InterferenceCount = 0;
             }
         }
 
         Resolver.Log.Info("Sample completed");
         return Task.CompletedTask;
+    }
+
+    bool AreFloatsEqual(float x, float y)
+    {
+        return Math.Abs(x - y) < 1e-6;
     }
 }
