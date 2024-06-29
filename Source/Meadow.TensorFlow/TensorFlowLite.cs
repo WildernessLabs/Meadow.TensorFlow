@@ -5,13 +5,13 @@ namespace Meadow.TensorFlow;
 
 public class TensorFlowLite
 {
-    public TensorFlowLiteQuantizationParams InputParam { get; private set; }
-    public TensorFlowLiteQuantizationParams OutputParam { get; private set; }
+    public TensorFlowLiteQuantizationParams InputQuantizationParams { get; private set; }
+    public TensorFlowLiteQuantizationParams OutputQuantizationParams { get; private set; }
 
-    public TensorFlowLiteStatus Status { get; set; } = TensorFlowLiteStatus.Ok;
+    public TensorFlowLiteStatus OperationStatus { get; set; } = TensorFlowLiteStatus.Ok;
 
-    protected TensorFlowLiteTensor Input { get; set; }
-    protected TensorFlowLiteTensor Output { get; set; }
+    protected TensorFlowLiteTensor InputTensor { get; set; }
+    protected TensorFlowLiteTensor OutputTensor { get; set; }
 
     protected readonly IntPtr interpreter;
     private readonly int arenaSize;
@@ -20,82 +20,117 @@ public class TensorFlowLite
     {
         this.arenaSize = arenaSize;
 
-        IntPtr model = Marshal.AllocHGlobal(tensorModel.Size * sizeof(int));
+        IntPtr modelPtr = Marshal.AllocHGlobal(tensorModel.Size * sizeof(int));
 
-        if (model == IntPtr.Zero)
+        if (modelPtr == IntPtr.Zero)
         {
-            throw new Exception("Failed to allocated model");
+            throw new Exception("Failed to allocate model memory");
         }
 
-        IntPtr arena = Marshal.AllocHGlobal(arenaSize * sizeof(int));
+        IntPtr arenaPtr = Marshal.AllocHGlobal(arenaSize * sizeof(int));
 
-        if (arena == IntPtr.Zero)
+        if (arenaPtr == IntPtr.Zero)
         {
-            Marshal.FreeHGlobal(model);
-            throw new Exception("Failed to allocated arena");
+            Marshal.FreeHGlobal(modelPtr);
+            throw new Exception("Failed to allocate arena memory");
         }
 
-        Marshal.Copy(tensorModel.Data, 0, model, tensorModel.Size);
+        Marshal.Copy(tensorModel.Data, 0, modelPtr, tensorModel.Size);
 
-        var modelOptions = TensorFlowLiteBindings.TfLiteMicroGetModel(arenaSize, arena, model);
-        if (modelOptions == null)
+        var modelOptionsPtr = TensorFlowLiteBindings.TfLiteMicroGetModel(arenaSize, arenaPtr, modelPtr);
+        if (modelOptionsPtr == IntPtr.Zero)
         {
-            throw new Exception("Failed to loaded the model");
+            throw new Exception("Failed to load the model");
         }
 
-        var interpreterOptions = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptions);
-        if (interpreterOptions == null)
+        var interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
+        if (interpreterOptionsPtr == IntPtr.Zero)
         {
-            throw new Exception("Failed to create interpreter option");
+            throw new Exception("Failed to create interpreter options");
         }
 
-        interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(interpreterOptions, modelOptions);
-        if (interpreter == null)
+        interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(interpreterOptionsPtr, modelOptionsPtr);
+        if (interpreter == IntPtr.Zero)
         {
-            throw new Exception("Failed to Interpreter");
+            throw new Exception("Failed to create interpreter");
         }
 
-        Status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
+        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
 
-        if (Status != TensorFlowLiteStatus.Ok)
+        if (OperationStatus != TensorFlowLiteStatus.Ok)
         {
             throw new Exception("Failed to allocate tensors");
         }
 
-        Input = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
-        Output = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0);
+        InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
+        OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0);
 
-        InputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(Input);
-        OutputParam = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(Output);
+        InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(InputTensor);
+        OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 
-    public int InputLength()
+    public int GetInputTensorLength()
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetByte(Input) / sizeof(float);
+        return TensorFlowLiteBindings.TfLiteMicroGetByte(InputTensor) / sizeof(float);
     }
 
-    public void InputInt8Data(int index, sbyte value)
+    public void SetInputTensorInt8Data(int index, sbyte value)
     {
-        TensorFlowLiteBindings.TfLiteMicroSetInt8Data(Input, index, value);
+        TensorFlowLiteBindings.TfLiteMicroSetInt8Data(InputTensor, index, value);
     }
 
-    public sbyte OutputInt8Data(int index)
+    public sbyte GetOutputTensorInt8Data(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGeInt8tData(Output, index);
+        return TensorFlowLiteBindings.TfLiteMicroGeInt8tData(OutputTensor, index);
     }
 
-    public void InputFloatData(int index, float value)
+    public void SetInputTensorFloatData(int index, float value)
     {
-        TensorFlowLiteBindings.TfLiteMicroSetFloatData(Input, index, value);
+        TensorFlowLiteBindings.TfLiteMicroSetFloatData(InputTensor, index, value);
     }
 
-    public float OutputFloatData(int index)
+    public float GetOutputTensorFloatData(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0), index);
+        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(OutputTensor, index);
     }
 
-    public void Invoke()
+    public void InvokeInterpreter()
     {
-        Status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
+        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
+    }
+
+    public int GetOutputTensorCount()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(interpreter);
+    }
+
+    public int GetInputTensorCount()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(interpreter);
+    }
+
+    public void SetMutableOption(sbyte option)
+    {
+        OperationStatus = TensorFlowLiteBindings.TfLiteMicroMutableSetOption(option);
+    }
+
+    public TensorDataType GetInputTensorType()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroGetType(InputTensor);
+    }
+
+    public int GetInputTensorDimensionsSize()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroDimsSizeData(InputTensor);
+    }
+
+    public int GetInputTensorDimension(int index)
+    {
+        return TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, index);
+    }
+
+    public TensorFlowLiteQuantizationParams GetOutputTensorQuantizationParams()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 }

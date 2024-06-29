@@ -44,8 +44,8 @@ public class MeadowApp : App<F7FeatherV2>
         {
             if (await ReadAccelerometer(clearBuffer))
             {
-                wandTensorFlow.Invoke();
-                if (wandTensorFlow.Status != TensorFlowLiteStatus.Ok)
+                wandTensorFlow.InvokeInterpreter();
+                if (wandTensorFlow.OperationStatus != TensorFlowLiteStatus.Ok)
                 {
                     Resolver.Log.Info("Invoke failed");
                     break;
@@ -109,8 +109,7 @@ public class MeadowApp : App<F7FeatherV2>
                 ringArryIndex += ringBuffer;
             }
 
-            //    Console.Write($"{(i,(float)saveAccelData[ringArryIndex])}");
-            wandTensorFlow.InputFloatData(i, (float)saveAccelData[ringArryIndex]);
+            wandTensorFlow.SetInputTensorFloatData(i, (float)saveAccelData[ringArryIndex]);
         }
 
         return true;

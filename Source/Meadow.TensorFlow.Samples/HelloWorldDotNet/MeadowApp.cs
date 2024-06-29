@@ -34,21 +34,21 @@ public class MeadowApp : App<F7CoreComputeV2>
             float position = helloWorldModel.InterferenceCount / (float)helloWorldModel.InterferencesPerCycles;
             float x = position * helloWorldModel.XRange;
 
-            sbyte xQuantized = (sbyte)((x / tensorFlowLite.InputParam.Scale) + tensorFlowLite.InputParam.ZeroPoint);
+            sbyte xQuantized = (sbyte)((x / tensorFlowLite.InputQuantizationParams.Scale) + tensorFlowLite.InputQuantizationParams.ZeroPoint);
 
-            tensorFlowLite.InputInt8Data(0, xQuantized);
+            tensorFlowLite.SetInputTensorInt8Data(0, xQuantized);
 
-            tensorFlowLite.Invoke();
+            tensorFlowLite.InvokeInterpreter();
 
-            if (tensorFlowLite.Status != TensorFlowLiteStatus.Ok)
+            if (tensorFlowLite.OperationStatus != TensorFlowLiteStatus.Ok)
             {
                 Resolver.Log.Info("Failed to Invoke");
                 return Task.CompletedTask;
             }
 
-            sbyte yQuantized = tensorFlowLite.OutputInt8Data(0);
+            sbyte yQuantized = tensorFlowLite.GetOutputTensorInt8Data(0);
 
-            float y = (yQuantized - tensorFlowLite.OutputParam.ZeroPoint) * tensorFlowLite.OutputParam.Scale;
+            float y = (yQuantized - tensorFlowLite.OutputQuantizationParams.ZeroPoint) * tensorFlowLite.OutputQuantizationParams.Scale;
 
             Resolver.Log.Info($" {i} - {(x, y)} ");
 

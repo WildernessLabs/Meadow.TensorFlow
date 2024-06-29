@@ -55,9 +55,9 @@ public class MeadowApp : App<F7CoreComputeV2>
                 {
                     if (samplesRead == sampleCount)
                     {
-                        tensorFlowLite.Invoke();
+                        tensorFlowLite.InvokeInterpreter();
 
-                        if (tensorFlowLite.Status != TensorFlowLiteStatus.Ok)
+                        if (tensorFlowLite.OperationStatus != TensorFlowLiteStatus.Ok)
                         {
                             Resolver.Log.Info("Invoke falied");
                             break;
@@ -65,7 +65,7 @@ public class MeadowApp : App<F7CoreComputeV2>
                     }
                     for (int i = 0; i < gestureList.Length; i++)
                     {
-                        float tensorData = tensorFlowLite.OutputFloatData(i);
+                        float tensorData = tensorFlowLite.GetOutputTensorFloatData(i);
                         if (tensorData > 0.85)
                         {
                             Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
@@ -92,9 +92,9 @@ public class MeadowApp : App<F7CoreComputeV2>
             float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
             float aZ = (float)((accelerometerData[2] + 4.0) / 8.0);
 
-            tensorFlowLite.InputFloatData(samplesRead * 3 + 0, aX);
-            tensorFlowLite.InputFloatData(samplesRead * 3 + 1, aY);
-            tensorFlowLite.InputFloatData(samplesRead * 3 + 2, aZ);
+            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 0, aX);
+            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 1, aY);
+            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 2, aZ);
 
             samplesRead++;
             return true;

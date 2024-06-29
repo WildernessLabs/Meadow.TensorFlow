@@ -1,7 +1,5 @@
-using MagicWand.Models;
 using Meadow.TensorFlow;
 using System;
-using System.Runtime.InteropServices;
 
 namespace MagicWand;
 
@@ -19,12 +17,12 @@ public class MagicWandTensorFlow : TensorFlowLite
     private readonly float[,] predictionHistory = new float[kGestureCount, kPredictionHistoryLength];
     private int predictionSupressionCount = 0;
 
-    public MagicWandTensorFlow(ITensorModel tensorModel, int areaSize) 
+    public MagicWandTensorFlow(ITensorModel tensorModel, int areaSize)
         : base(tensorModel, areaSize)
     {
-        if ((TensorFlowLiteBindings.TfLiteMicroDimsSizeData(Input) != 4) || (TensorFlowLiteBindings.TfLiteMicroDimsData(Input, 0) != 1) ||
-            (TensorFlowLiteBindings.TfLiteMicroDimsData(Input, 1) != 128) || (TensorFlowLiteBindings.TfLiteMicroDimsData(Input, 2) != kChannelNumber) ||
-            (TensorFlowLiteBindings.TfLiteMicroGetType(Input) != TensorDataType.Float32))
+        if ((TensorFlowLiteBindings.TfLiteMicroDimsSizeData(InputTensor) != 4) || (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 0) != 1) ||
+            (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 1) != 128) || (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 2) != kChannelNumber) ||
+            (TensorFlowLiteBindings.TfLiteMicroGetType(InputTensor) != TensorDataType.Float32))
         {
             Console.Write("DimsSizeData error");
         }
@@ -34,19 +32,19 @@ public class MagicWandTensorFlow : TensorFlowLite
 
     public int InputLength()
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetByte(Input) / sizeof(float);
+        return TensorFlowLiteBindings.TfLiteMicroGetByte(InputTensor) / sizeof(float);
     }
 
     public void InputData(int index, float value)
     {
-        TensorFlowLiteBindings.TfLiteMicroSetFloatData(Input, index, value);
+        TensorFlowLiteBindings.TfLiteMicroSetFloatData(InputTensor, index, value);
     }
 
     public int Predict()
     {
         for (int i = 0; i < kGestureCount; ++i)
         {
-            predictionHistory[i, predictionHistoryIndex] = OutputFloatData(i);
+            predictionHistory[i, predictionHistoryIndex] = GetOutputTensorFloatData(i);
         }
 
         ++predictionHistoryIndex;
