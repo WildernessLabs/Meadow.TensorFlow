@@ -1,14 +1,20 @@
-﻿using Meadow;
+﻿using MagicWand.Models;
+using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation.Sensors.Motion;
+using Meadow.TensorFlow;
 using System;
 using System.Threading.Tasks;
-using TensorFlow.litemicro;
 
 namespace MagicWand;
 
 public class MeadowApp : App<F7FeatherV2>
 {
+    MagicWandTensorFlow wandTensorFlow;
+
+    readonly MagicWandModel wandModel = new();
+    const int ArenaSize = 60 * 1024;
+
     Mpu6050 mpu;
     static long lastTime = 0;
     const int updateTime = 40;
@@ -16,13 +22,14 @@ public class MeadowApp : App<F7FeatherV2>
     public double[] saveAccelData = new double[ringBuffer];
     public int beingIndex = 0;
     bool pendingInitialData = true;
-    bool clearBuffer = false;
+    readonly bool clearBuffer = false;
     public int InputLegth;
+
+    long Millis => DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
     public override Task Initialize()
     {
-        TensorFlow.Instance.Initialize();
-        InputLegth = TensorFlow.Instance.InputLegth();
+        wandTensorFlow = new MagicWandTensorFlow(wandModel, ArenaSize);
 
         mpu = new Mpu6050(Device.CreateI2cBus());
 
@@ -37,15 +44,15 @@ public class MeadowApp : App<F7FeatherV2>
         {
             if (await ReadAccelerometer(clearBuffer))
             {
-
-                if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                wandTensorFlow.InvokeInterpreter();
+                if (wandTensorFlow.OperationStatus != TensorFlowLiteStatus.Ok)
                 {
                     Resolver.Log.Info("Invoke failed");
                     break;
                 }
 
-                int gestureIndex = TensorFlow.Instance.Predict();
-                string gesture = TensorFlow.Instance.HandleOutput(gestureIndex);
+                int gestureIndex = wandTensorFlow.Predict();
+                string gesture = wandTensorFlow.HandleOutput(gestureIndex);
                 if (gesture != null)
                 {
                     Resolver.Log.Info($"Gesture = {gesture}");
@@ -56,20 +63,17 @@ public class MeadowApp : App<F7FeatherV2>
         }
     }
 
-    long millis()
-    {
-        return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-    }
+
 
     public async Task<bool> ReadAccelerometer(bool resetBuffer)
     {
 
-        if (millis() - lastTime < updateTime)
+        if (Millis - lastTime < updateTime)
         {
             return false;
         }
 
-        lastTime = millis();
+        lastTime = Millis;
 
         var result = await mpu.Read();
         double x = (double)result.Acceleration3D?.X.Gravity;
@@ -105,8 +109,7 @@ public class MeadowApp : App<F7FeatherV2>
                 ringArryIndex += ringBuffer;
             }
 
-            //    Console.Write($"{(i,(float)saveAccelData[ringArryIndex])}");
-            TensorFlow.Instance.InputData(i, (float)saveAccelData[ringArryIndex]);
+            wandTensorFlow.SetInputTensorFloatData(i, (float)saveAccelData[ringArryIndex]);
         }
 
         return true;
