@@ -84,11 +84,6 @@ public class DisplayController
 
         displayScreen.Controls.Add(picture);
     }
-
-    public void Clear()
-    {
-        picture = null;
-    }
 }
 
 public enum Classification

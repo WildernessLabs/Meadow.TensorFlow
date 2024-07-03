@@ -1,19 +1,23 @@
 ﻿using BitMiracle.LibJpeg;
 using Meadow;
 using Meadow.Devices;
+using Meadow.Hardware;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Foundation.Graphics.MicroLayout;
 using Meadow.Foundation.Sensors.Camera;
 using Meadow.Peripherals.Displays;
-using PersonDetection.Controllers;
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using TensorFlow.litemicro;
+using Meadow.TensorFlow;
+
+using PersonDetection.Models;
+using PersonDetection.Controllers;
 
 namespace PersonDetection;
-using tf = TensorFlow;
+
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
@@ -22,19 +26,18 @@ public class MeadowApp : App<F7CoreComputeV2>
     public const sbyte Person = 1;
     public const sbyte noPerson = 0;
 
-    TfLiteTensor input, output;
-    public readonly Image[] images =
-    {
-        Image.LoadFromResource("Resources.no_person.bmp"),
-        Image.LoadFromResource("Resources.person.bmp"),
-    };
+    PersonDetectionTensorFlow personDetectionTF;
+    readonly PersonDetectionModel personDetectionModel = new();
+    const int ArenaSize = 134 * 1024;
+
     Vc0706 camera;
     private DisplayScreen displayScreen;
 
     public override Task Initialize()
     {
+        personDetectionTF = new PersonDetectionTensorFlow(personDetectionModel, ArenaSize);
+
         projLab = ProjectLab.Create();
-        // displayScreen = new DisplayScreen(projLab.Display, RotationType._270Degrees);
         displayController = new DisplayController(projLab.Display);
 
         camera = new Vc0706(Device, Device.PlatformOS.GetSerialPortName("COM1"), 38400);
@@ -43,35 +46,31 @@ public class MeadowApp : App<F7CoreComputeV2>
             Resolver.Log.Info("Resolution successfully changed");
         }
 
-        Resolver.Log.Info("Initialize TensorFlow ...");
-        tf.Initialize();
-
-        input = tf.GetInput();
         return Task.CompletedTask;
     }
 
     public override async Task Run()
     {
         var imageBuffer = await TakePicture();
-        CopyPixelBufferToTensor(imageBuffer, input);
+        CopyPixelBufferToTensor(imageBuffer);
 
-        TfLiteStatus tfLiteStatus;
-        tfLiteStatus = tf.Invoke();
-        if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
+        
+        personDetectionTF.InvokeInterpreter();
+
+        if (personDetectionTF.OperationStatus != TensorFlowLiteStatus.Ok)
         {
             Resolver.Log.Info("Invoke failed");
             return;
         }
 
-        output = tf.GetOutput();
-        int outputDimsSize = tf.DimsSize(output);
-        int outputData0 = tf.DimsData(output, 0);
-        int outputDimsData0Size = tf.DimsData(output, 1);
+        int outputDimsSize = personDetectionTF.GetOutputTensorDimensionsSize();
+        int outputData0 = personDetectionTF.GetInputTensorDimension(0);
+        int outputDimsData0Size = personDetectionTF.GetOutputTensorDimension(1);
 
         Resolver.Log.Info($" Dims Size: {outputDimsSize}, Data 0: {outputData0},  Size:{outputDimsData0Size}");
 
-        sbyte personScore = tf.GetInt8Data(output, 1);
-        sbyte noPersonScore = tf.GetInt8Data(output, 0);
+        sbyte personScore = personDetectionTF.GetOutputTensorInt8Data(1);
+        sbyte noPersonScore = personDetectionTF.GetOutputTensorInt8Data(0);
         
         Resolver.Log.Info($"Score \n - Person: {personScore}\n - No Person:{noPersonScore}");
 
@@ -104,27 +103,14 @@ public class MeadowApp : App<F7CoreComputeV2>
         return pixelBuffer.Resize<BufferGray8>(96, 96);
     }
 
-    public static void CopyImageToTensor(Image img, TfLiteTensor tensor)
-    {
-        int width = img.DisplayBuffer.Width;
-        int height = img.DisplayBuffer.Height;
-        using var memStream = new MemoryStream(img.DisplayBuffer.Buffer);
-        Resolver.Log.Info($"Image Infos - width: {width}, height: {height} , size: {memStream.Length}");
-        int index = 0;
-        memStream.Seek(0, SeekOrigin.Begin);
-        while (index < memStream.Length)
-        {
-            tf.SetInt8Data(tensor, index++, (sbyte)memStream.ReadByte());
-        }
-    }
-    public static void CopyPixelBufferToTensor(IPixelBuffer pixel, TfLiteTensor tensor)
+    public static void CopyPixelBufferToTensor(IPixelBuffer pixel)
     {
         using var memStream = new MemoryStream(pixel.Buffer);
         int index = 0;
         memStream.Seek(0, SeekOrigin.Begin);
         while (index < memStream.Length)
         {
-            tf.SetInt8Data(tensor, index++, (sbyte)memStream.ReadByte());
+            personDetectionTF.InputData(index++, (sbyte)memStream.ReadByte());
         }
     }
 }
