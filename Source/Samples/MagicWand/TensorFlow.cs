@@ -1,37 +1,38 @@
 using MagicWand.Models;
+using Meadow.TensorFlow;
 using System;
 using System.Runtime.InteropServices;
-using TensorFlow.litemicro;
 
 namespace MagicWand;
 
 public class TensorFlow
 {
-    private static readonly Lazy<TensorFlow> instance = new Lazy<TensorFlow>(() => new TensorFlow());
+    private static readonly Lazy<TensorFlow> instance = new();
+
     private const int kChannelNumber = 3;
     private const int kGestureCount = 4;
     private const int kPredictionHistoryLength = 5;
     private const int kNoGesture = 3;
     private const float kDetectionThreshould = 0.8f;
     private const int kPredictionSuppressionDuration = 25;
-    private int[] kConsecutiveInterfaceThresholds = { 9, 7, 6 };
-    private string[] labels = { "M", "L", "O", "U" };
+    private readonly int[] kConsecutiveInterfaceThresholds = { 9, 7, 6 };
+    private readonly string[] labels = { "M", "L", "O", "U" };
     private int predictionHistoryIndex = 0;
-    private float[,] predictionHistory = new float[kGestureCount, kPredictionHistoryLength];
+    private readonly float[,] predictionHistory = new float[kGestureCount, kPredictionHistoryLength];
     private int predictionSupressionCount = 0;
 
     public static TensorFlow Instance => instance.Value;
 
-    TfLiteStatus tfLiteStatus;
-    TfLiteTensor input, output;
-    IntPtr interpreter;
-    int ArenaSize = 60 * 1024;
+    private TensorFlowLiteStatus tfLiteStatus;
+    private TensorFlowLiteTensor input;
+    private IntPtr interpreter;
+    readonly int ArenaSize = 60 * 1024;
 
     public void Initialize()
     {
-        MagicWandModel magicWandModel = new MagicWandModel();
+        MagicWandModel magicWandModel = new();
 
-        IntPtr model = Marshal.AllocHGlobal(magicWandModel.GetSize() * sizeof(byte));
+        IntPtr model = Marshal.AllocHGlobal(magicWandModel.Size * sizeof(byte));
 
         if (model == IntPtr.Zero)
         {
@@ -39,7 +40,7 @@ public class TensorFlow
             return;
         }
 
-        Marshal.Copy(magicWandModel.GetData(), 0, model, magicWandModel.GetSize());
+        Marshal.Copy(magicWandModel.Data, 0, model, magicWandModel.Size);
 
         IntPtr arena = Marshal.AllocHGlobal(ArenaSize * sizeof(int));
 
@@ -50,27 +51,27 @@ public class TensorFlow
             return;
         }
 
-        var model_options = c_api_lite_micro.TfLiteMicroGetModel(ArenaSize, arena, model);
+        var model_options = TensorFlowLiteBindings.TfLiteMicroGetModel(ArenaSize, arena, model);
         if (model_options == null)
             Console.WriteLine("Failed to loaded the model");
 
-        var interpreter_options = c_api_lite_micro.TfLiteMicroInterpreterOptionCreate(model_options);
+        var interpreter_options = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(model_options);
         if (interpreter_options == null)
             Console.WriteLine("Failed to create interpreter option");
 
-        interpreter = c_api_lite_micro.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
+        interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(interpreter_options, model_options);
         if (interpreter == null)
             Console.WriteLine("Failed to Interpreter");
 
-        tfLiteStatus = c_api_lite_micro.TfLiteMicroInterpreterAllocateTensors(interpreter);
-        if (tfLiteStatus != TfLiteStatus.kTfLiteOk)
+        tfLiteStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
+        if (tfLiteStatus != TensorFlowLiteStatus.Ok)
             Console.WriteLine("Failed to allocate tensors");
 
-        input = c_api_lite_micro.TfLiteMicroInterpreterGetInput(interpreter, 0);
+        input = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
 
-        if ((c_api_lite_micro.TfLiteMicroDimsSizeData(input) != 4) || (c_api_lite_micro.TfLiteMicroDimsData(input, 0) != 1) ||
-            (c_api_lite_micro.TfLiteMicroDimsData(input, 1) != 128) || (c_api_lite_micro.TfLiteMicroDimsData(input, 2) != kChannelNumber) ||
-            (c_api_lite_micro.TfLiteMicroGetType(input) != TfLiteType.kTfLiteFloat32))
+        if ((TensorFlowLiteBindings.TfLiteMicroDimsSizeData(input) != 4) || (TensorFlowLiteBindings.TfLiteMicroDimsData(input, 0) != 1) ||
+            (TensorFlowLiteBindings.TfLiteMicroDimsData(input, 1) != 128) || (TensorFlowLiteBindings.TfLiteMicroDimsData(input, 2) != kChannelNumber) ||
+            (TensorFlowLiteBindings.TfLiteMicroGetType(input) != TensorDataType.Float32))
         {
             Console.Write("DimsSizeData error");
         }
@@ -78,24 +79,24 @@ public class TensorFlow
         Console.WriteLine("TensorFlow Initialize");
     }
 
-    public int InputLegth()
+    public int InputLength()
     {
-        return c_api_lite_micro.TfLiteMicroGetByte(input) / sizeof(float);
+        return TensorFlowLiteBindings.TfLiteMicroGetByte(input) / sizeof(float);
     }
 
     public void InputData(int index, float value)
     {
-        c_api_lite_micro.TfLiteMicroSetFloatData(input, index, value);
+        TensorFlowLiteBindings.TfLiteMicroSetFloatData(input, index, value);
     }
 
     public float OutputData(int index)
     {
-        return c_api_lite_micro.TfLiteMicroGetFloatData(c_api_lite_micro.TfLiteMicroInterpreterGetOutput(interpreter, 0), index);
+        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0), index);
     }
 
-    public TfLiteStatus Invoke()
+    public TensorFlowLiteStatus Invoke()
     {
-        return c_api_lite_micro.TfLiteMicroInterpreterInvoke(interpreter);
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
     }
 
     public int Predict()

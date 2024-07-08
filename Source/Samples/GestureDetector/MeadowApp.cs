@@ -1,28 +1,34 @@
-﻿using Meadow;
+﻿using GestureDetector.Models;
+using Meadow;
 using Meadow.Devices;
+using Meadow.TensorFlow;
 using Meadow.Units;
 using System;
 using System.Threading.Tasks;
-using TensorFlow.litemicro;
 
 namespace GestureDetector;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
+    TensorFlowLite tensorFlowLite;
+
+    readonly GestureModel gestureModel = new();
+    const int ArenaSize = 60 * 1024;
+
     private IProjectLabHardware projLab;
     private const double kDetectionThreshould = 2.5;
-    private string[] gestureList = { "thumbs up", "wave" };
+    private readonly string[] gestureList = { "thumbs up", "wave" };
 
     public int samplesRead = 0;
-    public const int numOfSamples = 119;
+    public const int sampleCount = 119;
     public double[] accelerometerData = new double[3];
 
     public override Task Initialize()
     {
         projLab = ProjectLab.Create();
-        projLab.Accelerometer.Updated += onAccelerometerUpdated;
+        projLab.Accelerometer.Updated += OnAccelerometerUpdated;
 
-        TensorFlow.Instance.Initialize();
+        tensorFlowLite = new TensorFlowLite(gestureModel, ArenaSize);
 
         return base.Initialize();
     }
@@ -32,7 +38,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         projLab.Accelerometer.StartUpdating(TimeSpan.FromMilliseconds(10));
         while (true)
         {
-            while (samplesRead == numOfSamples)
+            while (samplesRead == sampleCount)
             {
                 if (IsMovement())
                 {
@@ -43,13 +49,15 @@ public class MeadowApp : App<F7CoreComputeV2>
                 await Task.Delay(1);
             }
 
-            while (samplesRead < numOfSamples)
+            while (samplesRead < sampleCount)
             {
                 if (InputAccelerometerData())
                 {
-                    if (samplesRead == numOfSamples)
+                    if (samplesRead == sampleCount)
                     {
-                        if (TensorFlow.Instance.Invoke() != TfLiteStatus.kTfLiteOk)
+                        tensorFlowLite.InvokeInterpreter();
+
+                        if (tensorFlowLite.OperationStatus != TensorFlowLiteStatus.Ok)
                         {
                             Resolver.Log.Info("Invoke falied");
                             break;
@@ -57,7 +65,7 @@ public class MeadowApp : App<F7CoreComputeV2>
                     }
                     for (int i = 0; i < gestureList.Length; i++)
                     {
-                        float tensorData = TensorFlow.Instance.OutputData(i);
+                        float tensorData = tensorFlowLite.GetOutputTensorFloatData(i);
                         if (tensorData > 0.85)
                         {
                             Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
@@ -84,9 +92,9 @@ public class MeadowApp : App<F7CoreComputeV2>
             float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
             float aZ = (float)((accelerometerData[2] + 4.0) / 8.0);
 
-            TensorFlow.Instance.InputData(samplesRead * 3 + 0, aX);
-            TensorFlow.Instance.InputData(samplesRead * 3 + 1, aY);
-            TensorFlow.Instance.InputData(samplesRead * 3 + 2, aZ);
+            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 0, aX);
+            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 1, aY);
+            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 2, aZ);
 
             samplesRead++;
             return true;
@@ -94,7 +102,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         return false;
     }
 
-    private void onAccelerometerUpdated(object sender, IChangeResult<Acceleration3D> e)
+    private void OnAccelerometerUpdated(object sender, IChangeResult<Acceleration3D> e)
     {
         accelerometerData[0] = e.New.X.Gravity;
         accelerometerData[1] = e.New.Y.Gravity;

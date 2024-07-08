@@ -1,8 +1,12 @@
+using Meadow.TensorFlow;
+
 namespace GestureDetector.Models;
 
-public class Model
+public class GestureModel : ITensorModel
 {
-    private static byte[] Data = {
+    public int Size => Data.Length;
+
+    public byte[] Data { get; } = {
 
     0x1c, 0x00, 0x00, 0x00, 0x54, 0x46, 0x4c, 0x33, 0x14, 0x00, 0x20, 0x00,
     0x1c, 0x00, 0x18, 0x00, 0x14, 0x00, 0x10, 0x00, 0x0c, 0x00, 0x00, 0x00,
@@ -6416,12 +6420,5 @@ public class Model
     0x00, 0x00, 0x00, 0x09
     };
 
-    public byte[] GetData()
-    {
-        return Data;
-    }
-    public int GetSize()
-    {
-        return Data.Length;
-    }
+
 }

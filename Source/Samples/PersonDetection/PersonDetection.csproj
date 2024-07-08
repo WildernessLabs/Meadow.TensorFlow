@@ -1,0 +1,39 @@
+﻿<Project Sdk="Meadow.Sdk/1.1.0">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <OutputType>Library</OutputType>
+        <AssemblyName>App</AssemblyName>
+        <LangVersion>10.0</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="app.config.yaml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Resources\no_person.bmp" />
+        <None Remove="Resources\person.bmp" />
+        <None Remove="Resources\img-tf-logo.bmp" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\no_person.bmp" />
+        <EmbeddedResource Include="Resources\person.bmp" />
+        <EmbeddedResource Include="Resources\img-tf-logo.bmp" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="BitMiracle.LibJpeg.NET" Version="1.5.324" />
+        <PackageReference Include="Meadow.ProjectLab" Version="1.12.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Meadow.Core\Source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
+        <ProjectReference Include="..\..\Driver\Meadow.TensorFlowLiteForMicrocontrollers.csproj" />
+        <ProjectReference Include="..\..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Core\Meadow.Foundation.Core.csproj" />
+        <ProjectReference Include="..\..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Camera.Vc0706\Driver\Sensors.Camera.Vc0706.csproj" />
+        <ProjectReference Include="..\..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Graphics.MicroLayout\Driver\Graphics.MicroLayout.csproj" />
+    </ItemGroup>
+</Project>
