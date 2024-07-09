@@ -6,17 +6,17 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Represents TensorFlow Lite for microcontrollers interpreter.
 /// </summary>
-public class TensorFlowLite : ITensorFlowLiteInterpreter
+internal class Interpreter : ITensorFlowLiteInterpreter
 {
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
     /// </summary>
-    public TensorFlowLiteQuantizationParams InputQuantizationParams { get; private set; }
+    public QuantizationParams InputQuantizationParams { get; private set; }
 
     /// <summary>
     /// Gets the quantization parameters for the output tensor.
     /// </summary>
-    public TensorFlowLiteQuantizationParams OutputQuantizationParams { get; private set; }
+    public QuantizationParams OutputQuantizationParams { get; private set; }
 
     /// <summary>
     /// Gets or sets the status of the last operation performed by the TensorFlow Lite interpreter.
@@ -26,24 +26,24 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// <summary>
     /// Gets the input tensor used by the TensorFlow Lite interpreter.
     /// </summary>
-    protected TensorFlowLiteTensor InputTensor { get; set; }
+    protected TensorSafeHandle InputTensor { get; set; }
 
     /// <summary>
     /// Gets the output tensor produced by the TensorFlow Lite interpreter.
     /// </summary>
-    protected TensorFlowLiteTensor OutputTensor { get; set; }
+    protected TensorSafeHandle OutputTensor { get; set; }
 
     private readonly IntPtr interpreter;
 
     /// <summary>
-    /// Initializes a new instance of the TensorFlowLite class with the specified tensor model and arena size.
+    /// Initializes a new instance of the Interpreter class with the specified tensor model and arena size.
     /// </summary>
-    /// <param name="tensorModel">The tensor model containing the TensorFlow Lite model data.</param>
+    /// <param name="model">The tensor model containing the TensorFlow Lite model data.</param>
     /// <param name="arenaSize">The size of the memory arena allocated for TensorFlow Lite operations.</param>
     /// <exception cref="Exception">Thrown when allocation or initialization fails.</exception>
-    public TensorFlowLite(ITensorModel tensorModel, int arenaSize)
+    public Interpreter(Model model, int arenaSize)
     {
-        IntPtr modelPtr = Marshal.AllocHGlobal(tensorModel.Size * sizeof(int));
+        IntPtr modelPtr = Marshal.AllocHGlobal(model.Size * sizeof(int));
 
         if (modelPtr == IntPtr.Zero)
         {
@@ -58,7 +58,7 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
             throw new Exception("Failed to allocate arena memory");
         }
 
-        Marshal.Copy(tensorModel.Data, 0, modelPtr, tensorModel.Size);
+        Marshal.Copy(model.Data, 0, modelPtr, model.Size);
 
         var modelOptionsPtr = TensorFlowLiteBindings.TfLiteMicroGetModel(arenaSize, arenaPtr, modelPtr);
         if (modelOptionsPtr == IntPtr.Zero)
@@ -208,7 +208,7 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// Retrieves the quantization parameters of the output tensor.
     /// </summary>
     /// <returns>The quantization parameters of the output tensor.</returns>
-    public TensorFlowLiteQuantizationParams GetOutputTensorQuantizationParams()
+    public QuantizationParams GetOutputTensorQuantizationParams()
     {
         return TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }

@@ -8,12 +8,12 @@ public interface ITensorFlowLiteInterpreter
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
     /// </summary>
-    TensorFlowLiteQuantizationParams InputQuantizationParams { get; }
+    QuantizationParams InputQuantizationParams { get; }
 
     /// <summary>
     /// Gets the quantization parameters for the output tensor.
     /// </summary>
-    TensorFlowLiteQuantizationParams OutputQuantizationParams { get; }
+    QuantizationParams OutputQuantizationParams { get; }
 
     /// <summary>
     /// Gets or sets the status of the last operation performed by the TensorFlow Lite interpreter.
@@ -100,5 +100,5 @@ public interface ITensorFlowLiteInterpreter
     /// Retrieves the quantization parameters of the output tensor.
     /// </summary>
     /// <returns>The quantization parameters of the output tensor.</returns>
-    TensorFlowLiteQuantizationParams GetOutputTensorQuantizationParams();
+    QuantizationParams GetOutputTensorQuantizationParams();
 }

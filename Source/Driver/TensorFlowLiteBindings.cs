@@ -6,7 +6,7 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Provides C API bindings for TensorFlow Lite for Microcontrollers.
 /// </summary>
-public static class TensorFlowLiteBindings
+internal static class TensorFlowLiteBindings
 {
     /// <summary>
     /// The name of the TensorFlow Lite library.
@@ -55,7 +55,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index of the input tensor.</param>
     /// <returns>The input tensor.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern TensorFlowLiteTensor TfLiteMicroInterpreterGetInput(IntPtr interpreter, int index);
+    public static extern TensorSafeHandle TfLiteMicroInterpreterGetInput(IntPtr interpreter, int index);
 
     /// <summary>
     /// Retrieves an output tensor from the TensorFlow Lite Micro interpreter.
@@ -64,7 +64,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index of the output tensor.</param>
     /// <returns>The output tensor.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern TensorFlowLiteTensor TfLiteMicroInterpreterGetOutput(IntPtr interpreter, int index);
+    public static extern TensorSafeHandle TfLiteMicroInterpreterGetOutput(IntPtr interpreter, int index);
 
     /// <summary>
     /// Retrieves the number of output tensors from the TensorFlow Lite Micro interpreter.
@@ -97,7 +97,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index of the int8 data.</param>
     /// <returns>The int8 data at the specified index.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern sbyte TfLiteMicroGeInt8tData(TensorFlowLiteTensor tensor, int index);
+    public static extern sbyte TfLiteMicroGeInt8tData(TensorSafeHandle tensor, int index);
 
     /// <summary>
     /// Sets the int8 data in a tensor at the specified index.
@@ -106,7 +106,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index where the int8 data will be set.</param>
     /// <param name="value">The int8 value to set.</param>
     [DllImport(TensorFlowLibName)]
-    public static extern void TfLiteMicroSetInt8Data(TensorFlowLiteTensor tensor, int index, sbyte value);
+    public static extern void TfLiteMicroSetInt8Data(TensorSafeHandle tensor, int index, sbyte value);
 
     /// <summary>
     /// Retrieves the quantization parameters of a tensor.
@@ -114,7 +114,7 @@ public static class TensorFlowLiteBindings
     /// <param name="tensor">The tensor.</param>
     /// <returns>The quantization parameters of the tensor.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern TensorFlowLiteQuantizationParams TfLiteMicroTensorQuantizationParams(TensorFlowLiteTensor tensor);
+    public static extern QuantizationParams TfLiteMicroTensorQuantizationParams(TensorSafeHandle tensor);
 
     /// <summary>
     /// Sets a mutable option for TensorFlow Lite Micro.
@@ -130,7 +130,7 @@ public static class TensorFlowLiteBindings
     /// <param name="tensor">The tensor.</param>
     /// <returns>The data type of the tensor.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern TensorDataType TfLiteMicroGetType(TensorFlowLiteTensor tensor);
+    public static extern TensorDataType TfLiteMicroGetType(TensorSafeHandle tensor);
 
     /// <summary>
     /// Retrieves the size of the dimensions data of a tensor.
@@ -138,7 +138,7 @@ public static class TensorFlowLiteBindings
     /// <param name="tensor">The tensor.</param>
     /// <returns>The size of the dimensions data.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern int TfLiteMicroDimsSizeData(TensorFlowLiteTensor tensor);
+    public static extern int TfLiteMicroDimsSizeData(TensorSafeHandle tensor);
 
     /// <summary>
     /// Retrieves the dimension data of a tensor at the specified index.
@@ -147,7 +147,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index of the dimension data.</param>
     /// <returns>The dimension data at the specified index.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern int TfLiteMicroDimsData(TensorFlowLiteTensor tensor, int index);
+    public static extern int TfLiteMicroDimsData(TensorSafeHandle tensor, int index);
 
     /// <summary>
     /// Retrieves the float data from a tensor at the specified index.
@@ -156,7 +156,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index of the float data.</param>
     /// <returns>The float data at the specified index.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern float TfLiteMicroGetFloatData(TensorFlowLiteTensor tensor, int index);
+    public static extern float TfLiteMicroGetFloatData(TensorSafeHandle tensor, int index);
 
     /// <summary>
     /// Sets the float data in a tensor at the specified index.
@@ -165,7 +165,7 @@ public static class TensorFlowLiteBindings
     /// <param name="index">The index where the float data will be set.</param>
     /// <param name="value">The float value to set.</param>
     [DllImport(TensorFlowLibName)]
-    public static extern void TfLiteMicroSetFloatData(TensorFlowLiteTensor tensor, int index, float value);
+    public static extern void TfLiteMicroSetFloatData(TensorSafeHandle tensor, int index, float value);
 
     /// <summary>
     /// Retrieves the byte data from a tensor.
@@ -173,5 +173,5 @@ public static class TensorFlowLiteBindings
     /// <param name="tensor">The tensor containing the byte data.</param>
     /// <returns>The byte data from the tensor.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern int TfLiteMicroGetByte(TensorFlowLiteTensor tensor);
+    public static extern int TfLiteMicroGetByte(TensorSafeHandle tensor);
 }

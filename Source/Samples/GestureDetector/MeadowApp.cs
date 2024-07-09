@@ -10,7 +10,7 @@ namespace GestureDetector;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
-    TensorFlowLite tensorFlowLite;
+    TensorFlowLiteInterpreter tensorFlowLite;
 
     readonly GestureModel gestureModel = new();
     const int ArenaSize = 60 * 1024;
@@ -28,7 +28,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         projLab = ProjectLab.Create();
         projLab.Accelerometer.Updated += OnAccelerometerUpdated;
 
-        tensorFlowLite = new TensorFlowLite(gestureModel, ArenaSize);
+        tensorFlowLite = new TensorFlowLiteInterpreter(gestureModel, ArenaSize);
 
         return base.Initialize();
     }

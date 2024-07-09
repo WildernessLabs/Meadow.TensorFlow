@@ -3,7 +3,7 @@ using System;
 
 namespace MagicWand;
 
-public class MagicWandTensorFlow : TensorFlowLite
+public class MagicWandTensorFlow : TensorFlowLiteInterpreter
 {
     private const int kChannelNumber = 3;
     private const int kGestureCount = 4;

@@ -9,7 +9,7 @@ namespace HelloWorld;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
-    TensorFlowLite tensorFlowLite;
+    TensorFlowLiteInterpreter tensorFlowLite;
 
     readonly HelloWorldModel helloWorldModel = new();
     const int ArenaSize = 2000;
@@ -18,7 +18,7 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         Resolver.Log.Info("Initialize TensorFlow ...");
 
-        tensorFlowLite = new TensorFlowLite(helloWorldModel, ArenaSize);
+        tensorFlowLite = new TensorFlowLiteInterpreter(helloWorldModel, ArenaSize);
 
         helloWorldModel.InterferenceCount = 0;
 

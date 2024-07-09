@@ -24,7 +24,7 @@ public class TensorFlow
     public static TensorFlow Instance => instance.Value;
 
     private TensorFlowLiteStatus tfLiteStatus;
-    private TensorFlowLiteTensor input;
+    private TensorSafeHandle input;
     private IntPtr interpreter;
     readonly int ArenaSize = 60 * 1024;
 
