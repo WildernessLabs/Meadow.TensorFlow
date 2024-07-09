@@ -3,24 +3,35 @@ using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
 
-internal class Model : IDisposable
+public class Model : IDisposable
 {
-    byte[] _data;
-
+    private byte[] _data;
     private GCHandle _handle;
-    private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
-
     private IntPtr _arenaHandle;
-
     private IntPtr _modelOptionsPtr;
+    private IntPtr _interpreterOptionsPtr;
+    private IntPtr _interpreter;
+    private TensorSafeHandle _inputTensor;
+    private TensorSafeHandle _outputTensor;
+    private QuantizationParams _inputQuantizationParams;
+    private QuantizationParams _outputQuantizationParams;
 
-    private bool disposedValue;
+    private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
+    public bool IsDisposed { get; private set; }
+
+    public ModelInput Input { get; private set; }
+    public ModelOutput Output { get; private set; }
 
     public Model(byte[] data, int arenaSize)
     {
         _data = data;
         _handle = GCHandle.Alloc(data, GCHandleType.Pinned);
 
+        Initialize(arenaSize);
+    }
+
+    private void Initialize(int arenaSize)
+    {
         _arenaHandle = Marshal.AllocHGlobal(arenaSize * sizeof(int));
 
         if (_arenaHandle == IntPtr.Zero)
@@ -33,11 +44,43 @@ internal class Model : IDisposable
         {
             throw new Exception("Failed to load the model");
         }
+
+        _interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(_modelOptionsPtr);
+        if (_interpreterOptionsPtr == IntPtr.Zero)
+        {
+            throw new Exception("Failed to create interpreter options");
+        }
+
+        _interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, _modelOptionsPtr);
+        if (_interpreter == IntPtr.Zero)
+        {
+            throw new Exception("Failed to create interpreter");
+        }
+
+        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(_interpreter);
+        if (status != TensorFlowLiteStatus.Ok)
+        {
+            throw new Exception("Failed to allocate tensors");
+        }
+
+        _inputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreter, 0);
+        Input = new ModelInput(_interpreter, _inputTensor);
+
+        _outputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreter, 0);
+        Output = new ModelOutput(_interpreter, _outputTensor);
+
+        _inputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_inputTensor);
+        _outputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_outputTensor);
+    }
+
+    public TensorFlowLiteStatus Predict()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreter);
     }
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (!IsDisposed)
         {
             if (disposing)
             {
@@ -54,11 +97,17 @@ internal class Model : IDisposable
 
                 if (_modelOptionsPtr != IntPtr.Zero)
                 {
-                    // ToDo!! need bindings to free this 
+                    // TODO: MEMORY LEAK need a binding to release this
                     _modelOptionsPtr = IntPtr.Zero;
                 }
+
+                if (_interpreterOptionsPtr != IntPtr.Zero)
+                {
+                    // TODO: MEMORY LEAK need a binding to release this
+                    _interpreterOptionsPtr = IntPtr.Zero;
+                }
             }
-            disposedValue = true;
+            IsDisposed = true;
         }
     }
 

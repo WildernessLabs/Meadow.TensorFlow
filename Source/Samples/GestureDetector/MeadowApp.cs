@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 
 namespace GestureDetector;
 
-public class MeadowApp : App<F7CoreComputeV2>
+public class TensorFlowApp : App<F7CoreComputeV2>
 {
-    TensorFlowLiteInterpreter tensorFlowLite;
-
-    readonly GestureModel gestureModel = new();
-    const int ArenaSize = 60 * 1024;
+    private Model _model;
+    private readonly GestureModel gestureModelData = new();
+    private const int arenaSize = 60 * 1024;
 
     private IProjectLabHardware projLab;
     private const double kDetectionThreshould = 2.5;
@@ -28,7 +27,7 @@ public class MeadowApp : App<F7CoreComputeV2>
         projLab = ProjectLab.Create();
         projLab.Accelerometer.Updated += OnAccelerometerUpdated;
 
-        tensorFlowLite = new TensorFlowLiteInterpreter(gestureModel, ArenaSize);
+        _model = new Model(gestureModelData.Data, arenaSize);
 
         return base.Initialize();
     }
@@ -55,17 +54,15 @@ public class MeadowApp : App<F7CoreComputeV2>
                 {
                     if (samplesRead == sampleCount)
                     {
-                        tensorFlowLite.InvokeInterpreter();
-
-                        if (tensorFlowLite.OperationStatus != TensorFlowLiteStatus.Ok)
+                        if (_model.Predict() != TensorFlowLiteStatus.Ok)
                         {
-                            Resolver.Log.Info("Invoke falied");
+                            Resolver.Log.Info("Invoke failed");
                             break;
                         }
                     }
                     for (int i = 0; i < gestureList.Length; i++)
                     {
-                        float tensorData = tensorFlowLite.GetOutputTensorFloatData(i);
+                        float tensorData = _model.Output.GetSingle(i);
                         if (tensorData > 0.85)
                         {
                             Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
@@ -92,9 +89,9 @@ public class MeadowApp : App<F7CoreComputeV2>
             float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
             float aZ = (float)((accelerometerData[2] + 4.0) / 8.0);
 
-            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 0, aX);
-            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 1, aY);
-            tensorFlowLite.SetInputTensorFloatData(samplesRead * 3 + 2, aZ);
+            _model.Input.Set(samplesRead * 3 + 0, aX);
+            _model.Input.Set(samplesRead * 3 + 1, aY);
+            _model.Input.Set(samplesRead * 3 + 2, aZ);
 
             samplesRead++;
             return true;

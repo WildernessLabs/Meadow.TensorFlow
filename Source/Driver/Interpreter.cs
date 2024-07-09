@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
 
@@ -43,53 +42,6 @@ internal class Interpreter : ITensorFlowLiteInterpreter
     /// <exception cref="Exception">Thrown when allocation or initialization fails.</exception>
     public Interpreter(Model model, int arenaSize)
     {
-        IntPtr modelPtr = Marshal.AllocHGlobal(model.Size * sizeof(int));
-
-        if (modelPtr == IntPtr.Zero)
-        {
-            throw new Exception("Failed to allocate model memory");
-        }
-
-        IntPtr arenaPtr = Marshal.AllocHGlobal(arenaSize * sizeof(int));
-
-        if (arenaPtr == IntPtr.Zero)
-        {
-            Marshal.FreeHGlobal(modelPtr);
-            throw new Exception("Failed to allocate arena memory");
-        }
-
-        Marshal.Copy(model.Data, 0, modelPtr, model.Size);
-
-        var modelOptionsPtr = TensorFlowLiteBindings.TfLiteMicroGetModel(arenaSize, arenaPtr, modelPtr);
-        if (modelOptionsPtr == IntPtr.Zero)
-        {
-            throw new Exception("Failed to load the model");
-        }
-
-        var interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
-        if (interpreterOptionsPtr == IntPtr.Zero)
-        {
-            throw new Exception("Failed to create interpreter options");
-        }
-
-        interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(interpreterOptionsPtr, modelOptionsPtr);
-        if (interpreter == IntPtr.Zero)
-        {
-            throw new Exception("Failed to create interpreter");
-        }
-
-        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
-
-        if (OperationStatus != TensorFlowLiteStatus.Ok)
-        {
-            throw new Exception("Failed to allocate tensors");
-        }
-
-        InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
-        OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0);
-
-        InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(InputTensor);
-        OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 
     /// <summary>
