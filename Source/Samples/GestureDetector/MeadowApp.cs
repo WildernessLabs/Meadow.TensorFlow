@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 
 namespace GestureDetector;
 
-public class TensorFlowApp : App<F7CoreComputeV2>
+public class TensorFlowApp : ProjectLabCoreComputeApp
 {
     private Model _model;
     private ModelInput<float> _inputs;
     private readonly GestureModel gestureModelData = new();
     private const int arenaSize = 60 * 1024;
 
-    private IProjectLabHardware projLab;
     private const double kDetectionThreshould = 2.5;
     private readonly string[] gestureList = { "thumbs up", "wave" };
 
@@ -25,8 +24,7 @@ public class TensorFlowApp : App<F7CoreComputeV2>
 
     public override Task Initialize()
     {
-        projLab = ProjectLab.Create();
-        projLab.Accelerometer.Updated += OnAccelerometerUpdated;
+        Hardware.Accelerometer!.Updated += OnAccelerometerUpdated;
 
         _model = new Model(gestureModelData.Data, arenaSize);
         _inputs = _model.CreateInput<float>();
@@ -36,7 +34,7 @@ public class TensorFlowApp : App<F7CoreComputeV2>
 
     public override async Task Run()
     {
-        projLab.Accelerometer.StartUpdating(TimeSpan.FromMilliseconds(10));
+        Hardware.Accelerometer!.StartUpdating(TimeSpan.FromMilliseconds(10));
         while (true)
         {
             while (samplesRead == sampleCount)
