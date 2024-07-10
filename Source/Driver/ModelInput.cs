@@ -2,7 +2,8 @@
 
 namespace Meadow.TensorFlow;
 
-public class ModelInput
+public class ModelInput<T>
+    where T : struct
 {
     private readonly TensorSafeHandle _inputTensorHandle;
     private readonly IntPtr _interpreter;
@@ -13,15 +14,35 @@ public class ModelInput
         _inputTensorHandle = inputTensorHandle;
     }
 
-    public int TensorCount => TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreter);
+    public int Length => TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreter);
 
-    public void Set(int index, float value)
+    public T this[int index]
+    {
+        set
+        {
+            // TODO: validate index
+            if (typeof(T).Equals(typeof(float)))
+            {
+                Set(index, Convert.ToSingle(value));
+            }
+            else if (typeof(T).Equals(typeof(sbyte)))
+            {
+                Set(index, Convert.ToSByte(value));
+            }
+            else
+            {
+                throw new ArgumentException();
+            }
+        }
+    }
+
+    private void Set(int index, float value)
     {
         // TODO: validate index
         TensorFlowLiteBindings.TfLiteMicroSetFloatData(_inputTensorHandle, index, value);
     }
 
-    public void Set(int index, sbyte value)
+    private void Set(int index, sbyte value)
     {
         // TODO: validate index
         TensorFlowLiteBindings.TfLiteMicroSetInt8Data(_inputTensorHandle, index, value);

@@ -19,9 +19,6 @@ public class Model : IDisposable
     private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
     public bool IsDisposed { get; private set; }
 
-    public ModelInput Input { get; private set; }
-    public ModelOutput Output { get; private set; }
-
     public Model(byte[] data, int arenaSize)
     {
         _data = data;
@@ -64,18 +61,29 @@ public class Model : IDisposable
         }
 
         _inputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreter, 0);
-        Input = new ModelInput(_interpreter, _inputTensor);
-
         _outputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreter, 0);
-        Output = new ModelOutput(_interpreter, _outputTensor);
 
         _inputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_inputTensor);
         _outputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_outputTensor);
     }
 
-    public TensorFlowLiteStatus Predict()
+    public ModelInput<T> CreateInput<T>()
+        where T : struct
     {
-        return TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreter);
+        return new ModelInput<T>(_interpreter, _inputTensor);
+    }
+
+    public ModelOutput<T> Predict<T>(ModelInput<T> inputs)
+        where T : struct
+    {
+        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreter);
+
+        if (status != TensorFlowLiteStatus.Ok)
+        {
+            throw new Exception();
+        }
+
+        return new ModelOutput<T>(_interpreter, _outputTensor);
     }
 
     protected virtual void Dispose(bool disposing)

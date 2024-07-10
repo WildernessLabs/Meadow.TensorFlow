@@ -11,6 +11,7 @@ namespace GestureDetector;
 public class TensorFlowApp : App<F7CoreComputeV2>
 {
     private Model _model;
+    private ModelInput<float> _inputs;
     private readonly GestureModel gestureModelData = new();
     private const int arenaSize = 60 * 1024;
 
@@ -28,6 +29,7 @@ public class TensorFlowApp : App<F7CoreComputeV2>
         projLab.Accelerometer.Updated += OnAccelerometerUpdated;
 
         _model = new Model(gestureModelData.Data, arenaSize);
+        _inputs = _model.CreateInput<float>();
 
         return base.Initialize();
     }
@@ -52,20 +54,22 @@ public class TensorFlowApp : App<F7CoreComputeV2>
             {
                 if (InputAccelerometerData())
                 {
+                    ModelOutput<float>? output = null;
+
                     if (samplesRead == sampleCount)
                     {
-                        if (_model.Predict() != TensorFlowLiteStatus.Ok)
-                        {
-                            Resolver.Log.Info("Invoke failed");
-                            break;
-                        }
+                        output = _model.Predict(_inputs);
                     }
-                    for (int i = 0; i < gestureList.Length; i++)
+
+                    if (output != null)
                     {
-                        float tensorData = _model.Output.GetSingle(i);
-                        if (tensorData > 0.85)
+                        for (int i = 0; i < gestureList.Length; i++)
                         {
-                            Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                            var tensorData = output[i];
+                            if (tensorData > 0.85)
+                            {
+                                Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                            }
                         }
                     }
                 }
@@ -89,9 +93,9 @@ public class TensorFlowApp : App<F7CoreComputeV2>
             float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
             float aZ = (float)((accelerometerData[2] + 4.0) / 8.0);
 
-            _model.Input.Set(samplesRead * 3 + 0, aX);
-            _model.Input.Set(samplesRead * 3 + 1, aY);
-            _model.Input.Set(samplesRead * 3 + 2, aZ);
+            _inputs[samplesRead * 3 + 0] = aX;
+            _inputs[samplesRead * 3 + 1] = aY;
+            _inputs[samplesRead * 3 + 2] = aZ;
 
             samplesRead++;
             return true;

@@ -5,6 +5,7 @@
         <OutputType>Library</OutputType>
         <AssemblyName>App</AssemblyName>
         <LangVersion>10.0</LangVersion>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
         <None Include="app.config.yaml">
