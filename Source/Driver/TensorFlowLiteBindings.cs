@@ -91,24 +91,6 @@ public static class TensorFlowLiteBindings
     public static extern TensorFlowLiteStatus TfLiteMicroInterpreterInvoke(IntPtr interpreter);
 
     /// <summary>
-    /// Retrieves the int8 data from a tensor at the specified index.
-    /// </summary>
-    /// <param name="tensor">The tensor containing the int8 data.</param>
-    /// <param name="index">The index of the int8 data.</param>
-    /// <returns>The int8 data at the specified index.</returns>
-    [DllImport(TensorFlowLibName)]
-    public static extern sbyte TfLiteMicroGeInt8tData(TensorFlowLiteTensor tensor, int index);
-
-    /// <summary>
-    /// Sets the int8 data in a tensor at the specified index.
-    /// </summary>
-    /// <param name="tensor">The tensor to set the int8 data in.</param>
-    /// <param name="index">The index where the int8 data will be set.</param>
-    /// <param name="value">The int8 value to set.</param>
-    [DllImport(TensorFlowLibName)]
-    public static extern void TfLiteMicroSetInt8Data(TensorFlowLiteTensor tensor, int index, sbyte value);
-
-    /// <summary>
     /// Retrieves the quantization parameters of a tensor.
     /// </summary>
     /// <param name="tensor">The tensor.</param>
@@ -150,28 +132,29 @@ public static class TensorFlowLiteBindings
     public static extern int TfLiteMicroDimsData(TensorFlowLiteTensor tensor, int index);
 
     /// <summary>
-    /// Retrieves the float data from a tensor at the specified index.
-    /// </summary>
-    /// <param name="tensor">The tensor containing the float data.</param>
-    /// <param name="index">The index of the float data.</param>
-    /// <returns>The float data at the specified index.</returns>
-    [DllImport(TensorFlowLibName)]
-    public static extern float TfLiteMicroGetFloatData(TensorFlowLiteTensor tensor, int index);
-
-    /// <summary>
-    /// Sets the float data in a tensor at the specified index.
-    /// </summary>
-    /// <param name="tensor">The tensor to set the float data in.</param>
-    /// <param name="index">The index where the float data will be set.</param>
-    /// <param name="value">The float value to set.</param>
-    [DllImport(TensorFlowLibName)]
-    public static extern void TfLiteMicroSetFloatData(TensorFlowLiteTensor tensor, int index, float value);
-
-    /// <summary>
     /// Retrieves the byte data from a tensor.
     /// </summary>
     /// <param name="tensor">The tensor containing the byte data.</param>
     /// <returns>The byte data from the tensor.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern int TfLiteMicroGetByte(TensorFlowLiteTensor tensor);
+
+    /// <summary>
+    /// Get a value to the tensor depending on the type of data .
+    /// </summary>
+    /// <param name="tensor">The tensor containing the byte data.</param>
+    /// <param name="index">The index at which to set the data.</param>
+    /// <paramref name="type"/>The type of data.</param>
+    /// <returns>The byte data from the tensor.</returns>
+    [DllImport(TensorFlowLibName)]
+    public static extern IntPtr TfLiteMicroGetData(TensorFlowLiteTensor tensor, int index, TensorDataType type);
+
+    /// <summary>
+    /// Set a value to the tensor depending on the type of data.
+    /// </summary>
+    /// <param name="tensor">The tensor containing the byte data.</param>
+    /// <param name="index">The index at which to set the data.</param>
+    /// <param name="value">The byte data from the tensor.</param>
+    [DllImport(TensorFlowLibName)]
+    public static extern int TfLiteMicroSetData(TensorFlowLiteTensor tensor, int index, IntPtr value, TensorDataType type);
 }
