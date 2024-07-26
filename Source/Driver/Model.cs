@@ -3,7 +3,10 @@ using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
 
-public class Model : IDisposable
+/// <summary>
+/// Represents a TensorFlow Lite model.
+/// </summary>
+public class Model : ITensorModel, IDisposable
 {
     private byte[] _data;
     private GCHandle _handle;
@@ -17,8 +20,20 @@ public class Model : IDisposable
     private QuantizationParams _outputQuantizationParams;
 
     private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
+
+    /// <summary>
+    /// Gets a value indicating whether the model is disposed.
+    /// </summary>
     public bool IsDisposed { get; private set; }
 
+    /// <inheritdoc />
+    public int Size => _data.Length; //ToDo verify this
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Model"/> class with the specified model data and arena size.
+    /// </summary>
+    /// <param name="data">The model data.</param>
+    /// <param name="arenaSize">The size of the arena for the interpreter.</param>
     public Model(byte[] data, int arenaSize)
     {
         _data = data;
@@ -27,6 +42,11 @@ public class Model : IDisposable
         Initialize(arenaSize);
     }
 
+    /// <summary>
+    /// Initializes the model with the specified arena size.
+    /// </summary>
+    /// <param name="arenaSize">The size of the arena for the interpreter.</param>
+    /// <exception cref="Exception">Thrown when memory allocation or model loading fails.</exception>
     private void Initialize(int arenaSize)
     {
         _arenaHandle = Marshal.AllocHGlobal(arenaSize * sizeof(int));
@@ -67,12 +87,24 @@ public class Model : IDisposable
         _outputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_outputTensor);
     }
 
+    /// <summary>
+    /// Creates an input tensor for the model.
+    /// </summary>
+    /// <typeparam name="T">The type of the input tensor elements.</typeparam>
+    /// <returns>A <see cref="ModelInput{T}"/> representing the input tensor.</returns>
     public ModelInput<T> CreateInput<T>()
         where T : struct
     {
         return new ModelInput<T>(_interpreter, _inputTensor);
     }
 
+    /// <summary>
+    /// Makes a prediction based on the provided input tensor.
+    /// </summary>
+    /// <typeparam name="T">The type of the input tensor elements.</typeparam>
+    /// <param name="inputs">The input tensor.</param>
+    /// <returns>A <see cref="ModelOutput{T}"/> representing the output tensor.</returns>
+    /// <exception cref="Exception">Thrown when the interpreter invocation fails.</exception>
     public ModelOutput<T> Predict<T>(ModelInput<T> inputs)
         where T : struct
     {
@@ -86,6 +118,10 @@ public class Model : IDisposable
         return new ModelOutput<T>(_interpreter, _outputTensor);
     }
 
+    /// <summary>
+    /// Releases the resources used by the <see cref="Model"/> class.
+    /// </summary>
+    /// <param name="disposing">A boolean value indicating whether the method is being called from the Dispose method.</param>
     protected virtual void Dispose(bool disposing)
     {
         if (!IsDisposed)
@@ -119,6 +155,9 @@ public class Model : IDisposable
         }
     }
 
+    /// <summary>
+    /// Releases the resources used by the <see cref="Model"/> class.
+    /// </summary>
     public void Dispose()
     {
         Dispose(disposing: true);

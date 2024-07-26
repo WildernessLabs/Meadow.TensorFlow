@@ -10,20 +10,23 @@ public class TensorSafeHandle : SafeHandle
 {
     private readonly IntPtr _handle;
 
+    /// <inheritdoc />
+    public override bool IsInvalid => handle == IntPtr.Zero;
+
     /// <summary>
     /// Constructor of the TensorSafeHandle struct.
     /// </summary>
     /// <param name="handle">The tensor handle.</param>
-    public TensorSafeHandle(IntPtr handle)
+    public TensorSafeHandle(IntPtr handle) : base(IntPtr.Zero, true)
     {
-        _handle = handle;
+        SetHandle(handle);
     }
 
-    public override bool IsInvalid => throw new NotImplementedException();
-
+    /// <inheritdoc />
     protected override bool ReleaseHandle()
     {
-        //   TensorFlowLiteBindings.
+        // ToDo: Implement the release handle logic.
+        return false;
     }
 
     /// <summary>
@@ -32,7 +35,7 @@ public class TensorSafeHandle : SafeHandle
     /// <param name="handle">The tensor handle.</param>
     /// <returns>The TensorSafeHandle corresponding to the handle.</returns>
     public static implicit operator TensorSafeHandle(IntPtr handle)
-        => new TensorSafeHandle(handle);
+        => new(handle);
 
     /// <summary>
     /// Implicit conversion from TensorSafeHandle to IntPtr.
