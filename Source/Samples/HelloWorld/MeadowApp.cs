@@ -67,6 +67,10 @@ public class MeadowApp : App<F7CoreComputeV2>
             }
         }
 
+        tensorFlowLite.DeleteInterpreterOption();
+        tensorFlowLite.DeleteInterpreter();
+        tensorFlowLite.DeleteModel();
+
         Resolver.Log.Info("Sample completed");
         return Task.CompletedTask;
     }
