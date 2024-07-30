@@ -212,4 +212,28 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     {
         return TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
+
+    /// <summary>
+    /// Delete the TensorFlow Model.
+    /// </summary>
+    public void DeleteModel()
+    {
+        TensorFlowLiteBindings.TfLiteMicroModelDelete(interpreter);
+    }
+
+    /// <summary>
+    /// Delete the Interpreter Option.
+    /// </summary>
+    public void DeleteInterpreterOption()
+    {
+        TensorFlowLiteBindings.TfLiteMicroInterpreterOptionDelete(interpreter);
+    }
+
+    /// <summary>
+    /// Delete the Interpreter.
+    /// </summary>
+    public void DeleteInterpreter()
+    {
+        TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(interpreter);
+    }
 }
