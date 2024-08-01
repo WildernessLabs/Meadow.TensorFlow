@@ -6,7 +6,7 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Represents TensorFlow Lite for microcontrollers interpreter.
 /// </summary>
-public class TensorFlowLite : ITensorFlowLiteInterpreter
+public class TensorFlowLite : ITensorFlowLiteInterpreter,IDisposable
 {
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
@@ -34,6 +34,9 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     protected TensorFlowLiteTensor OutputTensor { get; set; }
 
     private readonly IntPtr interpreter;
+    private readonly IntPtr modelPtr;
+    private readonly IntPtr arenaPtr;
+    private bool disposed = false;
 
     /// <summary>
     /// Initializes a new instance of the TensorFlowLite class with the specified tensor model and arena size.
@@ -43,14 +46,19 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// <exception cref="Exception">Thrown when allocation or initialization fails.</exception>
     public TensorFlowLite(ITensorModel tensorModel, int arenaSize)
     {
-        IntPtr modelPtr = Marshal.AllocHGlobal(tensorModel.Size * sizeof(int));
+        if (disposed)
+        {
+            new ObjectDisposedException("TensorFlow was disposed.");
+        }
+
+        modelPtr = Marshal.AllocHGlobal(tensorModel.Size * sizeof(int));
 
         if (modelPtr == IntPtr.Zero)
         {
             throw new Exception("Failed to allocate model memory");
         }
 
-        IntPtr arenaPtr = Marshal.AllocHGlobal(arenaSize * sizeof(int));
+        arenaPtr = Marshal.AllocHGlobal(arenaSize * sizeof(int));
 
         if (arenaPtr == IntPtr.Zero)
         {
@@ -235,5 +243,15 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     public void DeleteInterpreter()
     {
         TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(interpreter);
+    }
+
+    /// <summary>
+    /// .
+    /// </summary>
+    public void Dispose()
+    {
+        disposed = true;
+        Marshal.FreeHGlobal(modelPtr);
+        Marshal.FreeHGlobal(arenaPtr);
     }
 }
