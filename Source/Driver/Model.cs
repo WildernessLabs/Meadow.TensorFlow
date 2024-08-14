@@ -62,7 +62,6 @@ public class Model : ITensorModel, IDisposable
 
         InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_interpreter.InputTensor);
         OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_interpreter.OutputTensor);
-
     }
 
     /// <summary>

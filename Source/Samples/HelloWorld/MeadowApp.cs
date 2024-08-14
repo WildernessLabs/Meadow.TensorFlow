@@ -23,16 +23,12 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         var result = helloWorldModel.PopulateResult();
 
-
         for (int i = 0; i < result.Length; i++)
         {
             float position = helloWorldModel.InterferenceCount / (float)helloWorldModel.InterferencesPerCycles;
             float x = position * helloWorldModel.XRange;
 
-
             sbyte xQuantized = (sbyte)((x / helloWorldModel.InputQuantizationParams.Scale) + helloWorldModel.InputQuantizationParams.ZeroPoint);
-
-
 
             var inputs = helloWorldModel.CreateInput(new sbyte[] { xQuantized });
 

@@ -2,11 +2,14 @@ using Meadow.TensorFlow;
 
 namespace MagicWand.Models;
 
-public class MagicWandModel : ITensorModel
+public class MagicWandModel : Model
 {
-    public int Size => Data.Length;
+    static int ArenaSize = 60 * 1024;
 
-    public byte[] Data { get; } =
+    public GestureModel() : base(_data, ArenaSize)
+    { }
+
+    static byte[] _data { get; } =
     {
         0x1c, 0x00, 0x00, 0x00, 0x54, 0x46, 0x4c, 0x33, 0x00, 0x00, 0x12, 0x00,
         0x1c, 0x00, 0x04, 0x00, 0x08, 0x00, 0x0c, 0x00, 0x10, 0x00, 0x14, 0x00,

@@ -13,7 +13,6 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
     private Model _model;
     private ModelInput<float> _inputs;
     private readonly GestureModel gestureModelData = new();
-    private const int arenaSize = 60 * 1024;
 
     private const double kDetectionThreshould = 2.5;
     private readonly string[] gestureList = { "thumbs up", "wave" };

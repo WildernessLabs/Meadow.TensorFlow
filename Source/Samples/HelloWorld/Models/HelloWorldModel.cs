@@ -4,9 +4,10 @@ namespace HelloWorld.Models;
 
 public class HelloWorldModel : Model
 {
-    public HelloWorldModel() : base(_data, 2000)
-    {
-    }
+    static int ArenaSize = 2000;
+
+    public HelloWorldModel() : base(_data, ArenaSize)
+    { }
 
     static byte[] _data =
     {
