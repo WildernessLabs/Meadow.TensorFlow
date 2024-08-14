@@ -15,7 +15,14 @@ public class Model : ITensorModel, IDisposable
     private IntPtr _modelOptionsPtr;
     private Interpreter _interpreter;
 
+    /// <summary>
+    /// Gets the quantization parameters for the input tensor.
+    /// </summary>
     public QuantizationParams InputQuantizationParams { get; }
+
+    /// <summary>
+    /// Gets the quantization parameters for the output tensor.
+    /// </summary>
     public QuantizationParams OutputQuantizationParams { get; }
 
     /// <summary>
