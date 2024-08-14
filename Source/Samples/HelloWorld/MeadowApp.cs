@@ -9,16 +9,11 @@ namespace HelloWorld;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
-    TensorFlowLiteInterpreter tensorFlowLite;
-
     readonly HelloWorldModel helloWorldModel = new();
-    const int ArenaSize = 2000;
 
     public override Task Initialize()
     {
         Resolver.Log.Info("Initialize TensorFlow ...");
-
-        tensorFlowLite = new TensorFlowLiteInterpreter(helloWorldModel, ArenaSize);
 
         helloWorldModel.InterferenceCount = 0;
 
@@ -29,12 +24,16 @@ public class MeadowApp : App<F7CoreComputeV2>
     {
         var result = helloWorldModel.PopulateResult();
 
+
         for (int i = 0; i < result.Length; i++)
         {
             float position = helloWorldModel.InterferenceCount / (float)helloWorldModel.InterferencesPerCycles;
             float x = position * helloWorldModel.XRange;
 
+
             sbyte xQuantized = (sbyte)((x / tensorFlowLite.InputQuantizationParams.Scale) + tensorFlowLite.InputQuantizationParams.ZeroPoint);
+
+
 
             tensorFlowLite.SetInputTensorInt8Data(0, xQuantized);
 

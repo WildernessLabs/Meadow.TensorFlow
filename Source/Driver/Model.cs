@@ -12,14 +12,11 @@ public class Model : ITensorModel, IDisposable
     private GCHandle _handle;
     private IntPtr _arenaHandle;
     private IntPtr _modelOptionsPtr;
-    private IntPtr _interpreterOptionsPtr;
-    private IntPtr _interpreter;
+    private Interpreter _interpreter;
     private TensorSafeHandle _inputTensor;
     private TensorSafeHandle _outputTensor;
     private QuantizationParams _inputQuantizationParams;
     private QuantizationParams _outputQuantizationParams;
-
-    private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
 
     /// <summary>
     /// Gets a value indicating whether the model is disposed.
@@ -29,6 +26,8 @@ public class Model : ITensorModel, IDisposable
     /// <inheritdoc />
     public int Size => _data.Length; //ToDo verify this
 
+    private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Model"/> class with the specified model data and arena size.
     /// </summary>
@@ -37,9 +36,12 @@ public class Model : ITensorModel, IDisposable
     public Model(byte[] data, int arenaSize)
     {
         _data = data;
+
         _handle = GCHandle.Alloc(data, GCHandleType.Pinned);
 
         Initialize(arenaSize);
+
+        _interpreter = new Interpreter(_modelOptionsPtr);
     }
 
     /// <summary>
@@ -60,18 +62,6 @@ public class Model : ITensorModel, IDisposable
         if (_modelOptionsPtr == IntPtr.Zero)
         {
             throw new Exception("Failed to load the model");
-        }
-
-        _interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(_modelOptionsPtr);
-        if (_interpreterOptionsPtr == IntPtr.Zero)
-        {
-            throw new Exception("Failed to create interpreter options");
-        }
-
-        _interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, _modelOptionsPtr);
-        if (_interpreter == IntPtr.Zero)
-        {
-            throw new Exception("Failed to create interpreter");
         }
 
         var status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(_interpreter);
@@ -132,6 +122,8 @@ public class Model : ITensorModel, IDisposable
                 {
                     _handle.Free();
                 }
+
+                _interpreter?.Dispose();
 
                 if (_arenaHandle != IntPtr.Zero)
                 {

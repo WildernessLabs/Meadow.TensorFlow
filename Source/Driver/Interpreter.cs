@@ -5,7 +5,7 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Represents TensorFlow Lite for microcontrollers interpreter.
 /// </summary>
-internal class Interpreter : ITensorFlowLiteInterpreter
+internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
 {
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
@@ -33,15 +33,27 @@ internal class Interpreter : ITensorFlowLiteInterpreter
     protected TensorSafeHandle OutputTensor { get; set; }
 
     private readonly IntPtr interpreter;
+    private bool disposedValue;
+    private IntPtr _interpreterOptionsPtr;
+    private IntPtr _interpreter;
 
     /// <summary>
     /// Initializes a new instance of the Interpreter class with the specified tensor model and arena size.
     /// </summary>
-    /// <param name="model">The tensor model containing the TensorFlow Lite model data.</param>
-    /// <param name="arenaSize">The size of the memory arena allocated for TensorFlow Lite operations.</param>
     /// <exception cref="Exception">Thrown when allocation or initialization fails.</exception>
-    public Interpreter(Model model, int arenaSize)
+    public Interpreter(IntPtr modelOptionsPtr)
     {
+        _interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
+        if (_interpreterOptionsPtr == IntPtr.Zero)
+        {
+            throw new Exception("Failed to create interpreter options");
+        }
+
+        _interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, modelOptionsPtr);
+        if (_interpreter == IntPtr.Zero)
+        {
+            throw new Exception("Failed to create interpreter");
+        }
     }
 
     /// <summary>
@@ -207,5 +219,27 @@ internal class Interpreter : ITensorFlowLiteInterpreter
     public void DeleteInterpreter()
     {
         TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(interpreter);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                // TODO: dispose managed state (managed objects)
+            }
+
+            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+            // TODO: set large fields to null
+            disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 }
