@@ -10,9 +10,8 @@ namespace GestureDetector;
 
 public class TensorFlowApp : ProjectLabCoreComputeApp
 {
-    private Model _model;
-    private ModelInput<float> _inputs;
-    private readonly GestureModel gestureModelData = new();
+    private readonly GestureModel gestureModel = new();
+    private ModelInput<float> inputs = default!;
 
     private const double kDetectionThreshould = 2.5;
     private readonly string[] gestureList = { "thumbs up", "wave" };
@@ -25,8 +24,7 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
     {
         Hardware.Accelerometer!.Updated += OnAccelerometerUpdated;
 
-        _model = new Model(gestureModelData.Data, arenaSize);
-        _inputs = _model.CreateInput<float>();
+        inputs = gestureModel.CreateInput<float>();
 
         return base.Initialize();
     }
@@ -55,7 +53,7 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
 
                     if (samplesRead == sampleCount)
                     {
-                        output = _model.Predict(_inputs);
+                        output = gestureModel.Predict(inputs);
                     }
 
                     if (output != null)
@@ -90,9 +88,9 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
             float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
             float aZ = (float)((accelerometerData[2] + 4.0) / 8.0);
 
-            _inputs[samplesRead * 3 + 0] = aX;
-            _inputs[samplesRead * 3 + 1] = aY;
-            _inputs[samplesRead * 3 + 2] = aZ;
+            inputs[samplesRead * 3 + 0] = aX;
+            inputs[samplesRead * 3 + 1] = aY;
+            inputs[samplesRead * 3 + 2] = aZ;
 
             samplesRead++;
             return true;
@@ -106,5 +104,4 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
         accelerometerData[1] = e.New.Y.Gravity;
         accelerometerData[2] = e.New.Z.Gravity;
     }
-
 }

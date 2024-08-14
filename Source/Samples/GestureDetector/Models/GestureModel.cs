@@ -6,7 +6,7 @@ public class GestureModel : Model
 {
     static int ArenaSize = 60 * 1024;
 
-    public GestureModel(int arenaSize) : base(_data, ArenaSize)
+    public GestureModel() : base(_data, ArenaSize)
     { }
 
     static byte[] _data { get; } = {
