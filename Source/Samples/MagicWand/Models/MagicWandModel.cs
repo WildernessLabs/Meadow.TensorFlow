@@ -6,7 +6,7 @@ public class MagicWandModel : Model
 {
     static int ArenaSize = 60 * 1024;
 
-    public GestureModel() : base(_data, ArenaSize)
+    public MagicWandModel() : base(_data, ArenaSize)
     { }
 
     static byte[] _data { get; } =

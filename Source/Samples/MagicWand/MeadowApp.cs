@@ -13,7 +13,6 @@ public class MeadowApp : App<F7FeatherV2>
     MagicWandTensorFlow wandTensorFlow;
 
     readonly MagicWandModel wandModel = new();
-    const int ArenaSize = 60 * 1024;
 
     Mpu6050 mpu;
     static long lastTime = 0;
