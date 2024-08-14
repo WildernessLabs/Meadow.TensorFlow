@@ -147,6 +147,16 @@ internal class Interpreter : ITensorFlowLiteInterpreter
     }
 
     /// <summary>
+    /// Retrieves the size of the dimensions data of the output tensor.
+    /// </summary>
+    /// <returns>The size of the dimensions data.</returns>
+
+    public int GetOutputTensorDimensionsSize()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroDimsSizeData(OutputTensor);
+    }
+
+    /// <summary>
     /// Retrieves the dimension data of the input tensor at the specified index.
     /// </summary>
     /// <param name="index">The index of the dimension data.</param>
@@ -157,11 +167,45 @@ internal class Interpreter : ITensorFlowLiteInterpreter
     }
 
     /// <summary>
+    /// Retrieves the dimension data of the output tensor at the specified index.
+    /// </summary>
+    /// <param name="index">The index of the dimension data.</param>
+    /// <returns>The dimension data at the specified index.</returns>
+
+    public int GetOutputTensorDimension(int index)
+    {
+        return TensorFlowLiteBindings.TfLiteMicroDimsData(OutputTensor, index);
+    }
+    /// <summary>
     /// Retrieves the quantization parameters of the output tensor.
     /// </summary>
     /// <returns>The quantization parameters of the output tensor.</returns>
     public QuantizationParams GetOutputTensorQuantizationParams()
     {
         return TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
+    }
+
+    /// <summary>
+    /// Delete the TensorFlow Model.
+    /// </summary>
+    public void DeleteModel()
+    {
+        TensorFlowLiteBindings.TfLiteMicroModelDelete(interpreter);
+    }
+
+    /// <summary>
+    /// Delete the Interpreter Option.
+    /// </summary>
+    public void DeleteInterpreterOption()
+    {
+        TensorFlowLiteBindings.TfLiteMicroInterpreterOptionDelete(interpreter);
+    }
+
+    /// <summary>
+    /// Delete the Interpreter.
+    /// </summary>
+    public void DeleteInterpreter()
+    {
+        TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(interpreter);
     }
 }

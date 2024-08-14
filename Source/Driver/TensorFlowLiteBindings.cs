@@ -174,4 +174,25 @@ internal static class TensorFlowLiteBindings
     /// <returns>The byte data from the tensor.</returns>
     [DllImport(TensorFlowLibName)]
     public static extern int TfLiteMicroGetByte(TensorSafeHandle tensor);
+
+    /// <summary>
+    /// Delete the Interpreter.
+    /// </summary>
+    /// <param name="interpreter">.</param>
+    [DllImport(TensorFlowLibName)]
+    public static extern void TfLiteMicroInterpreterDelete(IntPtr interpreter);
+
+    /// <summary>
+    /// Delete the Model.
+    /// </summary>
+    /// <param name="interpreter">.</param>
+    [DllImport(TensorFlowLibName)]
+    public static extern void TfLiteMicroModelDelete(IntPtr interpreter);
+
+    /// <summary>
+    /// Delete the Interpreter option.
+    /// </summary>
+    /// <param name="interpreter">.</param>
+    [DllImport(TensorFlowLibName)]
+    public static extern void TfLiteMicroInterpreterOptionDelete(IntPtr interpreter);
 }

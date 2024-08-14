@@ -85,7 +85,7 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
 
     public bool InputAccelerometerData()
     {
-        if (projLab.Accelerometer.IsSampling)
+        if (Hardware.Accelerometer!.IsSampling)
         {
             float aX = (float)((accelerometerData[0] + 4.0) / 8.0);
             float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
