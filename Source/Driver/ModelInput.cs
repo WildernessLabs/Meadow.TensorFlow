@@ -1,20 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Meadow.TensorFlow;
 
 public class ModelInput<T>
     where T : struct
 {
-    private readonly TensorSafeHandle _inputTensorHandle;
-    private readonly IntPtr _interpreter;
+    private readonly Interpreter _interpreter;
 
-    internal ModelInput(IntPtr interpreter, TensorSafeHandle inputTensorHandle)
+    internal ModelInput(Interpreter interpreter, IEnumerable<T> inputs)
+        : this(interpreter)
     {
-        _interpreter = interpreter;
-        _inputTensorHandle = inputTensorHandle;
+        var i = 0;
+
+        foreach (var input in inputs)
+        {
+            this[i] = input;
+            i++;
+        }
     }
 
-    public int Length => TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreter);
+    internal ModelInput(Interpreter interpreter)
+    {
+        _interpreter = interpreter;
+    }
+
+    public int Length => TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreter.Handle);
 
     public T this[int index]
     {
@@ -39,12 +50,12 @@ public class ModelInput<T>
     private void Set(int index, float value)
     {
         // TODO: validate index
-        TensorFlowLiteBindings.TfLiteMicroSetFloatData(_inputTensorHandle, index, value);
+        TensorFlowLiteBindings.TfLiteMicroSetFloatData(_interpreter.InputTensor, index, value);
     }
 
     private void Set(int index, sbyte value)
     {
         // TODO: validate index
-        TensorFlowLiteBindings.TfLiteMicroSetInt8Data(_inputTensorHandle, index, value);
+        TensorFlowLiteBindings.TfLiteMicroSetInt8Data(_interpreter.InputTensor, index, value);
     }
 }

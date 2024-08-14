@@ -5,16 +5,14 @@ namespace Meadow.TensorFlow;
 public class ModelOutput<T>
     where T : struct
 {
-    private readonly TensorSafeHandle _outputTensorHandle;
-    private readonly IntPtr _interpreter;
+    private readonly Interpreter _interpreter;
 
-    internal ModelOutput(IntPtr interpreter, TensorSafeHandle outputTensorHandle)
+    internal ModelOutput(Interpreter interpreter)
     {
         _interpreter = interpreter;
-        _outputTensorHandle = outputTensorHandle;
     }
 
-    public int TensorCount => TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(_interpreter);
+    public int TensorCount => TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(_interpreter.Handle);
 
     public T this[int index]
     {
@@ -38,11 +36,11 @@ public class ModelOutput<T>
 
     private float GetSingle(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(_outputTensorHandle, index);
+        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(_interpreter.OutputTensor, index);
     }
 
     private sbyte GetSByte(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGeInt8tData(_outputTensorHandle, index);
+        return TensorFlowLiteBindings.TfLiteMicroGeInt8tData(_interpreter.OutputTensor, index);
     }
 }

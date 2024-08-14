@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
@@ -13,10 +14,9 @@ public class Model : ITensorModel, IDisposable
     private IntPtr _arenaHandle;
     private IntPtr _modelOptionsPtr;
     private Interpreter _interpreter;
-    private TensorSafeHandle _inputTensor;
-    private TensorSafeHandle _outputTensor;
-    private QuantizationParams _inputQuantizationParams;
-    private QuantizationParams _outputQuantizationParams;
+
+    public QuantizationParams InputQuantizationParams { get; }
+    public QuantizationParams OutputQuantizationParams { get; }
 
     /// <summary>
     /// Gets a value indicating whether the model is disposed.
@@ -39,18 +39,6 @@ public class Model : ITensorModel, IDisposable
 
         _handle = GCHandle.Alloc(data, GCHandleType.Pinned);
 
-        Initialize(arenaSize);
-
-        _interpreter = new Interpreter(_modelOptionsPtr);
-    }
-
-    /// <summary>
-    /// Initializes the model with the specified arena size.
-    /// </summary>
-    /// <param name="arenaSize">The size of the arena for the interpreter.</param>
-    /// <exception cref="Exception">Thrown when memory allocation or model loading fails.</exception>
-    private void Initialize(int arenaSize)
-    {
         _arenaHandle = Marshal.AllocHGlobal(arenaSize * sizeof(int));
 
         if (_arenaHandle == IntPtr.Zero)
@@ -64,17 +52,28 @@ public class Model : ITensorModel, IDisposable
             throw new Exception("Failed to load the model");
         }
 
-        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(_interpreter);
+        _interpreter = new Interpreter(_modelOptionsPtr);
+
+        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(_interpreter.Handle);
         if (status != TensorFlowLiteStatus.Ok)
         {
             throw new Exception("Failed to allocate tensors");
         }
 
-        _inputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreter, 0);
-        _outputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreter, 0);
+        InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_interpreter.InputTensor);
+        OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_interpreter.OutputTensor);
 
-        _inputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_inputTensor);
-        _outputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_outputTensor);
+    }
+
+    /// <summary>
+    /// Creates an input tensor for the model.
+    /// </summary>
+    /// <typeparam name="T">The type of the input tensor elements.</typeparam>
+    /// <returns>A <see cref="ModelInput{T}"/> representing the input tensor.</returns>
+    public ModelInput<T> CreateInput<T>(IEnumerable<T> inputs)
+        where T : struct
+    {
+        return new ModelInput<T>(_interpreter, inputs);
     }
 
     /// <summary>
@@ -85,7 +84,7 @@ public class Model : ITensorModel, IDisposable
     public ModelInput<T> CreateInput<T>()
         where T : struct
     {
-        return new ModelInput<T>(_interpreter, _inputTensor);
+        return new ModelInput<T>(_interpreter);
     }
 
     /// <summary>
@@ -98,14 +97,14 @@ public class Model : ITensorModel, IDisposable
     public ModelOutput<T> Predict<T>(ModelInput<T> inputs)
         where T : struct
     {
-        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreter);
+        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreter.Handle);
 
         if (status != TensorFlowLiteStatus.Ok)
         {
             throw new Exception();
         }
 
-        return new ModelOutput<T>(_interpreter, _outputTensor);
+        return new ModelOutput<T>(_interpreter);
     }
 
     /// <summary>
@@ -133,14 +132,8 @@ public class Model : ITensorModel, IDisposable
 
                 if (_modelOptionsPtr != IntPtr.Zero)
                 {
-                    // TODO: MEMORY LEAK need a binding to release this
+                    TensorFlowLiteBindings.TfLiteMicroModelDelete(_modelOptionsPtr);
                     _modelOptionsPtr = IntPtr.Zero;
-                }
-
-                if (_interpreterOptionsPtr != IntPtr.Zero)
-                {
-                    // TODO: MEMORY LEAK need a binding to release this
-                    _interpreterOptionsPtr = IntPtr.Zero;
                 }
             }
             IsDisposed = true;

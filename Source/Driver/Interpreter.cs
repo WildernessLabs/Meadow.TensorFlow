@@ -25,17 +25,18 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <summary>
     /// Gets the input tensor used by the TensorFlow Lite interpreter.
     /// </summary>
-    protected TensorSafeHandle InputTensor { get; set; }
+    internal TensorSafeHandle InputTensor { get; }
 
     /// <summary>
     /// Gets the output tensor produced by the TensorFlow Lite interpreter.
     /// </summary>
-    protected TensorSafeHandle OutputTensor { get; set; }
+    internal TensorSafeHandle OutputTensor { get; }
 
-    private readonly IntPtr interpreter;
+    internal IntPtr Handle => _interpreterPtr;
+
     private bool disposedValue;
     private IntPtr _interpreterOptionsPtr;
-    private IntPtr _interpreter;
+    private IntPtr _interpreterPtr;
 
     /// <summary>
     /// Initializes a new instance of the Interpreter class with the specified tensor model and arena size.
@@ -49,11 +50,14 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
             throw new Exception("Failed to create interpreter options");
         }
 
-        _interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, modelOptionsPtr);
-        if (_interpreter == IntPtr.Zero)
+        _interpreterPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, modelOptionsPtr);
+        if (_interpreterPtr == IntPtr.Zero)
         {
             throw new Exception("Failed to create interpreter");
         }
+
+        InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreterPtr, 0);
+        OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreterPtr, 0);
     }
 
     /// <summary>
@@ -110,7 +114,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// </summary>
     public void InvokeInterpreter()
     {
-        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
+        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreterPtr);
     }
 
     /// <summary>
@@ -119,7 +123,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The number of output tensors.</returns>
     public int GetOutputTensorCount()
     {
-        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(interpreter);
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(_interpreterPtr);
     }
 
     /// <summary>
@@ -128,7 +132,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The number of input tensors.</returns>
     public int GetInputTensorCount()
     {
-        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(interpreter);
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreterPtr);
     }
 
     /// <summary>
@@ -197,30 +201,6 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
         return TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 
-    /// <summary>
-    /// Delete the TensorFlow Model.
-    /// </summary>
-    public void DeleteModel()
-    {
-        TensorFlowLiteBindings.TfLiteMicroModelDelete(interpreter);
-    }
-
-    /// <summary>
-    /// Delete the Interpreter Option.
-    /// </summary>
-    public void DeleteInterpreterOption()
-    {
-        TensorFlowLiteBindings.TfLiteMicroInterpreterOptionDelete(interpreter);
-    }
-
-    /// <summary>
-    /// Delete the Interpreter.
-    /// </summary>
-    public void DeleteInterpreter()
-    {
-        TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(interpreter);
-    }
-
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -230,8 +210,18 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
                 // TODO: dispose managed state (managed objects)
             }
 
-            // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-            // TODO: set large fields to null
+            if (_interpreterOptionsPtr != IntPtr.Zero)
+            {
+                TensorFlowLiteBindings.TfLiteMicroInterpreterOptionDelete(_interpreterOptionsPtr);
+                _interpreterOptionsPtr = IntPtr.Zero;
+            }
+
+            if (_interpreterPtr != IntPtr.Zero)
+            {
+                TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(_interpreterPtr);
+                _interpreterPtr = IntPtr.Zero;
+            }
+
             disposedValue = true;
         }
     }

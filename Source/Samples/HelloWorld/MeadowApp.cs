@@ -1,7 +1,6 @@
 ﻿using HelloWorld.Models;
 using Meadow;
 using Meadow.Devices;
-using Meadow.TensorFlow;
 using System;
 using System.Threading.Tasks;
 
@@ -9,7 +8,7 @@ namespace HelloWorld;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
-    readonly HelloWorldModel helloWorldModel = new();
+    private readonly HelloWorldModel helloWorldModel = new();
 
     public override Task Initialize()
     {
@@ -31,23 +30,17 @@ public class MeadowApp : App<F7CoreComputeV2>
             float x = position * helloWorldModel.XRange;
 
 
-            sbyte xQuantized = (sbyte)((x / tensorFlowLite.InputQuantizationParams.Scale) + tensorFlowLite.InputQuantizationParams.ZeroPoint);
+            sbyte xQuantized = (sbyte)((x / helloWorldModel.InputQuantizationParams.Scale) + helloWorldModel.InputQuantizationParams.ZeroPoint);
 
 
 
-            tensorFlowLite.SetInputTensorInt8Data(0, xQuantized);
+            var inputs = helloWorldModel.CreateInput(new sbyte[] { xQuantized });
 
-            tensorFlowLite.InvokeInterpreter();
+            var outputs = helloWorldModel.Predict(inputs);
 
-            if (tensorFlowLite.OperationStatus != TensorFlowLiteStatus.Ok)
-            {
-                Resolver.Log.Info("Failed to Invoke");
-                return Task.CompletedTask;
-            }
+            sbyte yQuantized = outputs[0];
 
-            sbyte yQuantized = tensorFlowLite.GetOutputTensorInt8Data(0);
-
-            float y = (yQuantized - tensorFlowLite.OutputQuantizationParams.ZeroPoint) * tensorFlowLite.OutputQuantizationParams.Scale;
+            float y = (yQuantized - helloWorldModel.OutputQuantizationParams.ZeroPoint) * helloWorldModel.OutputQuantizationParams.Scale;
 
             Resolver.Log.Info($" {i} - {(x, y)} ");
 
@@ -66,15 +59,13 @@ public class MeadowApp : App<F7CoreComputeV2>
             }
         }
 
-        tensorFlowLite.DeleteInterpreterOption();
-        tensorFlowLite.DeleteInterpreter();
-        tensorFlowLite.DeleteModel();
+        helloWorldModel.Dispose();
 
         Resolver.Log.Info("Sample completed");
         return Task.CompletedTask;
     }
 
-    bool AreFloatsEqual(float x, float y)
+    private bool AreFloatsEqual(float x, float y)
     {
         return Math.Abs(x - y) < 1e-6;
     }
