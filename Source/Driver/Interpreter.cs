@@ -60,8 +60,6 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
         OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreterPtr, 0);
     }
 
-
-
     /// <summary>
     /// Retrieves the length of the input tensor in elements of type float.
     /// </summary>

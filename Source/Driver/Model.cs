@@ -61,14 +61,14 @@ public class Model : ITensorModel, IDisposable
 
         _interpreter = new Interpreter(_modelOptionsPtr);
 
-        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(_interpreter.Handle);
+        var status = _interpreter.AllocateTensors();
         if (status != TensorFlowLiteStatus.Ok)
         {
             throw new Exception("Failed to allocate tensors");
         }
 
-        InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_interpreter.InputTensor);
-        OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(_interpreter.OutputTensor);
+        InputQuantizationParams = _interpreter.InputQuantizationParams;
+        OutputQuantizationParams = _interpreter.OutputQuantizationParams;
     }
 
     /// <summary>
@@ -103,7 +103,7 @@ public class Model : ITensorModel, IDisposable
     public ModelOutput<T> Predict<T>(ModelInput<T> inputs)
         where T : struct
     {
-        var status = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreter.Handle);
+        var status = _interpreter.InvokeInterpreter();
 
         if (status != TensorFlowLiteStatus.Ok)
         {
