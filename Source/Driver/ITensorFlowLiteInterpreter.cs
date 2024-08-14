@@ -34,6 +34,11 @@ public interface ITensorFlowLiteInterpreter
     void SetInputTensorInt8Data(int index, sbyte value);
 
     /// <summary>
+    /// Allocates tensors for the TensorFlow Lite Micro interpreter.
+    /// </summary>
+    TensorFlowLiteStatus AllocateTensors();
+
+    /// <summary>
     /// Retrieves the int8 data at the specified index from the output tensor.
     /// </summary>
     /// <param name="index">The index from which to retrieve the data.</param>
