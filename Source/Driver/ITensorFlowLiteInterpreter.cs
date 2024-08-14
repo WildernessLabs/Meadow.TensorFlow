@@ -57,7 +57,7 @@ public interface ITensorFlowLiteInterpreter
     /// <summary>
     /// Invokes the TensorFlow Lite interpreter for inference.
     /// </summary>
-    void InvokeInterpreter();
+    TensorFlowLiteStatus InvokeInterpreter();
 
     /// <summary>
     /// Retrieves the number of output tensors produced by the TensorFlow Lite interpreter.

@@ -112,9 +112,9 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <summary>
     /// Invokes the TensorFlow Lite interpreter for inference.
     /// </summary>
-    public void InvokeInterpreter()
+    public TensorFlowLiteStatus InvokeInterpreter()
     {
-        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreterPtr);
+        return OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreterPtr);
     }
 
     /// <summary>
