@@ -195,6 +195,16 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     }
 
     /// <summary>
+    /// Retrieves the size of the dimensions data of the output tensor.
+    /// </summary>
+    /// <returns>The size of the dimensions data.</returns>
+
+    public int GetOutputTensorDimensionsSize()
+    {
+        return TensorFlowLiteBindings.TfLiteMicroDimsSizeData(OutputTensor);
+    }
+
+    /// <summary>
     /// Retrieves the dimension data of the input tensor at the specified index.
     /// </summary>
     /// <param name="index">The index of the dimension data.</param>
@@ -204,6 +214,16 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
         return TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, index);
     }
 
+    /// <summary>
+    /// Retrieves the dimension data of the output tensor at the specified index.
+    /// </summary>
+    /// <param name="index">The index of the dimension data.</param>
+    /// <returns>The dimension data at the specified index.</returns>
+
+    public int GetOutputTensorDimension(int index)
+    {
+        return TensorFlowLiteBindings.TfLiteMicroDimsData(OutputTensor, index);
+    }
     /// <summary>
     /// Retrieves the quantization parameters of the output tensor.
     /// </summary>
