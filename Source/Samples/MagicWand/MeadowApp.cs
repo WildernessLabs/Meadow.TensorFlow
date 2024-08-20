@@ -31,9 +31,9 @@ public class MeadowApp : App<F7FeatherV2>
 
         var data = await GetInputData();
 
-        var modelInput = wandModel.CreateInput(data);
+        wandModel.Inputs.SetData(data);
 
-        var modelOutput = wandModel.Predict(modelInput);
+        var modelOutput = wandModel.Predict();
 
 
         while (true)

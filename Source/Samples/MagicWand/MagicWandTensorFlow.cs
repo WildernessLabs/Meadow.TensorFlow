@@ -20,8 +20,10 @@ public class MagicWandTensorFlow : TensorFlowLiteInterpreter
     public MagicWandTensorFlow(ITensorModel tensorModel, int areaSize)
         : base(tensorModel, areaSize)
     {
-        if ((TensorFlowLiteBindings.TfLiteMicroDimsSizeData(InputTensor) != 4) || (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 0) != 1) ||
-            (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 1) != 128) || (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 2) != kChannelNumber) ||
+        if ((TensorFlowLiteBindings.TfLiteMicroDimsSizeData(InputTensor) != 4) ||
+            (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 0) != 1) ||
+            (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 1) != 128) ||
+            (TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, 2) != kChannelNumber) ||
             (TensorFlowLiteBindings.TfLiteMicroGetType(InputTensor) != TensorDataType.Float32))
         {
             Console.Write("DimsSizeData error");

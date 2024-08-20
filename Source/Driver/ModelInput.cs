@@ -30,8 +30,7 @@ public class ModelInput<T>
     public T this[int index]
     {
         set
-        {
-            // TODO: validate index
+        {   // TODO: validate index
             if (typeof(T).Equals(typeof(float)))
             {
                 Set(index, Convert.ToSingle(value));
@@ -47,9 +46,19 @@ public class ModelInput<T>
         }
     }
 
-    private void Set(int index, float value)
+    public void SetData(IEnumerable<T> inputs)
     {
-        // TODO: validate index
+        var i = 0;
+
+        foreach (var input in inputs)
+        {
+            this[i] = input;
+            i++;
+        }
+    }
+
+    private void Set(int index, float value)
+    {   // TODO: validate index
         TensorFlowLiteBindings.TfLiteMicroSetFloatData(_interpreter.InputTensor, index, value);
     }
 

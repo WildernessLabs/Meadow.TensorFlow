@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
@@ -7,7 +6,8 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Represents a TensorFlow Lite model.
 /// </summary>
-public class Model : ITensorModel, IDisposable
+public abstract class Model<T> : ITensorModel, IDisposable
+    where T : struct
 {
     private byte[] _data;
     private GCHandle _handle;
@@ -32,6 +32,11 @@ public class Model : ITensorModel, IDisposable
 
     /// <inheritdoc />
     public int Size => _data.Length; //ToDo verify this
+
+    /// <summary>
+    /// The input tensor for the model.
+    /// </summary>
+    public ModelInput<T> Inputs { get; }
 
     private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
 
@@ -69,39 +74,16 @@ public class Model : ITensorModel, IDisposable
 
         InputQuantizationParams = _interpreter.InputQuantizationParams;
         OutputQuantizationParams = _interpreter.OutputQuantizationParams;
-    }
 
-    /// <summary>
-    /// Creates an input tensor for the model.
-    /// </summary>
-    /// <typeparam name="T">The type of the input tensor elements.</typeparam>
-    /// <returns>A <see cref="ModelInput{T}"/> representing the input tensor.</returns>
-    public ModelInput<T> CreateInput<T>(IEnumerable<T> inputs)
-        where T : struct
-    {
-        return new ModelInput<T>(_interpreter, inputs);
-    }
-
-    /// <summary>
-    /// Creates an input tensor for the model.
-    /// </summary>
-    /// <typeparam name="T">The type of the input tensor elements.</typeparam>
-    /// <returns>A <see cref="ModelInput{T}"/> representing the input tensor.</returns>
-    public ModelInput<T> CreateInput<T>()
-        where T : struct
-    {
-        return new ModelInput<T>(_interpreter);
+        Inputs = new ModelInput<T>(_interpreter);
     }
 
     /// <summary>
     /// Makes a prediction based on the provided input tensor.
     /// </summary>
-    /// <typeparam name="T">The type of the input tensor elements.</typeparam>
-    /// <param name="inputs">The input tensor.</param>
     /// <returns>A <see cref="ModelOutput{T}"/> representing the output tensor.</returns>
     /// <exception cref="Exception">Thrown when the interpreter invocation fails.</exception>
-    public ModelOutput<T> Predict<T>(ModelInput<T> inputs)
-        where T : struct
+    public ModelOutput<T> Predict()
     {
         var status = _interpreter.InvokeInterpreter();
 
