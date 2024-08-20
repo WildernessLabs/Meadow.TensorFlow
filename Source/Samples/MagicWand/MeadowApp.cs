@@ -10,27 +10,17 @@ namespace MagicWand;
 
 public class MeadowApp : App<F7FeatherV2>
 {
-    MagicWandTensorFlow wandTensorFlow;
-
     readonly MagicWandModel wandModel = new();
 
-    Mpu6050 mpu;
-    static long lastTime = 0;
-    const int updateTime = 40;
-    public const int ringBuffer = 600;
-    public double[] saveAccelData = new double[ringBuffer];
-    public int beingIndex = 0;
-    bool pendingInitialData = true;
-    readonly bool clearBuffer = false;
-    public int InputLegth;
+    Mpu6050 accelerometer;
 
-    long Millis => DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+    readonly TimeSpan UpdateInverval = TimeSpan.FromMilliseconds(40);
+
+    const int SampleCount = 200;
 
     public override Task Initialize()
     {
-        wandTensorFlow = new MagicWandTensorFlow(wandModel, ArenaSize);
-
-        mpu = new Mpu6050(Device.CreateI2cBus());
+        accelerometer = new Mpu6050(Device.CreateI2cBus());
 
         return Task.CompletedTask;
     }
@@ -39,12 +29,19 @@ public class MeadowApp : App<F7FeatherV2>
     {
         Console.WriteLine("Tensor Flow completed");
 
+        var data = await GetInputData();
+
+        var modelInput = wandModel.CreateInput(data);
+
+        var modelOutput = wandModel.Predict(modelInput);
+
+
         while (true)
         {
-            if (await ReadAccelerometer(clearBuffer))
+            if (await GetInputData())
             {
-                wandTensorFlow.InvokeInterpreter();
-                if (wandTensorFlow.OperationStatus != TensorFlowLiteStatus.Ok)
+                var status = wandTensorFlow.InvokeInterpreter();
+                if (status != TensorFlowLiteStatus.Ok)
                 {
                     Resolver.Log.Info("Invoke failed");
                     break;
@@ -62,55 +59,24 @@ public class MeadowApp : App<F7FeatherV2>
         }
     }
 
-
-
-    public async Task<bool> ReadAccelerometer(bool resetBuffer)
+    public async Task<double[]> GetInputData()
     {
+        var saveAccelData = new double[SampleCount * 3];
 
-        if (Millis - lastTime < updateTime)
+        for (int i = 0; i < saveAccelData.Length; i += 3)
         {
-            return false;
+            var result = await accelerometer.Read();
+            double x = (double)result.Acceleration3D?.X.Gravity;
+            double y = (double)result.Acceleration3D?.Y.Gravity;
+            double z = (double)result.Acceleration3D?.Z.Gravity;
+
+            saveAccelData[i] = -1 * x * 1000;
+            saveAccelData[i + 1] = -1 * y * 1000;
+            saveAccelData[i + 2] = -1 * z * 1000;
+
+            await Task.Delay(UpdateInverval);
         }
 
-        lastTime = Millis;
-
-        var result = await mpu.Read();
-        double x = (double)result.Acceleration3D?.X.Gravity;
-        double y = (double)result.Acceleration3D?.Y.Gravity;
-        double z = (double)result.Acceleration3D?.Z.Gravity;
-
-        saveAccelData[beingIndex++] = -1 * x * 1000;
-        saveAccelData[beingIndex++] = -1 * y * 1000;
-        saveAccelData[beingIndex++] = -1 * z * 1000;
-
-        if (beingIndex >= ringBuffer)
-        {
-            beingIndex = 0;
-        }
-
-        mpu.StartUpdating(TimeSpan.FromMilliseconds(40));
-
-        if (pendingInitialData && beingIndex >= 200)
-        {
-            pendingInitialData = false;
-        }
-
-        if (pendingInitialData)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < InputLegth; ++i)
-        {
-            int ringArryIndex = beingIndex + i - InputLegth;
-            if (ringArryIndex < 0)
-            {
-                ringArryIndex += ringBuffer;
-            }
-
-            wandTensorFlow.SetInputTensorFloatData(i, (float)saveAccelData[ringArryIndex]);
-        }
-
-        return true;
+        return saveAccelData;
     }
 }
