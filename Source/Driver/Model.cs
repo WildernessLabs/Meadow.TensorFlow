@@ -6,7 +6,7 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Represents a TensorFlow Lite model.
 /// </summary>
-public abstract class Model<T> : ITensorModel, IDisposable
+public abstract class Model<T> : ITensorModel<T>, IDisposable
     where T : struct
 {
     private byte[] _data;

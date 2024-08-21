@@ -2,7 +2,7 @@ using Meadow.TensorFlow;
 
 namespace GestureDetector.Models;
 
-public class GestureModel : Model
+public class GestureModel : Model<float>
 {
     static int ArenaSize = 60 * 1024;
 

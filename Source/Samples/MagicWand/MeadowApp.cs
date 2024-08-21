@@ -59,16 +59,16 @@ public class MeadowApp : App<F7FeatherV2>
         }
     }
 
-    public async Task<double[]> GetInputData()
+    public async Task<float[]> GetInputData()
     {
-        var saveAccelData = new double[SampleCount * 3];
+        var saveAccelData = new float[SampleCount * 3];
 
         for (int i = 0; i < saveAccelData.Length; i += 3)
         {
             var result = await accelerometer.Read();
-            double x = (double)result.Acceleration3D?.X.Gravity;
-            double y = (double)result.Acceleration3D?.Y.Gravity;
-            double z = (double)result.Acceleration3D?.Z.Gravity;
+            float x = (float)result.Acceleration3D?.X.Gravity;
+            float y = (float)result.Acceleration3D?.Y.Gravity;
+            float z = (float)result.Acceleration3D?.Z.Gravity;
 
             saveAccelData[i] = -1 * x * 1000;
             saveAccelData[i + 1] = -1 * y * 1000;
