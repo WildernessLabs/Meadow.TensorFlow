@@ -23,7 +23,7 @@ public class MeadowApp : App<F7CoreComputeV2>
 
     public override Task Run()
     {
-        var result = helloWorldModel.PopulateResult();
+        var result = helloWorldModel.GetReferenceResults();
 
         for (int i = 0; i < result.Length; i++)
         {

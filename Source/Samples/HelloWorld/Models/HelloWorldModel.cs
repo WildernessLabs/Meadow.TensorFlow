@@ -4,10 +4,19 @@ namespace HelloWorld.Models;
 
 public class HelloWorldModel : Model<sbyte>
 {
-    static int ArenaSize = 2000;
+    private static readonly int ArenaSize = 2000;
 
     public HelloWorldModel(byte[] data) : base(data, ArenaSize)
     { }
+
+    public int InterferencesPerCycles => 20;
+    public int InterferenceCount { get; set; }
+    public float XRange => 6.2831855F;
+
+    public HelloWorldResult[] GetReferenceResults()
+    {
+        return helloWorldResult;
+    }
 
     private readonly HelloWorldResult[] helloWorldResult =
     {
@@ -32,13 +41,4 @@ public class HelloWorldModel : Model<sbyte>
         new() {X = 5.654867f, Y = -0.533736f },
         new() {X = 5.969026f, Y = -0.355824f }
     };
-
-    public int InterferencesPerCycles => 20;
-    public int InterferenceCount { get; set; }
-    public float XRange => 6.2831855F;
-
-    public HelloWorldResult[] PopulateResult()
-    {
-        return helloWorldResult;
-    }
 }

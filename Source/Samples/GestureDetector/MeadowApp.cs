@@ -10,7 +10,7 @@ namespace GestureDetector;
 
 public class TensorFlowApp : ProjectLabCoreComputeApp
 {
-    private readonly GestureModel gestureModel = new();
+    private GestureModel gestureModel;
     private ModelInput<float> inputs = default!;
 
     private const double kDetectionThreshould = 2.5;
@@ -22,6 +22,8 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
 
     public override Task Initialize()
     {
+        gestureModel = new GestureModel(GestureModelData.Data);
+
         Hardware.Accelerometer!.Updated += OnAccelerometerUpdated;
 
         inputs = gestureModel.CreateInput<float>();
