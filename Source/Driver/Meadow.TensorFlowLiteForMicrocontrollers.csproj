@@ -24,6 +24,8 @@
   <ItemGroup>
     <None Include="icon.png" Pack="true" PackagePath="" />
     <None Include="Readme.md" Pack="true" PackagePath="" />
-	<Content Include="..\..\TensorFlow\TensorFlow.so" Pack="true" PackageCopyToOutput="true" />
+	<Content Include="..\..\TensorFlow\TensorFlow.so" Pack="true" PackageCopyToOutput="true">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
   </ItemGroup>
 </Project>
