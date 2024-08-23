@@ -21,6 +21,8 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
 
     public override Task Initialize()
     {
+        Resolver.Log.Info("Initialize...");
+
         gestureModel = new GestureModel(GestureModelData.Data);
 
         Hardware.Accelerometer!.Updated += OnAccelerometerUpdated;
@@ -32,6 +34,8 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
 
     public override Task Run()
     {
+        Resolver.Log.Info("Run...");
+
         Hardware.Accelerometer?.StartUpdating(TimeSpan.FromMilliseconds(10));
 
         return Task.CompletedTask;

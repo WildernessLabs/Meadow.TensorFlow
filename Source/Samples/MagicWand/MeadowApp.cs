@@ -19,6 +19,8 @@ public class MeadowApp : App<F7FeatherV2>
 
     public override Task Initialize()
     {
+        Resolver.Log.Info("Initialize...");
+
         wandModel = new MagicWandModel(MagicWandModelData.Data);
 
         accelerometer = new Mpu6050(Device.CreateI2cBus());
@@ -28,7 +30,7 @@ public class MeadowApp : App<F7FeatherV2>
 
     public override async Task Run()
     {
-        Console.WriteLine("Tensor Flow completed");
+        Resolver.Log.Info("Run...");
 
         while (true)
         {

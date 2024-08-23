@@ -12,7 +12,7 @@ public class MeadowApp : App<F7CoreComputeV2>
 
     public override Task Initialize()
     {
-        Resolver.Log.Info("Initialize TensorFlow ...");
+        Resolver.Log.Info("Initialize...");
 
         helloWorldModel = new HelloWorldModel(HelloWorldModelData.Data);
 
@@ -23,6 +23,8 @@ public class MeadowApp : App<F7CoreComputeV2>
 
     public override Task Run()
     {
+        Resolver.Log.Info("Initialize...");
+
         var result = helloWorldModel.GetReferenceResults();
 
         for (int i = 0; i < result.Length; i++)
