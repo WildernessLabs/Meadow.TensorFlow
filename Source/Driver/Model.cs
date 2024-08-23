@@ -41,7 +41,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
     private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Model"/> class with the specified model data and arena size.
+    /// Initializes a new instance of the Model class with the specified model data and arena size.
     /// </summary>
     /// <param name="data">The model data.</param>
     /// <param name="arenaSize">The size of the arena for the interpreter.</param>
@@ -96,7 +96,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
     }
 
     /// <summary>
-    /// Releases the resources used by the <see cref="Model"/> class.
+    /// Releases the resources used by the Model class.
     /// </summary>
     /// <param name="disposing">A boolean value indicating whether the method is being called from the Dispose method.</param>
     protected virtual void Dispose(bool disposing)
@@ -129,7 +129,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
     }
 
     /// <summary>
-    /// Releases the resources used by the <see cref="Model"/> class.
+    /// Releases the resources used by the Model class.
     /// </summary>
     public void Dispose()
     {
