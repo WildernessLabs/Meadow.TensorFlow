@@ -1,7 +1,6 @@
 ﻿using GestureDetector.Models;
 using Meadow;
 using Meadow.Devices;
-using Meadow.TensorFlow;
 using Meadow.Units;
 using System;
 using System.Threading.Tasks;
@@ -10,15 +9,15 @@ namespace GestureDetector;
 
 public class TensorFlowApp : ProjectLabCoreComputeApp
 {
-    private GestureModel gestureModel;
-    private ModelInput<float> inputs = default!;
+    private GestureModel gestureModel = default!;
 
-    private const double kDetectionThreshould = 2.5;
+    private float[] inputData = new float[0];
+
+    private const double gestureDetectionThreshold = 2.5;
     private readonly string[] gestureList = { "thumbs up", "wave" };
 
-    public int samplesRead = 0;
-    public const int sampleCount = 119;
-    public double[] accelerometerData = new double[3];
+    private int samplesRead = 0;
+    private const int TargetSampleCount = 119;
 
     public override Task Initialize()
     {
@@ -26,84 +25,57 @@ public class TensorFlowApp : ProjectLabCoreComputeApp
 
         Hardware.Accelerometer!.Updated += OnAccelerometerUpdated;
 
-        inputs = gestureModel.CreateInput<float>();
+        inputData = new float[TargetSampleCount * 3];
 
         return base.Initialize();
     }
 
-    public override async Task Run()
+    public override Task Run()
     {
-        Hardware.Accelerometer!.StartUpdating(TimeSpan.FromMilliseconds(10));
-        while (true)
-        {
-            while (samplesRead == sampleCount)
-            {
-                if (IsMovement())
-                {
-                    Resolver.Log.Info("Movement Detected ...");
-                    samplesRead = 0;
-                    break;
-                }
-                await Task.Delay(1);
-            }
+        Hardware.Accelerometer?.StartUpdating(TimeSpan.FromMilliseconds(10));
 
-            while (samplesRead < sampleCount)
-            {
-                if (InputAccelerometerData())
-                {
-                    ModelOutput<float>? output = null;
-
-                    if (samplesRead == sampleCount)
-                    {
-                        output = gestureModel.Predict(inputs);
-                    }
-
-                    if (output != null)
-                    {
-                        for (int i = 0; i < gestureList.Length; i++)
-                        {
-                            var tensorData = output[i];
-                            if (tensorData > 0.85)
-                            {
-                                Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
-                            }
-                        }
-                    }
-                }
-                await Task.Delay(5);
-            }
-            await Task.Delay(1);
-        }
-    }
-
-    public bool IsMovement()
-    {
-        double threshould = Math.Abs(accelerometerData[0]) + Math.Abs(accelerometerData[1]) + Math.Abs(accelerometerData[2]);
-        return threshould > kDetectionThreshould;
-    }
-
-    public bool InputAccelerometerData()
-    {
-        if (Hardware.Accelerometer!.IsSampling)
-        {
-            float aX = (float)((accelerometerData[0] + 4.0) / 8.0);
-            float aY = (float)((accelerometerData[1] + 4.0) / 8.0);
-            float aZ = (float)((accelerometerData[2] + 4.0) / 8.0);
-
-            inputs[samplesRead * 3 + 0] = aX;
-            inputs[samplesRead * 3 + 1] = aY;
-            inputs[samplesRead * 3 + 2] = aZ;
-
-            samplesRead++;
-            return true;
-        }
-        return false;
+        return Task.CompletedTask;
     }
 
     private void OnAccelerometerUpdated(object sender, IChangeResult<Acceleration3D> e)
     {
-        accelerometerData[0] = e.New.X.Gravity;
-        accelerometerData[1] = e.New.Y.Gravity;
-        accelerometerData[2] = e.New.Z.Gravity;
+        if (samplesRead == 0)
+        {
+            //do we detect movement to start the gesture detection
+            double value = Math.Abs(e.New.X.Gravity) + Math.Abs(e.New.Y.Gravity) + Math.Abs(e.New.Z.Gravity);
+
+            if (value < gestureDetectionThreshold)
+            {
+                return;
+            }
+        }
+
+        float aX = (float)((e.New.X.Gravity + 4.0) / 8.0);
+        float aY = (float)((e.New.Y.Gravity + 4.0) / 8.0);
+        float aZ = (float)((e.New.Z.Gravity + 4.0) / 8.0);
+
+        inputData[samplesRead * 3 + 0] = aX;
+        inputData[samplesRead * 3 + 1] = aY;
+        inputData[samplesRead * 3 + 2] = aZ;
+
+        samplesRead++;
+
+        if (samplesRead == TargetSampleCount)
+        {
+            Resolver.Log.Info("Samples Read");
+            gestureModel.Inputs.SetData(inputData);
+            var output = gestureModel.Predict();
+
+            for (int i = 0; i < gestureList.Length; i++)
+            {
+                var tensorData = output[i];
+                if (tensorData > 0.85)
+                {
+                    Resolver.Log.Info($"Gesture = {gestureList[i]} : {tensorData}");
+                }
+            }
+
+            samplesRead = 0;
+        }
     }
 }
