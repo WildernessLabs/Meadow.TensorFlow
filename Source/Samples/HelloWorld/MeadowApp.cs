@@ -8,11 +8,13 @@ namespace HelloWorld;
 
 public class MeadowApp : App<F7CoreComputeV2>
 {
-    private readonly HelloWorldModel helloWorldModel = new();
+    private HelloWorldModel helloWorldModel;
 
     public override Task Initialize()
     {
         Resolver.Log.Info("Initialize TensorFlow ...");
+
+        helloWorldModel = new HelloWorldModel(HelloWorldModelData.Data);
 
         helloWorldModel.InterferenceCount = 0;
 
@@ -30,9 +32,9 @@ public class MeadowApp : App<F7CoreComputeV2>
 
             sbyte xQuantized = (sbyte)((x / helloWorldModel.InputQuantizationParams.Scale) + helloWorldModel.InputQuantizationParams.ZeroPoint);
 
-            var inputs = helloWorldModel.CreateInput(new sbyte[] { xQuantized });
+            helloWorldModel.Inputs.SetData(new sbyte[] { xQuantized });
 
-            var outputs = helloWorldModel.Predict(inputs);
+            var outputs = helloWorldModel.Predict();
 
             sbyte yQuantized = outputs[0];
 
