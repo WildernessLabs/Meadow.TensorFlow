@@ -18,6 +18,16 @@ public class HelloWorldModel : Model<sbyte>
         return helloWorldResult;
     }
 
+    public void IncrementInterferenceCount()
+    {
+        InterferenceCount += 1;
+
+        if (InterferenceCount >= InterferencesPerCycles)
+        {
+            InterferenceCount = 0;
+        }
+    }
+
     private readonly HelloWorldResult[] helloWorldResult =
     {
         new() {X = 0.000000f, Y = 0.000000f },
