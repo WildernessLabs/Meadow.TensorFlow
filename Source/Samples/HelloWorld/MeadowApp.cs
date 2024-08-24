@@ -18,12 +18,14 @@ public class MeadowApp : App<F7CoreComputeV2>
 
         helloWorldModel.InterferenceCount = 0;
 
+        Resolver.Log.Info("Initialize complete...");
+
         return Task.CompletedTask;
     }
 
     public override Task Run()
     {
-        Resolver.Log.Info("Initialize...");
+        Resolver.Log.Info("Run...");
 
         var result = helloWorldModel.GetReferenceResults();
 

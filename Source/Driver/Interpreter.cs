@@ -25,12 +25,12 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <summary>
     /// Gets the input tensor used by the TensorFlow Lite interpreter.
     /// </summary>
-    internal TensorSafeHandle InputTensor { get; }
+    internal TensorFlowLiteTensor InputTensor { get; }
 
     /// <summary>
     /// Gets the output tensor produced by the TensorFlow Lite interpreter.
     /// </summary>
-    internal TensorSafeHandle OutputTensor { get; }
+    internal TensorFlowLiteTensor OutputTensor { get; }
 
     internal IntPtr Handle => _interpreterPtr;
 
@@ -54,6 +54,12 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
         if (_interpreterPtr == IntPtr.Zero)
         {
             throw new Exception("Failed to create interpreter");
+        }
+
+        var status = AllocateTensors();
+        if (status != TensorFlowLiteStatus.Ok)
+        {
+            throw new Exception("Failed to allocate tensors");
         }
 
         InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreterPtr, 0);

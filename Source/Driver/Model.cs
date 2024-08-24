@@ -66,11 +66,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
 
         _interpreter = new Interpreter(_modelOptionsPtr);
 
-        var status = _interpreter.AllocateTensors();
-        if (status != TensorFlowLiteStatus.Ok)
-        {
-            throw new Exception("Failed to allocate tensors");
-        }
+        Console.WriteLine("Created interpreter");
 
         InputQuantizationParams = _interpreter.InputQuantizationParams;
         OutputQuantizationParams = _interpreter.OutputQuantizationParams;
