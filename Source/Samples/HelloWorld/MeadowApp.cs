@@ -48,9 +48,7 @@ public class MeadowApp : App<F7CoreComputeV2>
 
             if (!AreFloatsEqual(x, result[i].X) || !AreFloatsEqual(y, result[i].Y))
             {
-                Resolver.Log.Info($"Test {i} failed");
-                Resolver.Log.Info($"Expected {(result[i].X, result[i].Y)}");
-                break;
+                Resolver.Log.Info($"{i} failed - expected {(result[i].X, result[i].Y)}");
             }
 
             helloWorldModel.InterferenceCount += 1;

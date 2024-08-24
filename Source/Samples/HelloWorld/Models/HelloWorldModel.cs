@@ -11,7 +11,7 @@ public class HelloWorldModel : Model<sbyte>
 
     public int InterferencesPerCycles => 20;
     public int InterferenceCount { get; set; }
-    public float XRange => 6.2831855F;
+    public float XRange => 6.2831855f;
 
     public HelloWorldResult[] GetReferenceResults()
     {

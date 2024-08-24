@@ -64,6 +64,9 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
 
         InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreterPtr, 0);
         OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreterPtr, 0);
+
+        InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(InputTensor);
+        OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 
     /// <summary>
