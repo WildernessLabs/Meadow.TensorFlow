@@ -8,8 +8,6 @@ namespace Meadow.TensorFlow;
 /// </summary>
 public class TensorSafeHandle : SafeHandle
 {
-    private readonly IntPtr _handle;
-
     /// <inheritdoc />
     public override bool IsInvalid => handle == IntPtr.Zero;
 
@@ -43,5 +41,5 @@ public class TensorSafeHandle : SafeHandle
     /// <param name="tensor">The TensorSafeHandle to be converted.</param>
     /// <returns>The handle of the tensor.</returns>
     public static implicit operator IntPtr(TensorSafeHandle tensor)
-        => tensor._handle;
+        => tensor.handle;
 }

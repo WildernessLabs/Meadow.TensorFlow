@@ -1,17 +1,14 @@
 ﻿using MagicWand.Models;
 using Meadow;
 using Meadow.Devices;
-using Meadow.Foundation.Sensors.Motion;
 using System;
 using System.Threading.Tasks;
 
 namespace MagicWand;
 
-public class MeadowApp : App<F7FeatherV2>
+public class MeadowApp : ProjectLabCoreComputeApp
 {
     MagicWandModel wandModel;
-
-    Mpu6050 accelerometer;
 
     readonly TimeSpan UpdateInverval = TimeSpan.FromMilliseconds(40);
 
@@ -22,8 +19,6 @@ public class MeadowApp : App<F7FeatherV2>
         Resolver.Log.Info("Initialize...");
 
         wandModel = new MagicWandModel(MagicWandModelData.Data);
-
-        accelerometer = new Mpu6050(Device.CreateI2cBus());
 
         return Task.CompletedTask;
     }
@@ -40,6 +35,10 @@ public class MeadowApp : App<F7FeatherV2>
 
             var modelOutput = wandModel.Predict();
 
+            var gesture = wandModel.GetGesture(modelOutput);
+
+            Console.WriteLine($"Detected {gesture} gesture");
+
             await Task.Delay(UpdateInverval);
         }
     }
@@ -50,10 +49,10 @@ public class MeadowApp : App<F7FeatherV2>
 
         for (int i = 0; i < accelData.Length; i += 3)
         {
-            var data = await accelerometer.Read();
-            float x = (float)data.Acceleration3D?.X.Gravity;
-            float y = (float)data.Acceleration3D?.Y.Gravity;
-            float z = (float)data.Acceleration3D?.Z.Gravity;
+            var data = await Hardware.Accelerometer.Read();
+            float x = (float)data.X.Gravity;
+            float y = (float)data.Y.Gravity;
+            float z = (float)data.Z.Gravity;
 
             accelData[i] = -1 * x * 1000;
             accelData[i + 1] = -1 * y * 1000;
