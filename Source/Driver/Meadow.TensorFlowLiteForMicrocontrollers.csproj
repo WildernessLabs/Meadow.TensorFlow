@@ -11,7 +11,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/WildernessLabs/Meadow.TensorFlow</RepositoryUrl>
     <PackageTags>Meadow,Tensor,Flow,TensorFlow,Machine,Learning,ML,AI,artificial,intelligence,edge,microcontroller,microcontrollers</PackageTags>
-    <Version>0.3.0</Version>
+    <Version>1.13.0</Version>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
