@@ -8,12 +8,12 @@ public interface ITensorFlowLiteInterpreter
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
     /// </summary>
-    TensorFlowLiteQuantizationParams InputQuantizationParams { get; }
+    QuantizationParams InputQuantizationParams { get; }
 
     /// <summary>
     /// Gets the quantization parameters for the output tensor.
     /// </summary>
-    TensorFlowLiteQuantizationParams OutputQuantizationParams { get; }
+    QuantizationParams OutputQuantizationParams { get; }
 
     /// <summary>
     /// Gets or sets the status of the last operation performed by the TensorFlow Lite interpreter.
@@ -32,6 +32,11 @@ public interface ITensorFlowLiteInterpreter
     /// <param name="index">The index at which to set the data.</param>
     /// <param name="value">The int8 value to set.</param>
     void SetInputTensorInt8Data(int index, sbyte value);
+
+    /// <summary>
+    /// Allocates tensors for the TensorFlow Lite Micro interpreter.
+    /// </summary>
+    TensorFlowLiteStatus AllocateTensors();
 
     /// <summary>
     /// Retrieves the int8 data at the specified index from the output tensor.
@@ -57,7 +62,7 @@ public interface ITensorFlowLiteInterpreter
     /// <summary>
     /// Invokes the TensorFlow Lite interpreter for inference.
     /// </summary>
-    void InvokeInterpreter();
+    TensorFlowLiteStatus InvokeInterpreter();
 
     /// <summary>
     /// Retrieves the number of output tensors produced by the TensorFlow Lite interpreter.
@@ -100,5 +105,5 @@ public interface ITensorFlowLiteInterpreter
     /// Retrieves the quantization parameters of the output tensor.
     /// </summary>
     /// <returns>The quantization parameters of the output tensor.</returns>
-    TensorFlowLiteQuantizationParams GetOutputTensorQuantizationParams();
+    QuantizationParams GetOutputTensorQuantizationParams();
 }

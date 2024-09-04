@@ -11,7 +11,7 @@
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/WildernessLabs/Meadow.TensorFlow</RepositoryUrl>
     <PackageTags>Meadow,Tensor,Flow,TensorFlow,Machine,Learning,ML,AI,artificial,intelligence,edge,microcontroller,microcontrollers</PackageTags>
-    <Version>0.3.0</Version>
+    <Version>1.13.0</Version>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -24,6 +24,8 @@
   <ItemGroup>
     <None Include="icon.png" Pack="true" PackagePath="" />
     <None Include="Readme.md" Pack="true" PackagePath="" />
-	<Content Include="..\..\TensorFlow\TensorFlow.so" Pack="true" PackageCopyToOutput="true" />
+	<Content Include="..\..\TensorFlow\TensorFlow.so" Pack="true" PackageCopyToOutput="true">
+	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	</Content>
   </ItemGroup>
 </Project>

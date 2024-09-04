@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
 
 /// <summary>
 /// Represents TensorFlow Lite for microcontrollers interpreter.
 /// </summary>
-public class TensorFlowLite : ITensorFlowLiteInterpreter
+internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
 {
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
     /// </summary>
-    public TensorFlowLiteQuantizationParams InputQuantizationParams { get; private set; }
+    public QuantizationParams InputQuantizationParams { get; private set; }
 
     /// <summary>
     /// Gets the quantization parameters for the output tensor.
     /// </summary>
-    public TensorFlowLiteQuantizationParams OutputQuantizationParams { get; private set; }
+    public QuantizationParams OutputQuantizationParams { get; private set; }
 
     /// <summary>
     /// Gets or sets the status of the last operation performed by the TensorFlow Lite interpreter.
@@ -26,67 +25,45 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// <summary>
     /// Gets the input tensor used by the TensorFlow Lite interpreter.
     /// </summary>
-    protected TensorFlowLiteTensor InputTensor { get; set; }
+    internal TensorFlowLiteTensor InputTensor { get; }
 
     /// <summary>
     /// Gets the output tensor produced by the TensorFlow Lite interpreter.
     /// </summary>
-    protected TensorFlowLiteTensor OutputTensor { get; set; }
+    internal TensorFlowLiteTensor OutputTensor { get; }
 
-    private readonly IntPtr interpreter;
+    internal IntPtr Handle => _interpreterPtr;
+
+    private bool disposedValue;
+    private IntPtr _interpreterOptionsPtr;
+    private IntPtr _interpreterPtr;
 
     /// <summary>
-    /// Initializes a new instance of the TensorFlowLite class with the specified tensor model and arena size.
+    /// Initializes a new instance of the Interpreter class with the specified tensor model and arena size.
     /// </summary>
-    /// <param name="tensorModel">The tensor model containing the TensorFlow Lite model data.</param>
-    /// <param name="arenaSize">The size of the memory arena allocated for TensorFlow Lite operations.</param>
     /// <exception cref="Exception">Thrown when allocation or initialization fails.</exception>
-    public TensorFlowLite(ITensorModel tensorModel, int arenaSize)
+    public Interpreter(IntPtr modelOptionsPtr)
     {
-        IntPtr modelPtr = Marshal.AllocHGlobal(tensorModel.Size * sizeof(int));
-
-        if (modelPtr == IntPtr.Zero)
-        {
-            throw new Exception("Failed to allocate model memory");
-        }
-
-        IntPtr arenaPtr = Marshal.AllocHGlobal(arenaSize * sizeof(int));
-
-        if (arenaPtr == IntPtr.Zero)
-        {
-            Marshal.FreeHGlobal(modelPtr);
-            throw new Exception("Failed to allocate arena memory");
-        }
-
-        Marshal.Copy(tensorModel.Data, 0, modelPtr, tensorModel.Size);
-
-        var modelOptionsPtr = TensorFlowLiteBindings.TfLiteMicroGetModel(arenaSize, arenaPtr, modelPtr);
-        if (modelOptionsPtr == IntPtr.Zero)
-        {
-            throw new Exception("Failed to load the model");
-        }
-
-        var interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
-        if (interpreterOptionsPtr == IntPtr.Zero)
+        _interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
+        if (_interpreterOptionsPtr == IntPtr.Zero)
         {
             throw new Exception("Failed to create interpreter options");
         }
 
-        interpreter = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(interpreterOptionsPtr, modelOptionsPtr);
-        if (interpreter == IntPtr.Zero)
+        _interpreterPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, modelOptionsPtr);
+        if (_interpreterPtr == IntPtr.Zero)
         {
             throw new Exception("Failed to create interpreter");
         }
 
-        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(interpreter);
-
-        if (OperationStatus != TensorFlowLiteStatus.Ok)
+        var status = AllocateTensors();
+        if (status != TensorFlowLiteStatus.Ok)
         {
             throw new Exception("Failed to allocate tensors");
         }
 
-        InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(interpreter, 0);
-        OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(interpreter, 0);
+        InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreterPtr, 0);
+        OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreterPtr, 0);
 
         InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(InputTensor);
         OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
@@ -144,9 +121,9 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// <summary>
     /// Invokes the TensorFlow Lite interpreter for inference.
     /// </summary>
-    public void InvokeInterpreter()
+    public TensorFlowLiteStatus InvokeInterpreter()
     {
-        OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(interpreter);
+        return OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreterPtr);
     }
 
     /// <summary>
@@ -155,7 +132,7 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// <returns>The number of output tensors.</returns>
     public int GetOutputTensorCount()
     {
-        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(interpreter);
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(_interpreterPtr);
     }
 
     /// <summary>
@@ -164,7 +141,7 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// <returns>The number of input tensors.</returns>
     public int GetInputTensorCount()
     {
-        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(interpreter);
+        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreterPtr);
     }
 
     /// <summary>
@@ -228,32 +205,45 @@ public class TensorFlowLite : ITensorFlowLiteInterpreter
     /// Retrieves the quantization parameters of the output tensor.
     /// </summary>
     /// <returns>The quantization parameters of the output tensor.</returns>
-    public TensorFlowLiteQuantizationParams GetOutputTensorQuantizationParams()
+    public QuantizationParams GetOutputTensorQuantizationParams()
     {
         return TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 
-    /// <summary>
-    /// Delete the TensorFlow Model.
-    /// </summary>
-    public void DeleteModel()
+    protected virtual void Dispose(bool disposing)
     {
-        TensorFlowLiteBindings.TfLiteMicroModelDelete(interpreter);
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                // TODO: dispose managed state (managed objects)
+            }
+
+            if (_interpreterOptionsPtr != IntPtr.Zero)
+            {
+                TensorFlowLiteBindings.TfLiteMicroInterpreterOptionDelete(_interpreterOptionsPtr);
+                _interpreterOptionsPtr = IntPtr.Zero;
+            }
+
+            if (_interpreterPtr != IntPtr.Zero)
+            {
+                TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(_interpreterPtr);
+                _interpreterPtr = IntPtr.Zero;
+            }
+
+            disposedValue = true;
+        }
     }
 
-    /// <summary>
-    /// Delete the Interpreter Option.
-    /// </summary>
-    public void DeleteInterpreterOption()
+    public void Dispose()
     {
-        TensorFlowLiteBindings.TfLiteMicroInterpreterOptionDelete(interpreter);
+        // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
-    /// <summary>
-    /// Delete the Interpreter.
-    /// </summary>
-    public void DeleteInterpreter()
+    public TensorFlowLiteStatus AllocateTensors()
     {
-        TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(interpreter);
+        return OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(_interpreterPtr);
     }
 }

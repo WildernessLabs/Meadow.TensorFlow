@@ -53,8 +53,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "Samples\Hello
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicWand", "Samples\MagicWand\MagicWand.csproj", "{479675E5-5193-4B86-8F1E-78A07C473048}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Motion.Mpu6050", "..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Motion.Mpu6050\Driver\Sensors.Motion.Mpu6050.csproj", "{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,10 +147,6 @@ Global
 		{479675E5-5193-4B86-8F1E-78A07C473048}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{479675E5-5193-4B86-8F1E-78A07C473048}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{479675E5-5193-4B86-8F1E-78A07C473048}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -180,7 +174,6 @@ Global
 		{DE51C7A8-3464-4ADF-A91E-FD939A8F8CED} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
 		{E40B2505-8856-41C0-9CA8-EEAA5AAE6B14} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
 		{479675E5-5193-4B86-8F1E-78A07C473048} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
-		{4CE92EA2-2F7B-428C-911B-1E828A7C11BA} = {E34ADEDD-3759-40C8-918C-E10E896F84C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF0B3E5F-EFD0-4EB3-9197-84B122ADFE42}

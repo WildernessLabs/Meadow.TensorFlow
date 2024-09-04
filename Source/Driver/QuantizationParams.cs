@@ -3,7 +3,7 @@ namespace Meadow.TensorFlow
     /// <summary>
     /// Struct representing the parameters for asymmetric quantization in TensorFlow Lite.
     /// </summary>
-    public struct TensorFlowLiteQuantizationParams
+    public struct QuantizationParams
     {
         /// <summary>
         /// Gets or sets the scale factor applied to quantized values.

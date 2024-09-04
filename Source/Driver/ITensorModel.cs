@@ -1,17 +1,19 @@
 ﻿namespace Meadow.TensorFlow;
 
 /// <summary>
-/// Represents a model data interface for TensorFlow Lite.
+/// Represents a tensor model interface for creating inputs and making predictions.
 /// </summary>
-public interface ITensorModel
+public interface ITensorModel<T>
+    where T : struct
 {
     /// <summary>
-    /// Gets the model data as a byte array.
+    /// Makes a prediction based on the provided input tensor.
     /// </summary>
-    byte[] Data { get; }
+    /// <returns>A <see cref="ModelOutput{T}"/> representing the output tensor.</returns>
+    ModelOutput<T> Predict();
 
     /// <summary>
-    /// Gets the size of the model data.
+    /// Retrieves the length of the input tensor.
     /// </summary>
     int Size { get; }
 }

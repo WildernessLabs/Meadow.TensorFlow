@@ -6,7 +6,7 @@ namespace Meadow.TensorFlow;
 /// <summary>
 /// Provides C API bindings for TensorFlow Lite for Microcontrollers.
 /// </summary>
-public static class TensorFlowLiteBindings
+internal static class TensorFlowLiteBindings
 {
     /// <summary>
     /// The name of the TensorFlow Lite library.
@@ -114,7 +114,7 @@ public static class TensorFlowLiteBindings
     /// <param name="tensor">The tensor.</param>
     /// <returns>The quantization parameters of the tensor.</returns>
     [DllImport(TensorFlowLibName)]
-    public static extern TensorFlowLiteQuantizationParams TfLiteMicroTensorQuantizationParams(TensorFlowLiteTensor tensor);
+    public static extern QuantizationParams TfLiteMicroTensorQuantizationParams(TensorFlowLiteTensor tensor);
 
     /// <summary>
     /// Sets a mutable option for TensorFlow Lite Micro.
@@ -195,5 +195,4 @@ public static class TensorFlowLiteBindings
     /// <param name="interpreter">.</param>
     [DllImport(TensorFlowLibName)]
     public static extern void TfLiteMicroInterpreterOptionDelete(IntPtr interpreter);
-
 }
