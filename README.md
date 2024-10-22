@@ -1,4 +1,4 @@
-# Meadow.TensorFlow
+# Meadow TensorFlowLite for MicroControllers
 
 Welcome to the Meadow TensorFlow Library. This library provides a .NET application using the [TensorFlow Lite Micro](https://www.tensorflow.org/lite/microcontrollers), a powerful tool using machine learning on microcontrollers. The Meadow TensorFlow implements the most common TensorFlow API in C# which allows .NET developers to develop and deploy Machine Learning models on Meadow Devices.
 
