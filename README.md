@@ -2,16 +2,6 @@
 
 Welcome to the Meadow TensorFlow Library. This library provides a .NET application using the [TensorFlow Lite Micro](https://www.tensorflow.org/lite/microcontrollers), a powerful tool using machine learning on microcontrollers. The Meadow TensorFlow implements the most common TensorFlow API in C# which allows .NET developers to develop and deploy Machine Learning models on Meadow Devices.
 
-## Workflow
-
-The following steps are required to run the Meadow TensorFlow Library.
-  - Write the TensorFlow DLL on the development board. You may find on `TensorFlow/TensorFlow.so`
-   ```bash
-  meadow file write -f TensorFlow.so
-  ```
-  - Build the Meadow application
-  - Deploy
-
 ## Demos
 
 ### Hello World
