@@ -4,15 +4,12 @@ using Meadow.Foundation.Graphics.MicroLayout;
 using Meadow.Peripherals.Displays;
 using System.Threading;
 
+using Meadow.TensorFlow;
+using PersonDetection.Models;
+
 namespace PersonDetection.Controllers;
 public class DisplayController
 {
-    public readonly Image[] images =
-    {
-        Image.LoadFromResource("Resources.no_person.bmp"),
-        Image.LoadFromResource("Resources.person.bmp"),
-    };
-
     private readonly Font16x24 font16X24 = new Font16x24();
     private readonly Font12x16 font12X16 = new Font12x16();
 
@@ -61,7 +58,7 @@ public class DisplayController
         displayScreen.Controls.Add(classification);
     }
 
-    public void ShowClassification(int state, int scoreValue)
+    public void ShowClassification(int state, ModelOutput<sbyte> output)
     {
         classification.IsVisible = true;
         classification.Text = state switch
@@ -71,7 +68,7 @@ public class DisplayController
         };
 
         score.IsVisible = true;
-        score.Text = $"Score : {scoreValue}%";
+        score.Text = $"Score : {output[state]}%";
     }
 
     public void ShowImage(int width, int height, IPixelBuffer buffer)

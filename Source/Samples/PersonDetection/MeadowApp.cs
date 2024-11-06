@@ -18,25 +18,18 @@ using PersonDetection.Controllers;
 
 namespace PersonDetection;
 
-
 public class MeadowApp : App<F7CoreComputeV2>
 {
     private IProjectLabHardware projLab;
     private DisplayController displayController;
-    public const sbyte Person = 1;
-    public const sbyte noPerson = 0;
-
-    PersonDetectionTensorFlow personDetectionTF;
-    readonly PersonDetectionModel personDetectionModel = new();
-    const int ArenaSize = 134 * 1024;
+    PersonDetectionModel personDetectionModel;
 
     Vc0706 camera;
     private DisplayScreen displayScreen;
 
     public override Task Initialize()
     {
-        personDetectionTF = new PersonDetectionTensorFlow(personDetectionModel, ArenaSize);
-
+        personDetectionModel = new PersonDetectionModel(PersonDetectionModelData.Data);
         projLab = ProjectLab.Create();
         displayController = new DisplayController(projLab.Display);
 
@@ -52,33 +45,15 @@ public class MeadowApp : App<F7CoreComputeV2>
     public override async Task Run()
     {
         var imageBuffer = await TakePicture();
-        CopyPixelBufferToTensor(imageBuffer);
+        var dataInput = await CopyPixelBufferToTensor(imageBuffer);
+        personDetectionModel.Inputs.SetData(dataInput);
 
-        
-        personDetectionTF.InvokeInterpreter();
+        var modelOutput =  personDetectionModel.Predict();
 
-        if (personDetectionTF.OperationStatus != TensorFlowLiteStatus.Ok)
-        {
-            Resolver.Log.Info("Invoke failed");
-            return;
-        }
-
-        int outputDimsSize = personDetectionTF.GetOutputTensorDimensionsSize();
-        int outputData0 = personDetectionTF.GetInputTensorDimension(0);
-        int outputDimsData0Size = personDetectionTF.GetOutputTensorDimension(1);
-
-        Resolver.Log.Info($" Dims Size: {outputDimsSize}, Data 0: {outputData0},  Size:{outputDimsData0Size}");
-
-        sbyte personScore = personDetectionTF.GetOutputTensorInt8Data(1);
-        sbyte noPersonScore = personDetectionTF.GetOutputTensorInt8Data(0);
-        
-        Resolver.Log.Info($"Score \n - Person: {personScore}\n - No Person:{noPersonScore}");
-
-        int state = noPersonScore > personScore ? noPerson : Person;
-        int score = state != Person ? noPersonScore : personScore;
+        var result = personDetectionModel.GetOutputDetection(modelOutput);
 
         displayController.ShowImage(96, 96, imageBuffer);
-        displayController.ShowClassification(state, score);
+        displayController.ShowClassification((int)result, modelOutput);
     }
 
     public async Task<IPixelBuffer> TakePicture()
@@ -103,14 +78,18 @@ public class MeadowApp : App<F7CoreComputeV2>
         return pixelBuffer.Resize<BufferGray8>(96, 96);
     }
 
-    public static void CopyPixelBufferToTensor(IPixelBuffer pixel)
+    public async Task<sbyte[]> CopyPixelBufferToTensor(IPixelBuffer pixel)
     {
         using var memStream = new MemoryStream(pixel.Buffer);
+        sbyte[] data = new sbyte[memStream.Length]; 
+
         int index = 0;
         memStream.Seek(0, SeekOrigin.Begin);
         while (index < memStream.Length)
         {
-            personDetectionTF.InputData(index++, (sbyte)memStream.ReadByte());
+            data[index] = (sbyte)memStream.ReadByte();
+            index++;
         }
+        return data;
     }
 }
