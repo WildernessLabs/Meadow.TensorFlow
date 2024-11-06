@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Meadow.TensorFlow;
@@ -18,12 +19,12 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
     /// </summary>
-    public QuantizationParams InputQuantizationParams { get; }
+    public QuantizationParams InputQuantizationParams { get; private set; }
 
     /// <summary>
     /// Gets the quantization parameters for the output tensor.
     /// </summary>
-    public QuantizationParams OutputQuantizationParams { get; }
+    public QuantizationParams OutputQuantizationParams { get; private set; }
 
     /// <summary>
     /// Gets a value indicating whether the model is disposed.
@@ -36,9 +37,21 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
     /// <summary>
     /// The input tensor for the model.
     /// </summary>
-    public ModelInput<T> Inputs { get; }
+    public ModelInput<T> Inputs { get; private set; }
 
     private IntPtr Handle => _handle.IsAllocated ? _handle.AddrOfPinnedObject() : IntPtr.Zero;
+
+    public Model(FileInfo modelFile, int arenaSize)
+    {
+        Console.WriteLine($"Loading file {modelFile.Length} bytes");
+
+        var buffer = new byte[modelFile.Length];
+
+        using var stream = modelFile.OpenRead();
+        stream.Read(buffer, 0, buffer.Length);
+
+        Initialize(buffer, arenaSize);
+    }
 
     /// <summary>
     /// Initializes a new instance of the Model class with the specified model data and arena size.
@@ -46,6 +59,11 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
     /// <param name="data">The model data.</param>
     /// <param name="arenaSize">The size of the arena for the interpreter.</param>
     public Model(byte[] data, int arenaSize)
+    {
+        Initialize(data, arenaSize);
+    }
+
+    private void Initialize(byte[] data, int arenaSize)
     {
         _data = data;
 

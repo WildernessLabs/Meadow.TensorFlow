@@ -53,6 +53,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloWorld", "Samples\Hello
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicWand", "Samples\MagicWand\MagicWand.csproj", "{479675E5-5193-4B86-8F1E-78A07C473048}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MnistDigit", "Samples\MnistDigit\MnistDigit.csproj", "{5478A486-DBAC-4F42-9318-F3DBF6637978}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -147,6 +149,12 @@ Global
 		{479675E5-5193-4B86-8F1E-78A07C473048}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{479675E5-5193-4B86-8F1E-78A07C473048}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{479675E5-5193-4B86-8F1E-78A07C473048}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5478A486-DBAC-4F42-9318-F3DBF6637978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5478A486-DBAC-4F42-9318-F3DBF6637978}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5478A486-DBAC-4F42-9318-F3DBF6637978}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5478A486-DBAC-4F42-9318-F3DBF6637978}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5478A486-DBAC-4F42-9318-F3DBF6637978}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5478A486-DBAC-4F42-9318-F3DBF6637978}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -174,6 +182,7 @@ Global
 		{DE51C7A8-3464-4ADF-A91E-FD939A8F8CED} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
 		{E40B2505-8856-41C0-9CA8-EEAA5AAE6B14} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
 		{479675E5-5193-4B86-8F1E-78A07C473048} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
+		{5478A486-DBAC-4F42-9318-F3DBF6637978} = {47F3F4D4-721A-47B0-AAFA-E7A1155BB67C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF0B3E5F-EFD0-4EB3-9197-84B122ADFE42}

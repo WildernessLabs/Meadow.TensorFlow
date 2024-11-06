@@ -1,0 +1,37 @@
+﻿<Project Sdk="Meadow.Sdk/1.1.0">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <OutputType>Library</OutputType>
+        <AssemblyName>App</AssemblyName>
+        <LangVersion>10.0</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Include="app.config.yaml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\..\..\Meadow.Core\source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
+        <ProjectReference Include="..\..\..\..\Meadow.ProjectLab\Source\Meadow.ProjectLab\Meadow.ProjectLab.csproj" />
+        <ProjectReference Include="..\..\Driver\Meadow.TensorFlowLiteForMicrocontrollers.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Update="app.build.yaml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="mnist.quantized.tflite">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="4.bmp">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="6.bmp">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Models\" />
+      <Folder Include="TestData\" />
+    </ItemGroup>
+</Project>

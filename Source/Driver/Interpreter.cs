@@ -47,19 +47,19 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
         _interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
         if (_interpreterOptionsPtr == IntPtr.Zero)
         {
-            throw new Exception("Failed to create interpreter options");
+            throw new TensorFlowLiteException("Failed to create interpreter options");
         }
 
         _interpreterPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, modelOptionsPtr);
         if (_interpreterPtr == IntPtr.Zero)
         {
-            throw new Exception("Failed to create interpreter");
+            throw new TensorFlowLiteException("Failed to create interpreter");
         }
 
         var status = AllocateTensors();
         if (status != TensorFlowLiteStatus.Ok)
         {
-            throw new Exception("Failed to allocate tensors");
+            throw new TensorFlowLiteException("Failed to allocate tensors", status);
         }
 
         InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreterPtr, 0);
