@@ -17,16 +17,25 @@
         <ProjectReference Include="..\..\Driver\Meadow.TensorFlowLiteForMicrocontrollers.csproj" />
     </ItemGroup>
     <ItemGroup>
+      <None Update="0.bmp">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="2.bmp">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="app.build.yaml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="mnist.quantized.tflite">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </None>
       <None Update="4.bmp">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="6.bmp">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="mnist.tflite">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
