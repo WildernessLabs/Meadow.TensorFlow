@@ -4,18 +4,18 @@ using Meadow.Foundation.Graphics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Mnist_Demo;
+namespace PersonDetector_Demo;
 
 public class MeadowApp : ProjectLabCoreComputeApp
 {
-    private MnistDigitModel model;
+    private PersonDetectorModel model;
 
     public override Task Initialize()
     {
         Resolver.Log.Info("Loading model...");
 
-        var modelFile = new FileInfo("/meadow0/mnist.tflite");
-        model = new MnistDigitModel(modelFile);
+        var modelFile = new FileInfo("/meadow0/person_detect.tflite");
+        model = new PersonDetectorModel(modelFile);
 
         return Task.CompletedTask;
     }
@@ -26,10 +26,8 @@ public class MeadowApp : ProjectLabCoreComputeApp
 
         var tests = new string[]
             {
-                "/meadow0/4.bmp",
-                "/meadow0/6.bmp",
-                "/meadow0/0.bmp",
-                "/meadow0/2.bmp",
+                "/meadow0/person.bmp",
+                "/meadow0/no_person.bmp",
             };
 
         foreach (var test in tests)
@@ -38,7 +36,7 @@ public class MeadowApp : ProjectLabCoreComputeApp
             var img = Image.LoadFromFile(test);
 
             var result = model.Classify(img);
-            Resolver.Log.Info($"this image is a {result.Class}: Confidence {result.Confidence:N1}");
+            Resolver.Log.Info($"this image is {result}");
         }
 
         return Task.CompletedTask;

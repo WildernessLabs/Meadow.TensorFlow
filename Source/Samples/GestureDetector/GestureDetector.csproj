@@ -15,6 +15,6 @@
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\Meadow.Core\source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
         <ProjectReference Include="..\..\..\..\Meadow.ProjectLab\Source\Meadow.ProjectLab\Meadow.ProjectLab.csproj" />
-        <ProjectReference Include="..\..\Driver\Meadow.TensorFlowLiteForMicrocontrollers.csproj" />
+        <ProjectReference Include="..\..\Driver\Meadow.Foundation.RTLite.csproj" />
     </ItemGroup>
 </Project>

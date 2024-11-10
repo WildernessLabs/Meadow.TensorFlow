@@ -7,12 +7,16 @@
         <LangVersion>10.0</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <None Include="app.config.yaml">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
+      <Compile Remove="Models\**" />
+      <Compile Remove="TestData\**" />
+      <EmbeddedResource Remove="Models\**" />
+      <EmbeddedResource Remove="TestData\**" />
+      <None Remove="Models\**" />
+      <None Remove="TestData\**" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\..\..\..\Meadow.Core\source\implementations\f7\Meadow.F7\Meadow.F7.csproj" />
+        <ProjectReference Include="..\..\..\..\Meadow.Core\source\Meadow.Core\Meadow.Core.csproj" />
         <ProjectReference Include="..\..\..\..\Meadow.ProjectLab\Source\Meadow.ProjectLab\Meadow.ProjectLab.csproj" />
         <ProjectReference Include="..\..\Driver\Meadow.Foundation.RTLite.csproj" />
     </ItemGroup>
@@ -38,9 +42,11 @@
       <None Update="mnist.tflite">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Models\" />
-      <Folder Include="TestData\" />
+      <None Update="no_person.bmp">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="person.bmp">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 </Project>

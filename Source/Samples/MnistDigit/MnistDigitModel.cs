@@ -1,5 +1,4 @@
-﻿using Meadow;
-using Meadow.Foundation.Graphics;
+﻿using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Foundation.RTLite;
 using Meadow.Peripherals.Displays;
@@ -10,6 +9,20 @@ namespace Mnist_Demo;
 public class MnistDigitModel : Model<float>
 {
     private static readonly int ArenaSize = 10 * 1024;
+
+    public enum DigitClass
+    {
+        Zero = 0,
+        One = 1,
+        Two = 2,
+        Three = 3,
+        Four = 4,
+        Five = 5,
+        Six = 6,
+        Seven = 7,
+        Eight = 8,
+        Nine = 9
+    }
 
     public MnistDigitModel(FileInfo modelFile)
         : base(modelFile, ArenaSize)
@@ -36,16 +49,14 @@ public class MnistDigitModel : Model<float>
         return normalizedData;
     }
 
-    public void Classify(Image image)
+    public (DigitClass Class, float Confidence) Classify(Image image)
     {
         var inputs = ResizeAndNormalize(image, 28);
 
         Inputs.SetData(inputs);
 
         var prediction = this.Predict();
-
-        var result = prediction.GetMaxElementIndexAndValue(10);
-
-        Resolver.Log.Info($"this image is a {result.Class}: Confidence {result.Confidence:N1}");
+        var max = prediction.GetMaxElementIndexAndValue(10);
+        return ((DigitClass)max.Class, max.Confidence);
     }
 }
