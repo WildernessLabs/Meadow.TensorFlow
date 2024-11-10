@@ -4,7 +4,7 @@ using Meadow.Foundation.Graphics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace MagicWand;
+namespace Mnist_Demo;
 
 public class MeadowApp : ProjectLabCoreComputeApp
 {
@@ -33,10 +33,10 @@ public class MeadowApp : ProjectLabCoreComputeApp
 
         var tests = new string[]
             {
+                "/meadow0/4.bmp",
+                "/meadow0/6.bmp",
                 "/meadow0/0.bmp",
                 "/meadow0/2.bmp",
-                "/meadow0/4.bmp",
-                "/meadow0/6.bmp"
             };
 
         foreach (var test in tests)

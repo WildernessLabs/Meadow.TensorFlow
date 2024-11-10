@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Represents the input of a TensorFlow model, allowing setting of individual input tensors.
+/// Represents the input of a RTLite model, allowing setting of individual input tensors.
 /// </summary>
 /// <typeparam name="T">The data type of the input tensor. Must be either <see cref="float"/> or <see cref="sbyte"/>.</typeparam>
 public class ModelInput<T>
@@ -15,7 +15,7 @@ public class ModelInput<T>
     /// <summary>
     /// Initializes a new instance of the <see cref="ModelInput{T}"/> class with the specified interpreter and inputs.
     /// </summary>
-    /// <param name="interpreter">The interpreter used to process the TensorFlow model.</param>
+    /// <param name="interpreter">The interpreter used to process the RTLite model.</param>
     /// <param name="inputs">The initial input values to set in the model.</param>
     internal ModelInput(Interpreter interpreter, IEnumerable<T> inputs)
         : this(interpreter)
@@ -32,7 +32,7 @@ public class ModelInput<T>
     /// <summary>
     /// Initializes a new instance of the <see cref="ModelInput{T}"/> class with the specified interpreter.
     /// </summary>
-    /// <param name="interpreter">The interpreter used to process the TensorFlow model.</param>
+    /// <param name="interpreter">The interpreter used to process the RTLite model.</param>
     internal ModelInput(Interpreter interpreter)
     {
         _interpreter = interpreter;
@@ -41,7 +41,7 @@ public class ModelInput<T>
     /// <summary>
     /// Gets the number of input tensors in the model.
     /// </summary>
-    public int Length => TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreter.Handle);
+    public int Length => Native.TfLiteMicroInterpreterGetInputCount(_interpreter.Handle);
 
     /// <summary>
     /// Sets the input tensor value at the specified index.
@@ -92,7 +92,7 @@ public class ModelInput<T>
     private void Set(int index, float value)
     {
         // TODO: validate index
-        TensorFlowLiteBindings.TfLiteMicroSetFloatData(_interpreter.InputTensor, index, value);
+        Native.TfLiteMicroSetFloatData(_interpreter.InputTensor, index, value);
     }
 
     /// <summary>
@@ -103,6 +103,6 @@ public class ModelInput<T>
     private void Set(int index, sbyte value)
     {
         // TODO: validate index
-        TensorFlowLiteBindings.TfLiteMicroSetInt8Data(_interpreter.InputTensor, index, value);
+        Native.TfLiteMicroSetInt8Data(_interpreter.InputTensor, index, value);
     }
 }

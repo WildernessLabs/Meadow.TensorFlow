@@ -2,13 +2,13 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Represents a TensorFlow Lite model.
+/// Represents a RTLite model.
 /// </summary>
 public abstract class Model<T> : ITensorModel<T>, IDisposable
-    where T : struct
+    where T : struct, IComparable<T>
 {
     private byte[] _data;
     private GCHandle _handle;
@@ -76,7 +76,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
             throw new Exception("Failed to allocate arena memory");
         }
 
-        _modelOptionsPtr = TensorFlowLiteBindings.TfLiteMicroGetModel(arenaSize, _arenaHandle, Handle);
+        _modelOptionsPtr = Native.TfLiteMicroGetModel(arenaSize, _arenaHandle, Handle);
         if (_modelOptionsPtr == IntPtr.Zero)
         {
             throw new Exception("Failed to load the model");
@@ -99,7 +99,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
     {
         var status = _interpreter.InvokeInterpreter();
 
-        if (status != TensorFlowLiteStatus.Ok)
+        if (status != RuntimeStatus.Ok)
         {
             throw new Exception();
         }
@@ -132,7 +132,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
 
                 if (_modelOptionsPtr != IntPtr.Zero)
                 {
-                    TensorFlowLiteBindings.TfLiteMicroModelDelete(_modelOptionsPtr);
+                    Native.TfLiteMicroModelDelete(_modelOptionsPtr);
                     _modelOptionsPtr = IntPtr.Zero;
                 }
             }

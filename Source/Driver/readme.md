@@ -1,8 +1,8 @@
-# Meadow.TensorFlowLiteForMicrocontrollers
+# Meadow.Foundation.RTLite
 
-**TensorFlow Lite for Microcontrollers integration for Wilderness Labs Meadow**
+**RTLite (formerly TensorFlow Lite) for Microcontrollers integration for Wilderness Labs Meadow**
 
-The **TensorFlowLiteForMicrocontrollers** library provides TensorFlow Lite for Microcontrollers integration for the [Wilderness Labs](http://www.wildernesslabs.co) Meadow .NET IoT platform, enabling machine learning capabilities on Meadow F7 hardware.
+The **RTLiteForMicrocontrollers** library provides RTLite for Microcontrollers integration for the [Wilderness Labs](http://www.wildernesslabs.co) Meadow .NET IoT platform, enabling machine learning capabilities on Meadow F7 hardware.
 
 For more information on developing for Meadow, visit [developer.wildernesslabs.co](http://developer.wildernesslabs.co/).
 
@@ -12,7 +12,7 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 You can install the library from Visual Studio using the NuGet Package Manager or from the command line using the .NET CLI:
 
-`dotnet add package Meadow.TensorFlowLiteForMicrocontrollers`
+`dotnet add package Meadow.Foundation.RTLiteForMicrocontrollers`
 
 ## How to Contribute
 

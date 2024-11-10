@@ -1,20 +1,20 @@
 ﻿using System;
 
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Represents a TensorFlow Lite exception
+/// Represents a RTLite exception
 /// </summary>
-public class TensorFlowLiteException : Exception
+public class RTLiteException : Exception
 {
-    public TensorFlowLiteStatus? Status { get; }
+    public RuntimeStatus? Status { get; }
 
-    internal TensorFlowLiteException(string message)
+    internal RTLiteException(string message)
         : base(message)
     {
     }
 
-    internal TensorFlowLiteException(string message, TensorFlowLiteStatus status)
+    internal RTLiteException(string message, RuntimeStatus status)
         : base($"{message}: {status}")
     {
     }

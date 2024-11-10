@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Represents TensorFlow Lite for microcontrollers interpreter.
+/// Represents RTLite for microcontrollers interpreter.
 /// </summary>
-internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
+internal class Interpreter : IInterpreter, IDisposable
 {
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
@@ -18,19 +18,19 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     public QuantizationParams OutputQuantizationParams { get; private set; }
 
     /// <summary>
-    /// Gets or sets the status of the last operation performed by the TensorFlow Lite interpreter.
+    /// Gets or sets the status of the last operation performed by the RTLite interpreter.
     /// </summary>
-    public TensorFlowLiteStatus OperationStatus { get; set; } = TensorFlowLiteStatus.Ok;
+    public RuntimeStatus OperationStatus { get; set; } = RuntimeStatus.Ok;
 
     /// <summary>
-    /// Gets the input tensor used by the TensorFlow Lite interpreter.
+    /// Gets the input tensor used by the RTLite interpreter.
     /// </summary>
-    internal TensorFlowLiteTensor InputTensor { get; }
+    internal Tensor InputTensor { get; }
 
     /// <summary>
-    /// Gets the output tensor produced by the TensorFlow Lite interpreter.
+    /// Gets the output tensor produced by the RTLite interpreter.
     /// </summary>
-    internal TensorFlowLiteTensor OutputTensor { get; }
+    internal Tensor OutputTensor { get; private set; }
 
     internal IntPtr Handle => _interpreterPtr;
 
@@ -44,29 +44,29 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <exception cref="Exception">Thrown when allocation or initialization fails.</exception>
     public Interpreter(IntPtr modelOptionsPtr)
     {
-        _interpreterOptionsPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
+        _interpreterOptionsPtr = Native.TfLiteMicroInterpreterOptionCreate(modelOptionsPtr);
         if (_interpreterOptionsPtr == IntPtr.Zero)
         {
-            throw new TensorFlowLiteException("Failed to create interpreter options");
+            throw new RTLiteException("Failed to create interpreter options");
         }
 
-        _interpreterPtr = TensorFlowLiteBindings.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, modelOptionsPtr);
+        _interpreterPtr = Native.TfLiteMicroInterpreterCreate(_interpreterOptionsPtr, modelOptionsPtr);
         if (_interpreterPtr == IntPtr.Zero)
         {
-            throw new TensorFlowLiteException("Failed to create interpreter");
+            throw new RTLiteException("Failed to create interpreter");
         }
 
         var status = AllocateTensors();
-        if (status != TensorFlowLiteStatus.Ok)
+        if (status != RuntimeStatus.Ok)
         {
-            throw new TensorFlowLiteException("Failed to allocate tensors", status);
+            throw new RTLiteException("Failed to allocate tensors", status);
         }
 
-        InputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetInput(_interpreterPtr, 0);
-        OutputTensor = TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutput(_interpreterPtr, 0);
+        InputTensor = Native.TfLiteMicroInterpreterGetInput(_interpreterPtr, 0);
+        OutputTensor = Native.TfLiteMicroInterpreterGetOutput(_interpreterPtr, 0);
 
-        InputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(InputTensor);
-        OutputQuantizationParams = TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
+        InputQuantizationParams = Native.TfLiteMicroTensorQuantizationParams(InputTensor);
+        OutputQuantizationParams = Native.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The length of the input tensor.</returns>
     public int GetInputTensorLength()
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetByte(InputTensor) / sizeof(float);
+        return Native.TfLiteMicroGetByte(InputTensor) / sizeof(float);
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <param name="value">The int8 value to set.</param>
     public void SetInputTensorInt8Data(int index, sbyte value)
     {
-        TensorFlowLiteBindings.TfLiteMicroSetInt8Data(InputTensor, index, value);
+        Native.TfLiteMicroSetInt8Data(InputTensor, index, value);
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The int8 data at the specified index.</returns>
     public sbyte GetOutputTensorInt8Data(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGeInt8tData(OutputTensor, index);
+        return Native.TfLiteMicroGeInt8tData(OutputTensor, index);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <param name="value">The float value to set.</param>
     public void SetInputTensorFloatData(int index, float value)
     {
-        TensorFlowLiteBindings.TfLiteMicroSetFloatData(InputTensor, index, value);
+        Native.TfLiteMicroSetFloatData(InputTensor, index, value);
     }
 
     /// <summary>
@@ -115,42 +115,45 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The float data at the specified index.</returns>
     public float GetOutputTensorFloatData(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(OutputTensor, index);
+        return Native.TfLiteMicroGetFloatData(OutputTensor, index);
     }
 
     /// <summary>
-    /// Invokes the TensorFlow Lite interpreter for inference.
+    /// Invokes the RTLite interpreter for inference.
     /// </summary>
-    public TensorFlowLiteStatus InvokeInterpreter()
+    public RuntimeStatus InvokeInterpreter()
     {
-        return OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterInvoke(_interpreterPtr);
+        OperationStatus = Native.TfLiteMicroInterpreterInvoke(_interpreterPtr);
+        OutputTensor = Native.TfLiteMicroInterpreterGetOutput(_interpreterPtr, 0);
+
+        return OperationStatus;
     }
 
     /// <summary>
-    /// Retrieves the number of output tensors produced by the TensorFlow Lite interpreter.
+    /// Retrieves the number of output tensors produced by the RTLite interpreter.
     /// </summary>
     /// <returns>The number of output tensors.</returns>
     public int GetOutputTensorCount()
     {
-        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(_interpreterPtr);
+        return Native.TfLiteMicroInterpreterGetOutputCount(_interpreterPtr);
     }
 
     /// <summary>
-    /// Retrieves the number of input tensors expected by the TensorFlow Lite interpreter.
+    /// Retrieves the number of input tensors expected by the RTLite interpreter.
     /// </summary>
     /// <returns>The number of input tensors.</returns>
     public int GetInputTensorCount()
     {
-        return TensorFlowLiteBindings.TfLiteMicroInterpreterGetInputCount(_interpreterPtr);
+        return Native.TfLiteMicroInterpreterGetInputCount(_interpreterPtr);
     }
 
     /// <summary>
-    /// Sets a mutable option for TensorFlow Lite interpreter.
+    /// Sets a mutable option for RTLite interpreter.
     /// </summary>
     /// <param name="option">The option value to set.</param>
     public void SetMutableOption(sbyte option)
     {
-        OperationStatus = TensorFlowLiteBindings.TfLiteMicroMutableSetOption(option);
+        OperationStatus = Native.TfLiteMicroMutableSetOption(option);
     }
 
     /// <summary>
@@ -159,7 +162,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The data type of the input tensor.</returns>
     public TensorDataType GetInputTensorType()
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetType(InputTensor);
+        return Native.TfLiteMicroGetType(InputTensor);
     }
 
     /// <summary>
@@ -168,7 +171,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The size of the dimensions data.</returns>
     public int GetInputTensorDimensionsSize()
     {
-        return TensorFlowLiteBindings.TfLiteMicroDimsSizeData(InputTensor);
+        return Native.TfLiteMicroDimsSizeData(InputTensor);
     }
 
     /// <summary>
@@ -178,7 +181,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
 
     public int GetOutputTensorDimensionsSize()
     {
-        return TensorFlowLiteBindings.TfLiteMicroDimsSizeData(OutputTensor);
+        return Native.TfLiteMicroDimsSizeData(OutputTensor);
     }
 
     /// <summary>
@@ -188,7 +191,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The dimension data at the specified index.</returns>
     public int GetInputTensorDimension(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroDimsData(InputTensor, index);
+        return Native.TfLiteMicroDimsData(InputTensor, index);
     }
 
     /// <summary>
@@ -199,7 +202,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
 
     public int GetOutputTensorDimension(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroDimsData(OutputTensor, index);
+        return Native.TfLiteMicroDimsData(OutputTensor, index);
     }
     /// <summary>
     /// Retrieves the quantization parameters of the output tensor.
@@ -207,7 +210,7 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
     /// <returns>The quantization parameters of the output tensor.</returns>
     public QuantizationParams GetOutputTensorQuantizationParams()
     {
-        return TensorFlowLiteBindings.TfLiteMicroTensorQuantizationParams(OutputTensor);
+        return Native.TfLiteMicroTensorQuantizationParams(OutputTensor);
     }
 
     protected virtual void Dispose(bool disposing)
@@ -221,13 +224,13 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
 
             if (_interpreterOptionsPtr != IntPtr.Zero)
             {
-                TensorFlowLiteBindings.TfLiteMicroInterpreterOptionDelete(_interpreterOptionsPtr);
+                Native.TfLiteMicroInterpreterOptionDelete(_interpreterOptionsPtr);
                 _interpreterOptionsPtr = IntPtr.Zero;
             }
 
             if (_interpreterPtr != IntPtr.Zero)
             {
-                TensorFlowLiteBindings.TfLiteMicroInterpreterDelete(_interpreterPtr);
+                Native.TfLiteMicroInterpreterDelete(_interpreterPtr);
                 _interpreterPtr = IntPtr.Zero;
             }
 
@@ -242,8 +245,8 @@ internal class Interpreter : ITensorFlowLiteInterpreter, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public TensorFlowLiteStatus AllocateTensors()
+    public RuntimeStatus AllocateTensors()
     {
-        return OperationStatus = TensorFlowLiteBindings.TfLiteMicroInterpreterAllocateTensors(_interpreterPtr);
+        return OperationStatus = Native.TfLiteMicroInterpreterAllocateTensors(_interpreterPtr);
     }
 }
