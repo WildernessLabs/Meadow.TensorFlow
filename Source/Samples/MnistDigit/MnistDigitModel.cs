@@ -1,7 +1,6 @@
 ﻿using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Foundation.RTLite;
-using Meadow.Peripherals.Displays;
 using System.IO;
 
 namespace Mnist_Demo;
@@ -31,7 +30,6 @@ public class MnistDigitModel : Model<float>
 
     public static float[] ResizeAndNormalize(Image image, int targetSize = 28)
     {
-        image.ConvertAndResize(ColorMode.Format8bppGray, 28, 28);
         var resized = (image.DisplayBuffer as PixelBufferBase).Resize<BufferGray8>(28, 28);
 
         var normalizedData = new float[resized.ByteCount];

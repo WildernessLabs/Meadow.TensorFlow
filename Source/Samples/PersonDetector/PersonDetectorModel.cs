@@ -1,4 +1,5 @@
 ﻿using Meadow.Foundation.Graphics;
+using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Foundation.RTLite;
 using System.IO;
 using System.Linq;
@@ -22,8 +23,10 @@ public class PersonDetectorModel : Model<sbyte>
 
     public PersonClass Classify(Image image)
     {
-        var inputs = image.DisplayBuffer.Buffer
-            .Cast<sbyte>()
+        var resized = (image.DisplayBuffer as PixelBufferBase)?.Resize<BufferGray8>(96, 96);
+
+        var inputs = resized.Buffer
+            .Select(b => unchecked((sbyte)b))
             .ToArray();
 
         Inputs.SetData(inputs);
