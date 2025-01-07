@@ -1,9 +1,9 @@
-﻿namespace Meadow.TensorFlow;
+﻿namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Interface for TensorFlow Lite interpreter.
+/// Interface for RTLite interpreter.
 /// </summary>
-public interface ITensorFlowLiteInterpreter
+public interface IInterpreter
 {
     /// <summary>
     /// Gets the quantization parameters for the input tensor.
@@ -16,9 +16,9 @@ public interface ITensorFlowLiteInterpreter
     QuantizationParams OutputQuantizationParams { get; }
 
     /// <summary>
-    /// Gets or sets the status of the last operation performed by the TensorFlow Lite interpreter.
+    /// Gets or sets the status of the last operation performed by the RTLite interpreter.
     /// </summary>
-    TensorFlowLiteStatus OperationStatus { get; set; }
+    RuntimeStatus OperationStatus { get; set; }
 
     /// <summary>
     /// Retrieves the length of the input tensor.
@@ -34,9 +34,9 @@ public interface ITensorFlowLiteInterpreter
     void SetInputTensorInt8Data(int index, sbyte value);
 
     /// <summary>
-    /// Allocates tensors for the TensorFlow Lite Micro interpreter.
+    /// Allocates tensors for the RTLite Micro interpreter.
     /// </summary>
-    TensorFlowLiteStatus AllocateTensors();
+    RuntimeStatus AllocateTensors();
 
     /// <summary>
     /// Retrieves the int8 data at the specified index from the output tensor.
@@ -60,24 +60,24 @@ public interface ITensorFlowLiteInterpreter
     float GetOutputTensorFloatData(int index);
 
     /// <summary>
-    /// Invokes the TensorFlow Lite interpreter for inference.
+    /// Invokes the RTLite interpreter for inference.
     /// </summary>
-    TensorFlowLiteStatus InvokeInterpreter();
+    RuntimeStatus InvokeInterpreter();
 
     /// <summary>
-    /// Retrieves the number of output tensors produced by the TensorFlow Lite interpreter.
+    /// Retrieves the number of output tensors produced by the RTLite interpreter.
     /// </summary>
     /// <returns>The number of output tensors.</returns>
     int GetOutputTensorCount();
 
     /// <summary>
-    /// Retrieves the number of input tensors expected by the TensorFlow Lite interpreter.
+    /// Retrieves the number of input tensors expected by the RTLite interpreter.
     /// </summary>
     /// <returns>The number of input tensors.</returns>
     int GetInputTensorCount();
 
     /// <summary>
-    /// Sets a mutable option for TensorFlow Lite interpreter.
+    /// Sets a mutable option for RTLite interpreter.
     /// </summary>
     /// <param name="option">The option value to set.</param>
     void SetMutableOption(sbyte option);
