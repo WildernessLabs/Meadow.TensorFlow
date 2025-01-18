@@ -1,28 +1,28 @@
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Enum representing the internal states in TensorFlow Lite.
+/// Enum representing the internal states in RTLite.
 /// </summary>
-public enum TensorFlowLiteStatus
+public enum RuntimeStatus
 {
     /// <summary>
-    /// Successful execution in the TensorFlow Lite runtime.
+    /// Successful execution in the RTLite runtime.
     /// </summary>
     Ok = 0,
 
     /// <summary>
-    /// Error in the TensorFlow Lite runtime.
+    /// Error in the RTLite runtime.
     /// </summary>
     Error = 1,
 
     /// <summary>
-    /// Error from a TensorFlow Lite delegate itself.
+    /// Error from a RTLite delegate itself.
     /// </summary>
     DelegateError = 2,
 
     /// <summary>
     /// Error in applying a delegate due to incompatibility 
-    /// between the TensorFlow Lite runtime and the delegate.
+    /// between the RTLite runtime and the delegate.
     /// </summary>
     ApplicationError = 3,
 
@@ -42,7 +42,7 @@ public enum TensorFlowLiteStatus
     DelegateDataReadError = 6,
 
     /// <summary>
-    /// Issues when the TensorFlow Lite model has operations that cannot
+    /// Issues when the RTLite model has operations that cannot
     /// be resolved at runtime.
     /// </summary>
     UnresolvedOps = 7,

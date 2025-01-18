@@ -1,4 +1,4 @@
-using Meadow.TensorFlow;
+using Meadow.Foundation.RTLite;
 
 namespace GestureDetector.Models;
 

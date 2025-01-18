@@ -1,7 +1,7 @@
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Enum representing the types supported by tensors in TensorFlow Lite.
+/// Enum representing the types supported by tensors in RTLite.
 /// </summary>
 public enum TensorDataType
 {
