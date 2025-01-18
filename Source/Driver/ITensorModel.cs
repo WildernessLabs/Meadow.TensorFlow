@@ -1,10 +1,12 @@
-﻿namespace Meadow.TensorFlow;
+﻿using System;
+
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
 /// Represents a tensor model interface for creating inputs and making predictions.
 /// </summary>
 public interface ITensorModel<T>
-    where T : struct
+    where T : struct, IComparable<T>
 {
     /// <summary>
     /// Makes a prediction based on the provided input tensor.

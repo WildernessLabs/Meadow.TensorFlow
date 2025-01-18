@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// A Safe handle for a TensorFlow Lite tensor.
+/// A Safe handle for a RTLite tensor.
 /// </summary>
 public class TensorSafeHandle : SafeHandle
 {

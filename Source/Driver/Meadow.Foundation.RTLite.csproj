@@ -4,20 +4,20 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>10.0</LangVersion>
-    <AssemblyName>Meadow.TensorFlowLiteForMicrocontrollers</AssemblyName>
+    <AssemblyName>Meadow.RTLiteForMicrocontrollers</AssemblyName>
     <Company>Wilderness Labs, Inc</Company>
     <PackageProjectUrl>http://developer.wildernesslabs.co/Meadow/</PackageProjectUrl>
-    <PackageId>Meadow.TensorFlowLiteForMicrocontrollers</PackageId>
+    <PackageId>Meadow.Foundation.RTLiteForMicrocontrollers</PackageId>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/WildernessLabs/Meadow.TensorFlow</RepositoryUrl>
-    <PackageTags>Meadow,Tensor,Flow,TensorFlow,Machine,Learning,ML,AI,artificial,intelligence,edge,microcontroller,microcontrollers</PackageTags>
+    <PackageTags>Meadow,Tensor,Flow,TensorFlow,RTLite,Machine,Learning,ML,AI,artificial,intelligence,edge,microcontroller,microcontrollers</PackageTags>
     <Version>1.13.0</Version>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <RootNamespace>Meadow.TensorFlow</RootNamespace>
+    <RootNamespace>Meadow.Foundation.RTLite</RootNamespace>
     <Nullable>enable</Nullable>
-    <Description>TensorFlow Lite for Microcontrollers for use with Wilderness Labs Meadow</Description>
+    <Description>RTLite for Microcontrollers for use with Wilderness Labs Meadow</Description>
     <Authors>Wilderness Labs, Inc</Authors>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
