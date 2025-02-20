@@ -1,8 +1,10 @@
-# Meadow.Foundation.RTLite
+# Meadow.Foundation.RTLiteForMicrocontrollers
 
-**RTLite (formerly TensorFlow Lite) for Microcontrollers integration for Wilderness Labs Meadow**
+**RTLite for Microcontrollers for use with Wilderness Labs Meadow**
 
-The **RTLiteForMicrocontrollers** library provides RTLite for Microcontrollers integration for the [Wilderness Labs](http://www.wildernesslabs.co) Meadow .NET IoT platform, enabling machine learning capabilities on Meadow F7 hardware.
+The **Meadow.RTLiteForMicrocontrollers** library is included in the **Meadow.Foundation.RTLiteForMicrocontrollers** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+
+This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
 For more information on developing for Meadow, visit [developer.wildernesslabs.co](http://developer.wildernesslabs.co/).
 
@@ -10,15 +12,15 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 ## Installation
 
-You can install the library from Visual Studio using the NuGet Package Manager or from the command line using the .NET CLI:
+You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
 `dotnet add package Meadow.Foundation.RTLiteForMicrocontrollers`
-
 ## How to Contribute
 
 - **Found a bug?** [Report an issue](https://github.com/WildernessLabs/Meadow_Issues/issues)
 - Have a **feature idea or driver request?** [Open a new feature request](https://github.com/WildernessLabs/Meadow_Issues/issues)
-- Want to **contribute code?** Fork the [Meadow.Foundation](https://github.com/WildernessLabs/Meadow.Foundation) repository and submit a pull request against the `develop` branch
+- Want to **contribute code?** Fork the [Meadow.TensorFlow](https://github.com/WildernessLabs/Meadow.TensorFlow) repository and submit a pull request against the `develop` branch
+
 
 ## Need Help?
 
@@ -38,3 +40,5 @@ Utilize native support for WiFi, Ethernet, and Cellular connectivity to send sen
 ### Deploy
 
 Instantly deploy and manage your fleet in the cloud for OtA, health-monitoring, logs, command + control, and enterprise backend integrations.
+
+
