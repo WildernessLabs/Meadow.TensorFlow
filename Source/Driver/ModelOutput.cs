@@ -1,20 +1,20 @@
 ﻿using System;
 
-namespace Meadow.TensorFlow;
+namespace Meadow.Foundation.RTLite;
 
 /// <summary>
-/// Represents the output of a TensorFlow model, allowing access to individual output tensors.
+/// Represents the output of a RTLite model, allowing access to individual output tensors.
 /// </summary>
 /// <typeparam name="T">The data type of the output tensor. Must be either <see cref="float"/> or <see cref="sbyte"/>.</typeparam>
 public class ModelOutput<T>
-    where T : struct
+    where T : struct, IComparable<T>
 {
     private readonly Interpreter _interpreter;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ModelOutput{T}"/> class with the specified interpreter.
     /// </summary>
-    /// <param name="interpreter">The interpreter used to process the TensorFlow model.</param>
+    /// <param name="interpreter">The interpreter used to process the RTLite model.</param>
     internal ModelOutput(Interpreter interpreter)
     {
         _interpreter = interpreter;
@@ -23,7 +23,7 @@ public class ModelOutput<T>
     /// <summary>
     /// Gets the number of output tensors in the model.
     /// </summary>
-    public int TensorCount => TensorFlowLiteBindings.TfLiteMicroInterpreterGetOutputCount(_interpreter.Handle);
+    public int TensorCount => Native.TfLiteMicroInterpreterGetOutputCount(_interpreter.Handle);
 
     /// <summary>
     /// Gets the output tensor at the specified index.
@@ -52,13 +52,36 @@ public class ModelOutput<T>
     }
 
     /// <summary>
+    /// Gets the maximum class and confidence level of the output tensor
+    /// </summary>
+    /// <param name="tensorLength"></param>
+    /// <returns></returns>
+    public (int Class, T Confidence) GetMaxElementIndexAndValue(int tensorLength)
+    {
+        var index = 0;
+        T value = this[0];
+
+        // dev note: TensorCount is currently missing from the binding
+        for (var i = 0; i < tensorLength; i++)
+        {
+            if (this[i].CompareTo(value) > 0)
+            {
+                index = i;
+                value = this[i];
+            }
+        }
+
+        return (index, value);
+    }
+
+    /// <summary>
     /// Gets the float value from the output tensor at the specified index.
     /// </summary>
     /// <param name="index">The index of the output tensor.</param>
     /// <returns>The float value of the output tensor at the specified index.</returns>
     private float GetSingle(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGetFloatData(_interpreter.OutputTensor, index);
+        return Native.TfLiteMicroGetFloatData(_interpreter.OutputTensor, index);
     }
 
     /// <summary>
@@ -68,6 +91,6 @@ public class ModelOutput<T>
     /// <returns>The sbyte value of the output tensor at the specified index.</returns>
     private sbyte GetSByte(int index)
     {
-        return TensorFlowLiteBindings.TfLiteMicroGeInt8tData(_interpreter.OutputTensor, index);
+        return Native.TfLiteMicroGeInt8tData(_interpreter.OutputTensor, index);
     }
 }
