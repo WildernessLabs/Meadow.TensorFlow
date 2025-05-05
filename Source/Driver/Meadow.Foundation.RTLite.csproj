@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>12.0</LangVersion>
+    <LangVersion>12</LangVersion>
     <AssemblyName>Meadow.RTLiteForMicrocontrollers</AssemblyName>
     <Company>Wilderness Labs, Inc</Company>
     <PackageProjectUrl>http://developer.wildernesslabs.co/Meadow/</PackageProjectUrl>
