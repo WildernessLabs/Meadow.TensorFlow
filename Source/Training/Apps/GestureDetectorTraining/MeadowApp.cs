@@ -193,7 +193,7 @@ namespace MeadowApp
         {
             try
             {
-                fs.WriteLine(Path.Combine(MeadowOS.FileSystem.UserFileSystemRoot, filename), string.Empty);
+                File.WriteAllText(Path.Combine(MeadowOS.FileSystem.UserFileSystemRoot, filename), string.Empty);
             }
             catch (Exception ex)
             {

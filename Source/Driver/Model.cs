@@ -101,7 +101,7 @@ public abstract class Model<T> : ITensorModel<T>, IDisposable
 
         if (status != RuntimeStatus.Ok)
         {
-            throw new Exception();
+            throw new Exception($"Interpreter invocation failed with status: {status}");
         }
 
         return new ModelOutput<T>(_interpreter);
